@@ -2,13 +2,14 @@ import fs from 'node:fs';
 
 const read = (path) => fs.readFileSync(new URL(path, import.meta.url), 'utf8');
 const adapter = read('../../assets/js/supabase-final-adapter.js');
+const requests = read('../../assets/js/supabase/requests.js');
 const m125 = read('../../supabase/migrations/20261029012500_owner_vehicle_request_parity.sql');
 const m126 = read('../../supabase/migrations/20261029012600_vehicle_request_lifecycle_parity.sql');
 
 const exactRequestTypes = ['REACTIVACION_VEHICULO', 'RENOVACION_QR', 'PERMANENCIA_PROLONGADA'];
 const checks = [
   ['saveVehicle usa RPC de negocio', adapter.includes("sb.rpc('save_parking_vehicle'")],
-  ['createRequest usa RPC de negocio', adapter.includes("sb.rpc('create_parking_request'")],
+  ['createRequest usa RPC de negocio', requests.includes("sb.rpc('create_parking_request'")],
   ['renewQr usa wrapper de ciclo de vida', adapter.includes("sb.rpc('renew_parking_qr'")],
   ['replaceVehicle usa wrapper de ciclo de vida', adapter.includes("sb.rpc('replace_parking_vehicle'")],
   ['owner no tiene update directo amplio de vehicles', m125.includes('drop policy if exists vehicles_update_admin_or_owner') && m125.includes('create policy vehicles_update_admin')],
