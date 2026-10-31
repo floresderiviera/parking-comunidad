@@ -12,6 +12,7 @@ const checks = [
   ['preproducción carga módulo temporary periods', html.includes('supabase/temporary-periods.js')],
   ['preproducción carga módulo vehicles', html.includes('supabase/vehicles.js')],
   ['preproducción carga módulo housing', html.includes('supabase/housing.js')],
+  ['preproducción carga módulo users', html.includes('supabase/users.js')],
   ['preproducción carga módulo incidents', html.includes('supabase/incidents.js')],
   ['preproducción carga final adapter', html.includes('supabase-final-adapter.js')],
   ['final adapter inicializa Supabase', adapter.includes('window.supabase.createClient') && adapter.includes('window.parkingSupabase = sb')],

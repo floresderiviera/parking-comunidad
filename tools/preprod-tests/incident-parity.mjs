@@ -22,6 +22,11 @@ const housingSource = fs.readFileSync(
   'utf8'
 );
 
+const usersSource = fs.readFileSync(
+  new URL('../../assets/js/supabase/users.js', import.meta.url),
+  'utf8'
+);
+
 const incidentsSource = fs.readFileSync(
   new URL('../../assets/js/supabase/incidents.js', import.meta.url),
   'utf8'
@@ -64,6 +69,7 @@ vm.runInContext(requestsSource, ctx, { filename: 'requests.js' });
 vm.runInContext(temporaryPeriodsSource, ctx, { filename: 'temporary-periods.js' });
 vm.runInContext(vehiclesSource, ctx, { filename: 'vehicles.js' });
 vm.runInContext(housingSource, ctx, { filename: 'housing.js' });
+vm.runInContext(usersSource, ctx, { filename: 'users.js' });
 vm.runInContext(incidentsSource, ctx, { filename: 'incidents.js' });
 vm.runInContext(source, ctx, { filename: 'supabase-final-adapter.js' });
 const h = ctx.window.__parkingPreprodTestHooks;
