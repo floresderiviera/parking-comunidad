@@ -10,6 +10,7 @@ const checks = [
   ['preproducción no carga POC adapter', !html.includes('supabase-poc-adapter.js')],
   ['preproducción carga módulo requests', html.includes('supabase/requests.js')],
   ['preproducción carga módulo temporary periods', html.includes('supabase/temporary-periods.js')],
+  ['preproducción carga módulo vehicles', html.includes('supabase/vehicles.js')],
   ['preproducción carga final adapter', html.includes('supabase-final-adapter.js')],
   ['final adapter inicializa Supabase', adapter.includes('window.supabase.createClient') && adapter.includes('window.parkingSupabase = sb')],
   ['owner import template implementado', adapter.includes("case 'ownerImportTemplate'")],
