@@ -61,6 +61,7 @@ test('PRE carga los JS críticos', async ({ page }) => {
       'housing.js',
       'users.js',
       'audit.js',
+      'evidence.js',
       'incidents.js',
       'supabase-final-adapter.js',
       'app-init.js'
@@ -84,6 +85,7 @@ test('PRE carga los JS críticos', async ({ page }) => {
     'housing.js',
     'users.js',
     'audit.js',
+    'evidence.js',
     'incidents.js',
     'supabase-final-adapter.js',
     'app-init.js'
