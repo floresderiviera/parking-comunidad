@@ -58,6 +58,7 @@ test('PRE carga los JS críticos', async ({ page }) => {
       'requests.js',
       'temporary-periods.js',
       'vehicles.js',
+      'housing.js',
       'supabase-final-adapter.js',
       'app-init.js'
     ].forEach(name => {
@@ -77,6 +78,7 @@ test('PRE carga los JS críticos', async ({ page }) => {
     'requests.js',
     'temporary-periods.js',
     'vehicles.js',
+    'housing.js',
     'supabase-final-adapter.js',
     'app-init.js'
   ]) {
