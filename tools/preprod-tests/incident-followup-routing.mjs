@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
 const adapter = fs.readFileSync(
-  'assets/js/supabase-final-adapter.js',
+  'assets/js/supabase/incidents.js',
   'utf8'
 );
 
