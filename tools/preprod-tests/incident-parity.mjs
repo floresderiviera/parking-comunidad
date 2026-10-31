@@ -2,7 +2,15 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import { webcrypto } from 'node:crypto';
 
-const source = fs.readFileSync(new URL('../../assets/js/supabase-final-adapter.js', import.meta.url), 'utf8');
+const requestsSource = fs.readFileSync(
+  new URL('../../assets/js/supabase/requests.js', import.meta.url),
+  'utf8'
+);
+
+const source = fs.readFileSync(
+  new URL('../../assets/js/supabase-final-adapter.js', import.meta.url),
+  'utf8'
+);
 const fakeSb = {
   auth: { onAuthStateChange() {}, getUser: async () => ({ data: { user: { id: '00000000-0000-4000-8000-000000000001' } } }) },
   rpc: async () => ({ data: null, error: null }),
@@ -32,6 +40,7 @@ const ctx = {
 };
 ctx.window.window = ctx.window;
 vm.createContext(ctx);
+vm.runInContext(requestsSource, ctx, { filename: 'requests.js' });
 vm.runInContext(source, ctx, { filename: 'supabase-final-adapter.js' });
 const h = ctx.window.__parkingPreprodTestHooks;
 if (!h) throw new Error('Test hooks not exposed');

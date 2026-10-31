@@ -8,6 +8,7 @@ const migration = read('../../supabase/migrations/20261029012300_preproduction_a
 
 const checks = [
   ['preproducción no carga POC adapter', !html.includes('supabase-poc-adapter.js')],
+  ['preproducción carga módulo requests', html.includes('supabase/requests.js')],
   ['preproducción carga final adapter', html.includes('supabase-final-adapter.js')],
   ['final adapter inicializa Supabase', adapter.includes('window.supabase.createClient') && adapter.includes('window.parkingSupabase = sb')],
   ['owner import template implementado', adapter.includes("case 'ownerImportTemplate'")],
