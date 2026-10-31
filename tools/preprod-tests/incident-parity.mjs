@@ -7,6 +7,11 @@ const requestsSource = fs.readFileSync(
   'utf8'
 );
 
+const temporaryPeriodsSource = fs.readFileSync(
+  new URL('../../assets/js/supabase/temporary-periods.js', import.meta.url),
+  'utf8'
+);
+
 const source = fs.readFileSync(
   new URL('../../assets/js/supabase-final-adapter.js', import.meta.url),
   'utf8'
@@ -41,6 +46,7 @@ const ctx = {
 ctx.window.window = ctx.window;
 vm.createContext(ctx);
 vm.runInContext(requestsSource, ctx, { filename: 'requests.js' });
+vm.runInContext(temporaryPeriodsSource, ctx, { filename: 'temporary-periods.js' });
 vm.runInContext(source, ctx, { filename: 'supabase-final-adapter.js' });
 const h = ctx.window.__parkingPreprodTestHooks;
 if (!h) throw new Error('Test hooks not exposed');

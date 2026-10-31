@@ -56,6 +56,7 @@ test('PRE carga los JS críticos', async ({ page }) => {
       'supabase-config.js',
       'app.bundle.js',
       'requests.js',
+      'temporary-periods.js',
       'supabase-final-adapter.js',
       'app-init.js'
     ].forEach(name => {
@@ -73,6 +74,7 @@ test('PRE carga los JS críticos', async ({ page }) => {
     'supabase-config.js',
     'app.bundle.js',
     'requests.js',
+    'temporary-periods.js',
     'supabase-final-adapter.js',
     'app-init.js'
   ]) {
