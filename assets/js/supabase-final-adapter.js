@@ -510,7 +510,7 @@
               .order('occurred_at')
           ) || []
         : [],
-      loadRefs()
+      joinedReferenceData()
     ]);
 
     const followupsByIncident = new Map();
