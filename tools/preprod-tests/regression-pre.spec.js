@@ -65,9 +65,19 @@ function monitorBrowser(page) {
   });
 
   page.on('response', response => {
-    if (response.status() >= 400) {
+    const status = response.status();
+    const url = response.url();
+
+    const expectedLogout401 =
+      context.endsWith(':Logout') &&
+      status === 401 &&
+      url.startsWith(
+        'https://tefnzjvylcvffnorgzls.supabase.co/rest/v1/'
+      );
+
+    if (status >= 400 && !expectedLogout401) {
       errors.push(
-        `[${context}] HTTP ${response.status()} ${response.url()}`
+        `[${context}] HTTP ${status} ${url}`
       );
     }
   });
