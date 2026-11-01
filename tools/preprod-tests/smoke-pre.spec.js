@@ -67,6 +67,13 @@ test('PRE carga los JS críticos', async ({ page }) => {
       'dashboard.js',
       'owner.js',
       'search.js',
+      'settings.js',
+      'system.js',
+      'admin-users.js',
+      'admin-import.js',
+      'admin-data.js',
+      'auth.js',
+      'profile.js',
       'supabase-final-adapter.js',
       'app-init.js'
     ].forEach(name => {
