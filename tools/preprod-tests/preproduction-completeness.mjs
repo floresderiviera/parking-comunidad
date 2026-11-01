@@ -3,6 +3,8 @@ import fs from 'node:fs';
 const read = (path) => fs.readFileSync(new URL(path, import.meta.url), 'utf8');
 const html = read('../../index.html');
 const adapter = read('../../assets/js/supabase-final-adapter.js');
+const authModule = read('../../assets/js/supabase/auth.js');
+const profileModule = read('../../assets/js/supabase/profile.js');
 const adminUsers = read('../../assets/js/supabase/admin-users.js');
 const adminImport = read('../../assets/js/supabase/admin-import.js');
 const adminData = read('../../assets/js/supabase/admin-data.js');
@@ -29,6 +31,8 @@ const checks = [
   ['preproducción carga módulo admin users', html.includes('supabase/admin-users.js')],
   ['preproducción carga módulo admin import', html.includes('supabase/admin-import.js')],
   ['preproducción carga módulo admin data', html.includes('supabase/admin-data.js')],
+  ['preproducción carga módulo auth', html.includes('supabase/auth.js')],
+  ['preproducción carga módulo profile', html.includes('supabase/profile.js')],
   ['preproducción carga final adapter', html.includes('supabase-final-adapter.js')],
   ['final adapter inicializa Supabase', adapter.includes('window.supabase.createClient') && adapter.includes('window.parkingSupabase = sb')],
   ['final adapter integra módulo control', adapter.includes('window.ParkingSupabaseControl({') && adapter.includes("case 'scanQr': return parkingControl('QR', payload.token)") && adapter.includes("case 'searchPlate': return parkingControl('MATRICULA', payload.plate)")],
@@ -44,6 +48,19 @@ const checks = [
     && adapter.includes('settingsApi.uploadLogo(payload)')
     && adapter.includes('settingsApi.consistencyReport()')
     && adapter.includes('settingsApi.consistencyFix(payload)')],
+  ['final adapter integra módulos auth/profile',
+    adapter.includes('window.ParkingSupabaseAuth({')
+    && adapter.includes('window.ParkingSupabaseProfile({')
+    && adapter.includes('authApi.login(')
+    && adapter.includes('authApi.requestPasswordReset(')
+    && adapter.includes('authApi.completePasswordReset(')
+    && adapter.includes('authApi.logout()')
+    && adapter.includes('profileApi.updateProfile(payload)')
+    && adapter.includes('profileApi.changePassword(payload)')
+    && adapter.includes('authApi.bindAuthState()')
+    && authModule.includes('sessionUser')
+    && profileModule.includes('changePassword')],
+
   ['final adapter integra módulos admin',
     adapter.includes('window.ParkingSupabaseAdminUsers({')
     && adapter.includes('window.ParkingSupabaseAdminImport({')

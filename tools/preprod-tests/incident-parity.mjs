@@ -87,6 +87,16 @@ const adminDataSource = fs.readFileSync(
   'utf8'
 );
 
+const authSource = fs.readFileSync(
+  new URL('../../assets/js/supabase/auth.js', import.meta.url),
+  'utf8'
+);
+
+const profileSource = fs.readFileSync(
+  new URL('../../assets/js/supabase/profile.js', import.meta.url),
+  'utf8'
+);
+
 const source = fs.readFileSync(
   new URL('../../assets/js/supabase-final-adapter.js', import.meta.url),
   'utf8'
@@ -137,6 +147,8 @@ vm.runInContext(systemSource, ctx, { filename: 'system.js' });
 vm.runInContext(adminUsersSource, ctx, { filename: 'admin-users.js' });
 vm.runInContext(adminImportSource, ctx, { filename: 'admin-import.js' });
 vm.runInContext(adminDataSource, ctx, { filename: 'admin-data.js' });
+vm.runInContext(authSource, ctx, { filename: 'auth.js' });
+vm.runInContext(profileSource, ctx, { filename: 'profile.js' });
 vm.runInContext(source, ctx, { filename: 'supabase-final-adapter.js' });
 const h = ctx.window.__parkingPreprodTestHooks;
 if (!h) throw new Error('Test hooks not exposed');
