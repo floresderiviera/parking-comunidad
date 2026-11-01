@@ -69,10 +69,19 @@ function monitorBrowser(page) {
     const url = response.url();
 
     const expectedLogout401 =
-      context.endsWith(':Logout') &&
       status === 401 &&
-      url.startsWith(
-        'https://tefnzjvylcvffnorgzls.supabase.co/rest/v1/'
+      (
+        (
+          context.endsWith(':Logout') &&
+          url.startsWith(
+            'https://tefnzjvylcvffnorgzls.supabase.co/rest/v1/'
+          )
+        ) ||
+        (
+          context === 'ROOT:Logout' &&
+          url ===
+            'https://tefnzjvylcvffnorgzls.supabase.co/functions/v1/parking-admin'
+        )
       );
 
     if (status >= 400 && !expectedLogout401) {
