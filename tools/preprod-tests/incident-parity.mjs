@@ -47,6 +47,11 @@ const dashboardSource = fs.readFileSync(
   'utf8'
 );
 
+const ownerSource = fs.readFileSync(
+  new URL('../../assets/js/supabase/owner.js', import.meta.url),
+  'utf8'
+);
+
 const source = fs.readFileSync(
   new URL('../../assets/js/supabase-final-adapter.js', import.meta.url),
   'utf8'
@@ -89,6 +94,7 @@ vm.runInContext(auditSource, ctx, { filename: 'audit.js' });
 vm.runInContext(evidenceSource, ctx, { filename: 'evidence.js' });
 vm.runInContext(incidentsSource, ctx, { filename: 'incidents.js' });
 vm.runInContext(dashboardSource, ctx, { filename: 'dashboard.js' });
+vm.runInContext(ownerSource, ctx, { filename: 'owner.js' });
 vm.runInContext(source, ctx, { filename: 'supabase-final-adapter.js' });
 const h = ctx.window.__parkingPreprodTestHooks;
 if (!h) throw new Error('Test hooks not exposed');
