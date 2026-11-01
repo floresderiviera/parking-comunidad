@@ -56,8 +56,19 @@ function monitorBrowser(page) {
   });
 
   page.on('console', msg => {
-    if (msg.type() === 'error') {
+    if (
+      msg.type() === 'error' &&
+      !msg.text().includes('Failed to load resource')
+    ) {
       errors.push(`[${context}] console: ${msg.text()}`);
+    }
+  });
+
+  page.on('response', response => {
+    if (response.status() >= 400) {
+      errors.push(
+        `[${context}] HTTP ${response.status()} ${response.url()}`
+      );
     }
   });
 
@@ -363,6 +374,7 @@ test.describe('PRE · ADMIN', () => {
 
     await openProfile(page);
 
+    monitor.setContext('ADMIN:Logout');
     await logout(page);
 
     expect(errors).toEqual([]);
@@ -427,6 +439,7 @@ test.describe('PRE · CONTROL', () => {
 
     await openProfile(page);
 
+    monitor.setContext('CONTROL:Logout');
     await logout(page);
 
     expect(errors).toEqual([]);
@@ -481,6 +494,7 @@ test.describe('PRE · PROPIETARIO', () => {
 
     await openProfile(page);
 
+    monitor.setContext('PROPIETARIO:Logout');
     await logout(page);
 
     expect(errors).toEqual([]);
