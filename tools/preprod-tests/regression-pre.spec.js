@@ -49,18 +49,24 @@ const NAV = {
 
 function monitorBrowser(page) {
   const errors = [];
+  let context = 'inicio';
 
   page.on('pageerror', error => {
-    errors.push(`pageerror: ${error.message}`);
+    errors.push(`[${context}] pageerror: ${error.message}`);
   });
 
   page.on('console', msg => {
     if (msg.type() === 'error') {
-      errors.push(`console: ${msg.text()}`);
+      errors.push(`[${context}] console: ${msg.text()}`);
     }
   });
 
-  return errors;
+  return {
+    errors,
+    setContext(value) {
+      context = value || 'sin contexto';
+    }
+  };
 }
 
 async function login(page, account) {
@@ -102,6 +108,39 @@ async function login(page, account) {
   await expect(
     page.locator('#nav')
   ).toBeVisible();
+}
+
+async function ensureRole(page, role) {
+  const selector = page.locator('#role-switch');
+
+  if (await selector.count()) {
+    const values = await selector
+      .locator('option')
+      .evaluateAll(options =>
+        options.map(option => option.value)
+      );
+
+    expect(
+      values,
+      `La cuenta E2E no tiene asignado el perfil ${role}`
+    ).toContain(role);
+
+    if (await selector.inputValue() !== role) {
+      await selector.selectOption(role);
+      await waitViewReady(page);
+    }
+
+    return;
+  }
+
+  const single = (
+    await page.locator('.role-single').innerText()
+  ).trim();
+
+  expect(
+    single,
+    `La cuenta E2E no tiene asignado el perfil ${role}`
+  ).toBe(role);
 }
 
 async function waitViewReady(page) {
@@ -152,9 +191,12 @@ async function assertDesktopNavigation(
 
 async function navigateAll(
   page,
-  expected
+  expected,
+  monitor
 ) {
   for (const [view] of expected) {
+    monitor?.setContext(`vista:${view}`);
+
     const item =
       page.locator(
         `#nav button[data-view="${view}"]`
@@ -202,13 +244,16 @@ test.describe('PRE · ROOT', () => {
   );
 
   test('login, navegación ADMIN, Sistema y logout', async ({ page }) => {
-    const errors =
+    const monitor =
       monitorBrowser(page);
+    const { errors } = monitor;
 
     await login(
       page,
       ACCOUNTS.ROOT
     );
+
+    await ensureRole(page, 'ADMIN');
 
     await assertDesktopNavigation(
       page,
@@ -217,8 +262,11 @@ test.describe('PRE · ROOT', () => {
 
     await navigateAll(
       page,
-      NAV.ADMIN
+      NAV.ADMIN,
+      monitor
     );
+
+    monitor.setContext('ROOT:Configuración');
 
     await page
       .locator(
@@ -237,6 +285,7 @@ test.describe('PRE · ROOT', () => {
       systemTab
     ).toBeVisible();
 
+    monitor.setContext('ROOT:Sistema');
     await systemTab.click();
 
     await expect(
@@ -254,8 +303,10 @@ test.describe('PRE · ROOT', () => {
       )
     ).toHaveCount(0);
 
+    monitor.setContext('ROOT:Perfil');
     await openProfile(page);
 
+    monitor.setContext('ROOT:Logout');
     await logout(page);
 
     expect(errors).toEqual([]);
@@ -274,13 +325,16 @@ test.describe('PRE · ADMIN', () => {
   );
 
   test('navegación completa sin acceso a Sistema', async ({ page }) => {
-    const errors =
+    const monitor =
       monitorBrowser(page);
+    const { errors } = monitor;
 
     await login(
       page,
       ACCOUNTS.ADMIN
     );
+
+    await ensureRole(page, 'ADMIN');
 
     await assertDesktopNavigation(
       page,
@@ -289,7 +343,8 @@ test.describe('PRE · ADMIN', () => {
 
     await navigateAll(
       page,
-      NAV.ADMIN
+      NAV.ADMIN,
+      monitor
     );
 
     await page
@@ -326,13 +381,16 @@ test.describe('PRE · CONTROL', () => {
   );
 
   test('solo ve Control e Incidencias', async ({ page }) => {
-    const errors =
+    const monitor =
       monitorBrowser(page);
+    const { errors } = monitor;
 
     await login(
       page,
       ACCOUNTS.CONTROL
     );
+
+    await ensureRole(page, 'CONTROL');
 
     await assertDesktopNavigation(
       page,
@@ -341,7 +399,8 @@ test.describe('PRE · CONTROL', () => {
 
     await navigateAll(
       page,
-      NAV.CONTROL
+      NAV.CONTROL,
+      monitor
     );
 
     await expect(
@@ -349,6 +408,14 @@ test.describe('PRE · CONTROL', () => {
         '#nav button[data-view="config"]'
       )
     ).toHaveCount(0);
+
+    monitor.setContext('CONTROL:control');
+
+    await page
+      .locator('#nav button[data-view="control"]')
+      .click();
+
+    await waitViewReady(page);
 
     await expect(
       page.locator('#scan')
@@ -378,13 +445,16 @@ test.describe('PRE · PROPIETARIO', () => {
   );
 
   test('navega únicamente por sus vistas', async ({ page }) => {
-    const errors =
+    const monitor =
       monitorBrowser(page);
+    const { errors } = monitor;
 
     await login(
       page,
       ACCOUNTS.PROPIETARIO
     );
+
+    await ensureRole(page, 'PROPIETARIO');
 
     await assertDesktopNavigation(
       page,
@@ -393,7 +463,8 @@ test.describe('PRE · PROPIETARIO', () => {
 
     await navigateAll(
       page,
-      NAV.PROPIETARIO
+      NAV.PROPIETARIO,
+      monitor
     );
 
     await expect(
