@@ -72,12 +72,6 @@
     return { blob: new Blob([out], { type: mime }), mime };
   };
 
-  async function sessionUser() {
-    const { data, error } = await sb.auth.getUser();
-    if (error || !data?.user) throw new Error('La sesión ha caducado. Vuelve a iniciar sesión.');
-    return data.user;
-  }
-
   async function parkingAdmin(action, payload = {}) {
     const { data: sessionData, error: sessionError } = await sb.auth.getSession();
     const accessToken = sessionData?.session?.access_token;
@@ -139,6 +133,25 @@
     };
     return bootstrapCache;
   }
+
+  const authApi = window.ParkingSupabaseAuth({
+    sb,
+    unwrap,
+    invalidate,
+    appBootstrap
+  });
+
+  const {
+    sessionUser
+  } = authApi;
+
+  const profileApi = window.ParkingSupabaseProfile({
+    sb,
+    unwrap,
+    invalidate,
+    appBootstrap,
+    sessionUser
+  });
 
   const temporaryPeriodsApi = window.ParkingSupabaseTemporaryPeriods({
     sb,
@@ -498,25 +511,12 @@
       case 'closeUserSessions':
         return adminUsersApi.closeUserSessions(payload);
 
-      case 'updateProfile': {
-        const user = await sessionUser();
-        unwrap(await sb.from('profiles').update({ name: String(payload.Nombre || '').trim() }).eq('user_id', user.id));
-        invalidate(); return appBootstrap(true);
-      }
-      case 'changePassword': {
-        const boot = await appBootstrap();
-        if (boot.user.IsRoot) throw new Error('La contraseña técnica ROOT se gestiona mediante el procedimiento seguro de administración.');
-        const currentPassword = String(payload.currentPassword || payload.PasswordActual || '');
-        const newPassword = String(payload.newPassword || payload.password || payload.PasswordNueva || '');
-        if (!currentPassword) throw new Error('Introduce tu contraseña actual.');
-        if (newPassword.length < 8 || !/[A-Za-zÁÉÍÓÚáéíóúÑñ]/.test(newPassword) || !/\d/.test(newPassword)) {
-          throw new Error('La contraseña nueva debe tener al menos 8 caracteres, una letra y un número.');
-        }
-        const reauth = await sb.auth.signInWithPassword({ email: boot.user.Email, password: currentPassword });
-        if (reauth.error || !reauth.data.session) throw new Error('La contraseña actual no es correcta.');
-        unwrap(await sb.auth.updateUser({ password: newPassword }));
-        return true;
-      }
+      case 'updateProfile':
+        return profileApi.updateProfile(payload);
+
+      case 'changePassword':
+        return profileApi.changePassword(payload);
+
       case 'systemStatus':
         return systemApi.systemStatus(payload);
 
@@ -561,79 +561,30 @@
     }
   }
 
-  async function login(email, password) {
-    const response = await fetch(`${window.SUPABASE_CONFIG.url}/functions/v1/legacy-auth-migrate`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', apikey: window.SUPABASE_CONFIG.publishableKey },
-      body: JSON.stringify({ email, password }),
-      cache: 'no-store'
-    });
-    const body = await response.json().catch(() => ({}));
-    if (!response.ok || !body.session?.access_token || !body.session?.refresh_token) {
-      throw new Error(body.error || 'Credenciales no válidas.');
-    }
-    unwrap(await sb.auth.setSession({ access_token: body.session.access_token, refresh_token: body.session.refresh_token }));
-    const boot = await appBootstrap(true);
-    if (boot.user.IsRoot) await sb.rpc('record_root_session_event', { p_action: 'LOGIN' });
-    return { token: body.session.access_token, user: boot.user, migrated: !!body.migrated };
-  }
-
   server = async function finalSupabaseServer(fn, ...args) {
-    if (fn === 'loginWithPassword') return login(args[0], args[1]);
+    if (fn === 'loginWithPassword') {
+      return authApi.login(
+        args[0],
+        args[1]
+      );
+    }
 
     if (fn === 'requestPasswordReset') {
-      const email = String(args[0] || '').trim().toLowerCase();
-
-      if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
-        throw new Error('Introduce un email válido.');
-      }
-
-      const redirectTo = location.origin + location.pathname + '?resetPassword=1';
-
-      const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
-
-      if (error) {
-        throw new Error('No se pudo solicitar el restablecimiento. Inténtalo de nuevo.');
-      }
-
-      return { ok: true };
+      return authApi.requestPasswordReset(
+        args[0]
+      );
     }
 
     if (fn === 'completePasswordReset') {
-      const password = String(args[0] || '');
-
-      if (
-        password.length < 8 ||
-        !/[A-Za-zÁÉÍÓÚáéíóúÑñ]/.test(password) ||
-        !/\d/.test(password)
-      ) {
-        throw new Error('La contraseña debe tener al menos 8 caracteres, una letra y un número.');
-      }
-
-      const session = await sb.auth.getSession();
-
-      if (session.error || !session.data.session) {
-        throw new Error('El enlace de recuperación no es válido o ha caducado. Solicita uno nuevo.');
-      }
-
-      const updated = await sb.auth.updateUser({ password });
-
-      if (updated.error) {
-        throw new Error(updated.error.message || 'No se pudo actualizar la contraseña.');
-      }
-
-      return { ok: true };
+      return authApi.completePasswordReset(
+        args[0]
+      );
     }
 
     if (fn === 'logout') {
-      try {
-        const boot = await appBootstrap();
-        if (boot.user.IsRoot) await sb.rpc('record_root_session_event', { p_action: 'LOGOUT' });
-      } catch (_) {}
-      invalidate();
-      unwrap(await sb.auth.signOut());
-      return true;
+      return authApi.logout();
     }
+
     if (fn === 'getPublicParkingSettings') {
       try { return unwrap(await sb.rpc('parking_public_settings')) || window.INITIAL_PUBLIC_SETTINGS || {}; } catch (_) { return window.INITIAL_PUBLIC_SETTINGS || {}; }
     }
@@ -657,13 +608,7 @@
     };
   }
 
-  sb.auth.onAuthStateChange((event, session) => {
-    if (session?.access_token) localStorage.setItem('parking_token', session.access_token);
-    if (event === 'SIGNED_OUT') {
-      localStorage.removeItem('parking_token');
-      invalidate();
-    }
-  });
+  authApi.bindAuthState();
 
   console.info('[Parking Comunidad] adaptador Supabase final activo');
 })();
