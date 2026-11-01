@@ -42,6 +42,11 @@ const incidentsSource = fs.readFileSync(
   'utf8'
 );
 
+const controlSource = fs.readFileSync(
+  new URL('../../assets/js/supabase/control.js', import.meta.url),
+  'utf8'
+);
+
 const dashboardSource = fs.readFileSync(
   new URL('../../assets/js/supabase/dashboard.js', import.meta.url),
   'utf8'
@@ -98,6 +103,7 @@ vm.runInContext(usersSource, ctx, { filename: 'users.js' });
 vm.runInContext(auditSource, ctx, { filename: 'audit.js' });
 vm.runInContext(evidenceSource, ctx, { filename: 'evidence.js' });
 vm.runInContext(incidentsSource, ctx, { filename: 'incidents.js' });
+vm.runInContext(controlSource, ctx, { filename: 'control.js' });
 vm.runInContext(dashboardSource, ctx, { filename: 'dashboard.js' });
 vm.runInContext(ownerSource, ctx, { filename: 'owner.js' });
 vm.runInContext(searchSource, ctx, { filename: 'search.js' });
