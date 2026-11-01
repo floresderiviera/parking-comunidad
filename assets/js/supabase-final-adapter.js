@@ -359,6 +359,14 @@
     globalSearch
   } = searchApi;
 
+  const settingsApi = window.ParkingSupabaseSettings({
+    sb,
+    unwrap,
+    invalidate,
+    appBootstrap,
+    dataUrlBlob
+  });
+
   const systemApi = window.ParkingSupabaseSystem({
     sb,
     unwrap,
@@ -366,7 +374,7 @@
     parkingAdmin,
     appBootstrap,
     invalidate,
-    consistencyReport,
+    consistencyReport: (...args) => settingsApi.consistencyReport(...args),
     setPublicStateCache: (value) => {
       publicStateCache = value;
       publicStateCachedAt = Date.now();
@@ -378,37 +386,6 @@
     const sorted = rows.slice().sort((a, b) => String(a.Vivienda || '').localeCompare(String(b.Vivienda || ''), 'es', { numeric: true, sensitivity: 'base' }));
     if (!sorted.length) return [{ Vivienda: 'Bloque 1, 1º A', Propietario: '', Email: '' }];
     return sorted.map((row) => ({ Vivienda: row.Vivienda, Propietario: row.Propietario || '', Email: row.Responsable || '' }));
-  }
-
-  async function uploadLogo(payload) {
-    const boot = await appBootstrap();
-    const { blob, mime } = dataUrlBlob(payload.dataUrl);
-    if (!/^image\/(png|jpeg|jpg|webp|gif)$/i.test(mime)) throw new Error('El archivo de logo no es una imagen válida. Usa PNG, JPG, WEBP o GIF.');
-    if (blob.size > 3 * 1024 * 1024) throw new Error('El logo no puede superar 3 MB una vez optimizado.');
-    const normalizedMime = mime.toLowerCase() === 'image/jpg' ? 'image/jpeg' : mime.toLowerCase();
-    const extension = normalizedMime === 'image/jpeg' ? 'jpg' : normalizedMime.split('/')[1];
-    const objectPath = `${boot.communityId}/logos/logo-${Date.now()}-${crypto.randomUUID()}.${extension}`;
-    const uploaded = await sb.storage.from('parking-public').upload(objectPath, blob, {
-      cacheControl: '3600',
-      contentType: normalizedMime,
-      upsert: false
-    });
-    if (uploaded.error) throw uploaded.error;
-    const publicUrl = sb.storage.from('parking-public').getPublicUrl(objectPath).data.publicUrl;
-    return { id: objectPath, url: publicUrl, name: objectPath.split('/').pop() || 'logo' };
-  }
-
-  async function consistencyReport() {
-    return unwrap(await sb.rpc('parking_consistency_report'));
-  }
-
-  async function consistencyFix(payload) {
-    const result = unwrap(await sb.rpc('parking_consistency_fix', {
-      p_code: payload.code,
-      p_vehicle_id: payload.vehicleId
-    }));
-    invalidate();
-    return result;
   }
 
   async function action(name, payload = {}) {
@@ -472,8 +449,8 @@
       case 'replaceVehicle': return replaceVehicle(payload);
       case 'createRequest': return createRequest(payload);
       case 'resolveRequest': return resolveRequest(payload);
-      case 'getSettings': return (await appBootstrap()).settings;
-      case 'saveSettings': return saveSettings(payload);
+      case 'getSettings': return settingsApi.getSettings();
+      case 'saveSettings': return settingsApi.saveSettings(payload);
       case 'ownerImportTemplate': return ownerImportTemplate();
       case 'previewOwnerImport': return parkingAdmin('previewOwnerImport', payload);
       case 'applyOwnerImport': {
@@ -481,9 +458,9 @@
         invalidate();
         return data;
       }
-      case 'consistencyReport': return consistencyReport();
-      case 'consistencyFix': return consistencyFix(payload);
-      case 'uploadLogo': return uploadLogo(payload);
+      case 'consistencyReport': return settingsApi.consistencyReport();
+      case 'consistencyFix': return settingsApi.consistencyFix(payload);
+      case 'uploadLogo': return settingsApi.uploadLogo(payload);
       case 'globalSearch': return globalSearch(payload);
       case 'housingDetail': {
         const boot = await appBootstrap();
