@@ -406,11 +406,7 @@
   async function ownerBundle() {
     const boot = await appBootstrap();
 
-    const ownerUserId =
-      boot.user?.ID_Usuario ||
-      boot.user?.user_id ||
-      boot.user?.id ||
-      '';
+    const ownerUserId = await ownerScopeUserId();
 
     if (!ownerUserId) {
       return {

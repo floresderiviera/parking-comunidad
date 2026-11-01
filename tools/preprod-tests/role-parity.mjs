@@ -10,7 +10,7 @@ const checks = [
   ['CanConfigure ROOT o ADMIN', adapter.includes("CanConfigure: !!profile.is_root || roles.includes('ADMIN')")],
   ['ownerBundle filtra viviendas por responsable', adapter.includes(".eq('responsible_user_id', ownerUserId)")],
   ['ownerBundle filtra vehiculos por viviendas propias', adapter.includes(".in('dwelling_id', housingIds)")],
-  ['ROOT resuelve propietario normal por email visible', adapter.includes(".eq('is_root', false)") && adapter.includes(".ilike('email', visibleEmail)")]
+  ['ROOT resuelve propietario normal por email visible', adapter.includes('const ownerUserId = await ownerScopeUserId();') && adapter.includes(".eq('is_root', false)") && adapter.includes(".ilike('email', visibleEmail)")]
 ];
 let failed = 0;
 for (const [label, ok] of checks) {
