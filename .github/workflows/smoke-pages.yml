@@ -33,3 +33,80 @@ jobs:
 
       - name: Run public PRO/PRE smoke test
         run: node tools/smoke-pages.mjs
+
+
+  regression-pre:
+    name: Regression PRE autenticada
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'supabase-poc') }}
+    runs-on: ubuntu-latest
+
+    env:
+      E2E_ROOT_EMAIL: ${{ secrets.E2E_ROOT_EMAIL }}
+      E2E_ROOT_PASSWORD: ${{ secrets.E2E_ROOT_PASSWORD }}
+      E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+      E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+      E2E_CONTROL_EMAIL: ${{ secrets.E2E_CONTROL_EMAIL }}
+      E2E_CONTROL_PASSWORD: ${{ secrets.E2E_CONTROL_PASSWORD }}
+      E2E_OWNER_EMAIL: ${{ secrets.E2E_OWNER_EMAIL }}
+      E2E_OWNER_PASSWORD: ${{ secrets.E2E_OWNER_PASSWORD }}
+
+    steps:
+      - name: Checkout preproduction
+        uses: actions/checkout@v6
+        with:
+          ref: supabase-poc
+
+      - name: Check E2E credentials
+        id: credentials
+        shell: bash
+        run: |
+          set -e
+
+          enabled=true
+
+          for name in \
+            E2E_ROOT_EMAIL \
+            E2E_ROOT_PASSWORD \
+            E2E_ADMIN_EMAIL \
+            E2E_ADMIN_PASSWORD \
+            E2E_CONTROL_EMAIL \
+            E2E_CONTROL_PASSWORD \
+            E2E_OWNER_EMAIL \
+            E2E_OWNER_PASSWORD
+          do
+            if [ -z "${!name}" ]; then
+              echo "::notice::Falta el secret $name. Regresión autenticada desactivada."
+              enabled=false
+            fi
+          done
+
+          echo "enabled=$enabled" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Node
+        if: steps.credentials.outputs.enabled == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.credentials.outputs.enabled == 'true'
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        if: steps.credentials.outputs.enabled == 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Wait for GitHub Pages propagation
+        if: steps.credentials.outputs.enabled == 'true'
+        run: sleep 20
+
+      - name: Run authenticated PRE regression
+        if: steps.credentials.outputs.enabled == 'true'
+        run: npm run test:regression:pre
+
+      - name: Regression disabled
+        if: steps.credentials.outputs.enabled != 'true'
+        run: |
+          echo "Authenticated PRE regression is ready but disabled."
+          echo "Configure the eight E2E repository secrets to enable it."
