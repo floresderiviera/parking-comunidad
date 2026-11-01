@@ -20,9 +20,15 @@ const checks = [
   ['preproducción carga módulo dashboard', html.includes('supabase/dashboard.js')],
   ['preproducción carga módulo owner', html.includes('supabase/owner.js')],
   ['preproducción carga módulo search', html.includes('supabase/search.js')],
+  ['preproducción carga módulo system', html.includes('supabase/system.js')],
   ['preproducción carga final adapter', html.includes('supabase-final-adapter.js')],
   ['final adapter inicializa Supabase', adapter.includes('window.supabase.createClient') && adapter.includes('window.parkingSupabase = sb')],
   ['final adapter integra módulo control', adapter.includes('window.ParkingSupabaseControl({') && adapter.includes("case 'scanQr': return parkingControl('QR', payload.token)") && adapter.includes("case 'searchPlate': return parkingControl('MATRICULA', payload.plate)")],
+  ['final adapter integra módulo system',
+    adapter.includes('window.ParkingSupabaseSystem({')
+    && adapter.includes("case 'systemStatus':")
+    && adapter.includes('systemApi.systemStatus(payload)')
+    && adapter.includes('systemApi.systemDiagnostics(payload)')],
   ['owner import template implementado', adapter.includes("case 'ownerImportTemplate'")],
   ['owner import preview implementado', adapter.includes("case 'previewOwnerImport'") && admin.includes("action === 'previewOwnerImport'")],
   ['owner import apply implementado', adapter.includes("case 'applyOwnerImport'") && admin.includes("action === 'applyOwnerImport'")],

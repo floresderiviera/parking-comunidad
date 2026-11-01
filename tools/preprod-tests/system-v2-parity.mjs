@@ -5,6 +5,7 @@ const core = read('assets/js/core.js');
 const nav = read('assets/js/auth-navigation.js');
 const advanced = read('assets/js/admin/advanced.js');
 const adapter = read('assets/js/supabase-final-adapter.js');
+const system = read('assets/js/supabase/system.js');
 const scanner = read('scanner/scanner.js');
 const migration = read('supabase/migrations/20261029012800_system_v2_maintenance.sql');
 const statusFix = read('supabase/migrations/20261029012900_system_v2_status_corrections.sql');
@@ -22,14 +23,17 @@ const checks = [
   ['Sistema ya no muestra Hojas', !advanced.includes('<span>Hojas</span>')],
   ['Sistema ya no ofrece Benchmark Sheets', !advanced.includes('Benchmark Sheets')],
   ['Sistema ya no muestra correo heredado', !advanced.includes("integrationCard('Correo',integrations?.mail")],
-['Sistema muestra Supabase Auth', adapter.includes("'Supabase Auth'")],
-['Sistema muestra RLS / bootstrap', adapter.includes("'RLS / bootstrap'")],
+['Sistema muestra Supabase Auth', system.includes("'Supabase Auth'")],
+['Sistema muestra RLS / bootstrap', system.includes("'RLS / bootstrap'")],
 ['Sistema elimina Auth / RLS combinado', !adapter.includes("'Auth / RLS'")],
   ['Sistema muestra Drive/Docs heredado', advanced.includes("integrationCard('Google Drive / Docs'") && advanced.includes("['generateMissing','Generar faltantes']")],
   ['Sistema tiene mantenimiento ROOT', advanced.includes("call('systemSetMaintenance'")],
   ['Sistema tiene consistencia', advanced.includes("call('consistencyReport'")],
-  ['status usa mediciones reales', adapter.includes("timed('Base de datos'") && adapter.includes("parkingAdmin('systemPing'")],
-  ['status backend 129', adapter.includes("Supabase migration 129")],
+  ['status usa mediciones reales',
+      system.includes("'Base de datos'")
+      && system.includes("parkingAdmin(")
+      && system.includes("'systemPing'")],
+  ['status backend 129', system.includes("Supabase migration 129")],
   ['estado publico maintenance RPC', migration.includes('public.parking_public_state()')],
   ['set mantenimiento ROOT-only', migration.includes('public.parking_set_maintenance') && migration.includes("Acceso exclusivo ROOT")],
   ['snapshot sistema 129', statusFix.includes("'schemaVersion', '20261029012900'")],
