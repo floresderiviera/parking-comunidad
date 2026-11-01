@@ -223,6 +223,31 @@ async function navigateAll(
   }
 }
 
+async function clickStable(page, selector) {
+  let lastError;
+
+  for (let attempt = 0; attempt < 8; attempt++) {
+    try {
+      const locator = page.locator(selector);
+
+      await expect(locator).toBeVisible({
+        timeout: 5000
+      });
+
+      await locator.click({
+        timeout: 5000
+      });
+
+      return;
+    } catch (error) {
+      lastError = error;
+      await page.waitForTimeout(150);
+    }
+  }
+
+  throw lastError;
+}
+
 async function openProfile(page) {
   await page.locator('#profile-link').click();
 
@@ -297,7 +322,11 @@ test.describe('PRE · ROOT', () => {
     ).toBeVisible();
 
     monitor.setContext('ROOT:Sistema');
-    await systemTab.click();
+
+    await clickStable(
+      page,
+      '[data-config-tab="system"]'
+    );
 
     await expect(
       page.getByRole(
