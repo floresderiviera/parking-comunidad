@@ -18,6 +18,7 @@ const checks = [
   ['preproducción carga módulo incidents', html.includes('supabase/incidents.js')],
   ['preproducción carga módulo dashboard', html.includes('supabase/dashboard.js')],
   ['preproducción carga módulo owner', html.includes('supabase/owner.js')],
+  ['preproducción carga módulo search', html.includes('supabase/search.js')],
   ['preproducción carga final adapter', html.includes('supabase-final-adapter.js')],
   ['final adapter inicializa Supabase', adapter.includes('window.supabase.createClient') && adapter.includes('window.parkingSupabase = sb')],
   ['owner import template implementado', adapter.includes("case 'ownerImportTemplate'")],
