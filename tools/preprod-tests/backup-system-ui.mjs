@@ -5,6 +5,11 @@ const adapter = fs.readFileSync(
   'utf8'
 );
 
+const system = fs.readFileSync(
+  'assets/js/supabase/system.js',
+  'utf8'
+);
+
 const advanced = fs.readFileSync(
   'assets/js/admin/advanced.js',
   'utf8'
@@ -19,13 +24,17 @@ const checks = [
   [
     'adapter expone estado backup',
     adapter.includes("case 'systemBackupStatus'") &&
-    adapter.includes("parkingAdmin('legacyBackupStatus'")
+    adapter.includes('systemApi.systemBackupStatus(payload)') &&
+    system.includes("parkingAdmin(") &&
+    system.includes("'legacyBackupStatus'")
   ],
 
   [
     'adapter expone ejecución manual',
     adapter.includes("case 'systemBackupRunNow'") &&
-    adapter.includes("parkingAdmin('legacyBackupRunNow'")
+    adapter.includes('systemApi.systemBackupRunNow(payload)') &&
+    system.includes("parkingAdmin(") &&
+    system.includes("'legacyBackupRunNow'")
   ],
 
   [
