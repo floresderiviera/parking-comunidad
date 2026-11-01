@@ -1083,6 +1083,7 @@ async function configurationView(initialTab='identity'){
 
         try{
           const out=await call('systemBackupStatus');
+          if(!box.isConnected)return;
           const backup=out?.backup?.data||out?.backup||{};
           const automatic=backup.automatic||{};
           const last=backup.last||{};
@@ -1233,7 +1234,9 @@ async function configurationView(initialTab='identity'){
       function bindLegacyActions(integrations){document.querySelectorAll('.legacy-action').forEach(btn=>btn.onclick=async()=>{const domain=btn.dataset.domain,command=btn.dataset.command,key=`${domain}:${command}`,box=$(`#legacy-${domain}-result`);if(DIRECT_LEGACY_COMMANDS.has(key)){busy(btn);const message=legacyDirectMessage(domain,command,integrations);rememberLegacyResult(domain,{ok:true,message,completedAt:new Date().toISOString(),command});if(box)box.innerHTML=`<div class="message"><b>Consultado</b> · ${esc(message)}</div>`;toast(message);busy(btn,false);return}const args=legacyArgs(domain,command,integrations);if(args===null)return;busy(btn);if(box)box.textContent='Enviando comando seguro a Apps Script…';try{const out=await call('systemLegacyBridgeAction',{domain,command,args}),cmd=out?.command||out,id=cmd?.id;if(!id)throw new Error('Apps Script no devolvió ID de comando.');if(box)box.textContent=`Comando ${id} en cola. Esperando al bridge worker…`;await waitLegacyCommand(id,domain,btn)}catch(e){if(box)box.innerHTML=`<span class="message bad">${esc(e.message||String(e))}</span>`;toast(e.message||String(e),true);busy(btn,false)}})}
       async function loadStatus(force=false){
         try{
-          const st=await call('systemStatus',{force}),counts=st.counts||{},maintenance=st.maintenance||{},integrations=legacyBridgeIntegrations(),cachedBridge=legacyBridgeCache();
+          const st=await call('systemStatus',{force});
+          if(!panel.isConnected)return;
+          const counts=st.counts||{},maintenance=st.maintenance||{},integrations=legacyBridgeIntegrations(),cachedBridge=legacyBridgeCache();
           const coreServiceCards=(st.services||[]).map(x=>`<div class="system-service ${x.ok?'ok':'bad'}"><span class="system-dot"></span><div><b>${esc(x.label)}</b><small>${esc(x.detail||'')}</small><span class="perf-badge ${esc(x.level||'good')}">${Number(x.ms||0)} ms</span></div></div>`).join('');
           const bridgeServiceCard=cachedBridge?`<div id="system-bridge-service" class="system-service ${cachedBridge.error?'bad':'ok'}"><span class="system-dot"></span><div><b>Bridge · Apps Script</b><small>${esc(cachedBridge.error||'Último estado disponible; actualizando en segundo plano…')}</small>${Number.isFinite(cachedBridge.ms)?`<span class="perf-badge ${cachedBridge.ms>1500?'warn':'good'}">${Math.round(cachedBridge.ms)} ms</span>`:''}</div></div>`:`<div id="system-bridge-service" class="system-service"><span class="system-dot"></span><div><b>Bridge · Apps Script</b><small>Comprobando en segundo plano…</small></div></div>`;
           const serviceCards=coreServiceCards+bridgeServiceCard;
@@ -1265,7 +1268,12 @@ async function configurationView(initialTab='identity'){
           $('#system-consistency').onclick=runConsistency;
           $('#diag-quick').onclick=()=>runDiagnostic('quick');$('#diag-full').onclick=()=>runDiagnostic('full');$('#diag-roundtrip').onclick=runRoundTrip;$('#diag-concurrency').onclick=runConcurrency;
           renderSessionCalls();
-        }catch(e){panel.innerHTML=`<section class="card"><div class="message bad">${esc(e.message||String(e))}</div><button type="button" class="secondary" id="system-retry">Reintentar</button></section>`;$('#system-retry').onclick=()=>loadStatus(true)}
+        }catch(e){
+          if(!panel.isConnected)return;
+          panel.innerHTML=`<section class="card"><div class="message bad">${esc(e.message||String(e))}</div><button type="button" class="secondary" id="system-retry">Reintentar</button></section>`;
+          const retry=$('#system-retry');
+          if(retry)retry.onclick=()=>loadStatus(true);
+        }
       }
       async function runDiagnostic(mode){const box=resultBox();box.className='diagnostic-running';box.innerHTML='<div class="spinner"></div><span>Ejecutando diagnóstico…</span>';try{const r=await call('systemDiagnostics',{mode});box.className='diagnostic-result';box.innerHTML=`<div class="diagnostic-summary"><div><b>${mode==='full'?'Diagnóstico completo':'Prueba rápida'}</b><span>${esc(r.checkedAt?shortDateTime(r.checkedAt):'')}</span></div><span class="perf-badge ${esc(r.level||'good')}">${Number(r.totalMs||0)} ms</span></div><div class="diagnostic-grid">${rowsHtml(r)}</div>`}catch(e){box.className='diagnostic-result';box.innerHTML=`<div class="message bad">${esc(e.message||String(e))}</div>`}finally{renderSessionCalls()}}
       async function runConsistency(){const box=$('#consistency-result');box.className='diagnostic-running';box.innerHTML='<div class="spinner"></div><span>Comprobando consistencia…</span>';try{const r=await call('consistencyReport'),items=Array.isArray(r?.items)?r.items:[],errors=Number(r?.errors||0),warnings=Number(r?.warnings||0);box.className='diagnostic-result';box.innerHTML=`<div class="diagnostic-summary"><div><b>${errors||warnings?'Requiere revisión':'Sin inconsistencias detectadas'}</b><span>${errors} error(es) · ${warnings} aviso(s)</span></div><span class="system-pill ${errors?'bad':'ok'}">${errors?'REVISAR':'OK'}</span></div>${items.length?`<div class="diagnostic-grid">${items.slice(0,12).map(x=>`<div class="diagnostic-row"><div><b>${esc(x.label||x.code||'Observación')}</b><small>${esc(x.detail||'')}</small></div><span class="status ${x.severity==='Error'?'bad':''}">${esc(x.severity||'Aviso')}</span></div>`).join('')}</div>`:'<div class="system-summary ok">Las reglas de consistencia no detectaron incidencias.</div>'}` }catch(e){box.className='diagnostic-result';box.innerHTML=`<div class="message bad">${esc(e.message||String(e))}</div>`}}
