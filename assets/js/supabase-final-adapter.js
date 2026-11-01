@@ -381,12 +381,25 @@
     }
   });
 
-  async function ownerImportTemplate() {
-    const rows = await listHousing();
-    const sorted = rows.slice().sort((a, b) => String(a.Vivienda || '').localeCompare(String(b.Vivienda || ''), 'es', { numeric: true, sensitivity: 'base' }));
-    if (!sorted.length) return [{ Vivienda: 'Bloque 1, 1º A', Propietario: '', Email: '' }];
-    return sorted.map((row) => ({ Vivienda: row.Vivienda, Propietario: row.Propietario || '', Email: row.Responsable || '' }));
-  }
+  const adminUsersApi = window.ParkingSupabaseAdminUsers({
+    parkingAdmin,
+    invalidate
+  });
+
+  const adminImportApi = window.ParkingSupabaseAdminImport({
+    listHousing,
+    parkingAdmin,
+    invalidate
+  });
+
+  const adminDataApi = window.ParkingSupabaseAdminData({
+    listUsers,
+    formOptions,
+    listHousing,
+    listVehicles,
+    listRequests,
+    listIncidents
+  });
 
   async function action(name, payload = {}) {
     if (name !== 'bootstrap' && !name.startsWith('system')) {
@@ -451,13 +464,9 @@
       case 'resolveRequest': return resolveRequest(payload);
       case 'getSettings': return settingsApi.getSettings();
       case 'saveSettings': return settingsApi.saveSettings(payload);
-      case 'ownerImportTemplate': return ownerImportTemplate();
-      case 'previewOwnerImport': return parkingAdmin('previewOwnerImport', payload);
-      case 'applyOwnerImport': {
-        const data = await parkingAdmin('applyOwnerImport', payload);
-        invalidate();
-        return data;
-      }
+      case 'ownerImportTemplate': return adminImportApi.ownerImportTemplate();
+      case 'previewOwnerImport': return adminImportApi.previewOwnerImport(payload);
+      case 'applyOwnerImport': return adminImportApi.applyOwnerImport(payload);
       case 'consistencyReport': return settingsApi.consistencyReport();
       case 'consistencyFix': return settingsApi.consistencyFix(payload);
       case 'uploadLogo': return settingsApi.uploadLogo(payload);
@@ -477,31 +486,18 @@
         const audits = (await listAudit()).filter((row) => row.ID_Entidad === payload.id);
         return { vehicle, events: audits.map((row) => ({ type: row.Accion, title: row.Entidad, date: row.FechaHora, user: row.UsuarioNombre, detail: row.Observaciones })) };
       }
-      case 'saveUser': {
-        const data = await parkingAdmin('saveUser', {
-          ...payload,
-          AccessRedirectTo:
-            location.origin +
-            location.pathname +
-            '?resetPassword=1'
-        });
-        invalidate();
-        return data;
-      }
+      case 'saveUser':
+        return adminUsersApi.saveUser(payload);
+
       case 'adminGenerateTemporaryPassword':
-        return parkingAdmin('generateTemporaryPassword', {
-          id: payload.id || payload.ID_Usuario
-        });
+        return adminUsersApi.adminGenerateTemporaryPassword(payload);
+
       case 'adminSendPasswordReset':
-        return parkingAdmin('sendPasswordReset', {
-          id: payload.id || payload.ID_Usuario,
-          redirectTo:
-            location.origin +
-            location.pathname +
-            '?resetPassword=1'
-        });
+        return adminUsersApi.adminSendPasswordReset(payload);
+
       case 'closeUserSessions':
-        return parkingAdmin('closeSessions', { id: payload.id || payload.ID_Usuario });
+        return adminUsersApi.closeUserSessions(payload);
+
       case 'updateProfile': {
         const user = await sessionUser();
         unwrap(await sb.from('profiles').update({ name: String(payload.Nombre || '').trim() }).eq('user_id', user.id));
@@ -557,44 +553,8 @@
       case 'systemSheetsRealBenchmark':
         return systemApi.systemSheetsRealBenchmark(payload);
 
-      case 'managerData': {
-        const kind = payload?.kind;
-
-        if (kind === 'users') {
-          const [rows, options] = await Promise.all([
-            listUsers(),
-            formOptions()
-          ]);
-          return { rows, options };
-        }
-
-        if (kind === 'housing') {
-          const [rows, options] = await Promise.all([
-            listHousing(),
-            formOptions()
-          ]);
-          return { rows, options };
-        }
-
-        if (kind === 'vehicles') {
-          const [rows, options, requests, incidents] = await Promise.all([
-            listVehicles(),
-            formOptions(),
-            listRequests(),
-            listIncidents()
-          ]);
-
-          return {
-            rows,
-            options,
-            requests,
-            incidents,
-            requestStats: {}
-          };
-        }
-
-        throw new Error(`managerData no soporta el tipo "${kind || ''}".`);
-      }
+      case 'managerData':
+        return adminDataApi.managerData(payload);
 
       default:
         throw new Error(`Acción Supabase no soportada: "${name}".`);

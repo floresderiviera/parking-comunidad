@@ -3,6 +3,9 @@ import fs from 'node:fs';
 const read = (path) => fs.readFileSync(new URL(path, import.meta.url), 'utf8');
 const html = read('../../index.html');
 const adapter = read('../../assets/js/supabase-final-adapter.js');
+const adminUsers = read('../../assets/js/supabase/admin-users.js');
+const adminImport = read('../../assets/js/supabase/admin-import.js');
+const adminData = read('../../assets/js/supabase/admin-data.js');
 const settings = read('../../assets/js/supabase/settings.js');
 const admin = read('../../supabase/functions/parking-admin/index.ts');
 const migration = read('../../supabase/migrations/20261029012300_preproduction_admin_completeness.sql');
@@ -23,6 +26,9 @@ const checks = [
   ['preproducción carga módulo search', html.includes('supabase/search.js')],
   ['preproducción carga módulo settings', html.includes('supabase/settings.js')],
   ['preproducción carga módulo system', html.includes('supabase/system.js')],
+  ['preproducción carga módulo admin users', html.includes('supabase/admin-users.js')],
+  ['preproducción carga módulo admin import', html.includes('supabase/admin-import.js')],
+  ['preproducción carga módulo admin data', html.includes('supabase/admin-data.js')],
   ['preproducción carga final adapter', html.includes('supabase-final-adapter.js')],
   ['final adapter inicializa Supabase', adapter.includes('window.supabase.createClient') && adapter.includes('window.parkingSupabase = sb')],
   ['final adapter integra módulo control', adapter.includes('window.ParkingSupabaseControl({') && adapter.includes("case 'scanQr': return parkingControl('QR', payload.token)") && adapter.includes("case 'searchPlate': return parkingControl('MATRICULA', payload.plate)")],
@@ -38,6 +44,14 @@ const checks = [
     && adapter.includes('settingsApi.uploadLogo(payload)')
     && adapter.includes('settingsApi.consistencyReport()')
     && adapter.includes('settingsApi.consistencyFix(payload)')],
+  ['final adapter integra módulos admin',
+    adapter.includes('window.ParkingSupabaseAdminUsers({')
+    && adapter.includes('window.ParkingSupabaseAdminImport({')
+    && adapter.includes('window.ParkingSupabaseAdminData({')
+    && adapter.includes('adminUsersApi.saveUser(payload)')
+    && adapter.includes('adminImportApi.ownerImportTemplate()')
+    && adapter.includes('adminDataApi.managerData(payload)')],
+
   ['owner import template implementado', adapter.includes("case 'ownerImportTemplate'")],
   ['owner import preview implementado', adapter.includes("case 'previewOwnerImport'") && admin.includes("action === 'previewOwnerImport'")],
   ['owner import apply implementado', adapter.includes("case 'applyOwnerImport'") && admin.includes("action === 'applyOwnerImport'")],
