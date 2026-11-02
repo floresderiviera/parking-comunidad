@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 const admin=fs.readFileSync('supabase/functions/parking-admin/index.ts','utf8');
 const adapter=fs.readFileSync('assets/js/supabase-final-adapter.js','utf8');
+const router=fs.readFileSync('assets/js/supabase/router.js','utf8');
 const adminUsers=fs.readFileSync('assets/js/supabase/admin-users.js','utf8');
 const ui=fs.readFileSync('assets/js/admin/management.js','utf8');
 const saveBlock=admin.slice(admin.indexOf("action === 'saveUser'"),admin.indexOf('const targetId',admin.indexOf("action === 'saveUser'")));
@@ -10,7 +11,7 @@ const tests=[
 ['invite usa redirectTo',admin.includes('AccessRedirectTo')],
 ['admin reset usa Supabase',admin.includes("action === 'sendPasswordReset'")&&admin.includes('resetPasswordForEmail')],
 ['reset auditado',admin.includes('PASSWORD_RESET_SENT')],
-['adapter expone adminSendPasswordReset',adapter.includes("case 'adminSendPasswordReset'")],
+['router expone adminSendPasswordReset',router.includes("case 'adminSendPasswordReset'")],
 ['saveUser manda URL activacion',adminUsers.includes('AccessRedirectTo')&&adminUsers.includes('?resetPassword=1')],
 ['UI prioriza enlace seguro',ui.includes('Enviar enlace para crear/restablecer contraseña')],
 ['UI mantiene temporal asistida',ui.includes('Generar contraseña temporal')],

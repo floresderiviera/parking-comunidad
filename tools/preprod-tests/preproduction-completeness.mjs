@@ -3,6 +3,10 @@ import fs from 'node:fs';
 const read = (path) => fs.readFileSync(new URL(path, import.meta.url), 'utf8');
 const html = read('../../index.html');
 const adapter = read('../../assets/js/supabase-final-adapter.js');
+const runtime = read('../../assets/js/supabase/runtime.js');
+const referenceData = read('../../assets/js/supabase/reference-data.js');
+const router = read('../../assets/js/supabase/router.js');
+const backendSurface = [adapter, runtime, referenceData, router].join('\n');
 const authModule = read('../../assets/js/supabase/auth.js');
 const profileModule = read('../../assets/js/supabase/profile.js');
 const adminUsers = read('../../assets/js/supabase/admin-users.js');
@@ -33,30 +37,37 @@ const checks = [
   ['preproducción carga módulo admin data', html.includes('supabase/admin-data.js')],
   ['preproducción carga módulo auth', html.includes('supabase/auth.js')],
   ['preproducción carga módulo profile', html.includes('supabase/profile.js')],
+  ['preproducción carga runtime', html.includes('supabase/runtime.js')],
+  ['preproducción carga reference data', html.includes('supabase/reference-data.js')],
+  ['preproducción carga router', html.includes('supabase/router.js')],
   ['preproducción carga final adapter', html.includes('supabase-final-adapter.js')],
-  ['final adapter inicializa Supabase', adapter.includes('window.supabase.createClient') && adapter.includes('window.parkingSupabase = sb')],
-  ['final adapter integra módulo control', adapter.includes('window.ParkingSupabaseControl({') && adapter.includes("case 'scanQr': return parkingControl('QR', payload.token)") && adapter.includes("case 'searchPlate': return parkingControl('MATRICULA', payload.plate)")],
+  ['runtime inicializa Supabase', runtime.includes('window.supabase.createClient') && runtime.includes('window.parkingSupabase = sb')],
+  ['adapter/router integran módulo control',
+    adapter.includes('window.ParkingSupabaseControl({')
+    && router.includes("case 'scanQr':")
+    && router.includes("case 'searchPlate':")
+    && router.includes("parkingControl(")],
   ['final adapter integra módulo system',
     adapter.includes('window.ParkingSupabaseSystem({')
-    && adapter.includes("case 'systemStatus':")
-    && adapter.includes('systemApi.systemStatus(payload)')
-    && adapter.includes('systemApi.systemDiagnostics(payload)')],
+    && router.includes("case 'systemStatus':")
+    && router.includes('.systemStatus(')
+    && router.includes('.systemDiagnostics(')],
   ['final adapter integra módulo settings',
     adapter.includes('window.ParkingSupabaseSettings({')
-    && adapter.includes('settingsApi.getSettings()')
-    && adapter.includes('settingsApi.saveSettings(payload)')
-    && adapter.includes('settingsApi.uploadLogo(payload)')
-    && adapter.includes('settingsApi.consistencyReport()')
-    && adapter.includes('settingsApi.consistencyFix(payload)')],
+    && router.includes('.getSettings()')
+    && router.includes('.saveSettings(')
+    && router.includes('.uploadLogo(')
+    && router.includes('.consistencyReport()')
+    && router.includes('.consistencyFix(')],
   ['final adapter integra módulos auth/profile',
     adapter.includes('window.ParkingSupabaseAuth({')
     && adapter.includes('window.ParkingSupabaseProfile({')
-    && adapter.includes('authApi.login(')
-    && adapter.includes('authApi.requestPasswordReset(')
-    && adapter.includes('authApi.completePasswordReset(')
-    && adapter.includes('authApi.logout()')
-    && adapter.includes('profileApi.updateProfile(payload)')
-    && adapter.includes('profileApi.changePassword(payload)')
+    && router.includes('authApi.login(')
+    && router.includes('.requestPasswordReset(')
+    && router.includes('.completePasswordReset(')
+    && router.includes('authApi.logout()')
+    && router.includes('.updateProfile(')
+    && router.includes('.changePassword(')
     && adapter.includes('authApi.bindAuthState()')
     && authModule.includes('sessionUser')
     && profileModule.includes('changePassword')],
@@ -65,32 +76,32 @@ const checks = [
     adapter.includes('window.ParkingSupabaseAdminUsers({')
     && adapter.includes('window.ParkingSupabaseAdminImport({')
     && adapter.includes('window.ParkingSupabaseAdminData({')
-    && adapter.includes('adminUsersApi.saveUser(payload)')
-    && adapter.includes('adminImportApi.ownerImportTemplate()')
-    && adapter.includes('adminDataApi.managerData(payload)')],
+    && router.includes('.saveUser(')
+    && router.includes('.ownerImportTemplate()')
+    && router.includes('.managerData(')],
 
-  ['owner import template implementado', adapter.includes("case 'ownerImportTemplate'")],
-  ['owner import preview implementado', adapter.includes("case 'previewOwnerImport'") && admin.includes("action === 'previewOwnerImport'")],
-  ['owner import apply implementado', adapter.includes("case 'applyOwnerImport'") && admin.includes("action === 'applyOwnerImport'")],
+  ['owner import template implementado', router.includes("case 'ownerImportTemplate'")],
+  ['owner import preview implementado', router.includes("case 'previewOwnerImport'") && admin.includes("action === 'previewOwnerImport'")],
+  ['owner import apply implementado', router.includes("case 'applyOwnerImport'") && admin.includes("action === 'applyOwnerImport'")],
   ['consistency report implementado',
-    adapter.includes("case 'consistencyReport'")
+    router.includes("case 'consistencyReport'")
     && settings.includes("'parking_consistency_report'")
     && migration.includes('parking_consistency_report')],
   ['consistency fix implementado',
-    adapter.includes("case 'consistencyFix'")
+    router.includes("case 'consistencyFix'")
     && settings.includes("'parking_consistency_fix'")
     && migration.includes('parking_consistency_fix')],
   ['upload logo implementado',
-    adapter.includes("case 'uploadLogo'")
+    router.includes("case 'uploadLogo'")
     && settings.includes("from('parking-public')")],
   ['save settings implementado',
-    adapter.includes("case 'saveSettings'")
+    router.includes("case 'saveSettings'")
     && settings.includes("from('community_settings')")
     && settings.includes(".upsert(rows")
     && settings.includes("onConflict: 'community_id,key'")],
   ['bucket público controlado por RLS', migration.includes("'parking-public'") && migration.includes('parking_public_insert_admin')],
   ['index carga adaptador final', read('../../index.html').includes('supabase-final-adapter.js')],
-  ['service role no aparece en frontend final', !adapter.includes('SUPABASE_SERVICE_ROLE_KEY')],
+  ['service role no aparece en frontend final', !backendSurface.includes('SUPABASE_SERVICE_ROLE_KEY')],
   ['ROOT no se crea como membership normal desde owner import', !admin.includes("roles: ['ROOT']")]
 ];
 

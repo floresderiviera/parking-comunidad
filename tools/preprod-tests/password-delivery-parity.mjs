@@ -10,6 +10,11 @@ const adapter = fs.readFileSync(
   'utf8'
 );
 
+const router = fs.readFileSync(
+  'assets/js/supabase/router.js',
+  'utf8'
+);
+
 const management = fs.readFileSync(
   'assets/js/admin/management.js',
   'utf8'
@@ -62,7 +67,7 @@ const tests = [
   ],
   [
     'adapter expone adminGenerateTemporaryPassword',
-    adapter.includes(
+    router.includes(
       "case 'adminGenerateTemporaryPassword'"
     )
   ],
