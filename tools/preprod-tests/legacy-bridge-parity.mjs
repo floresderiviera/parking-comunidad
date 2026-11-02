@@ -14,7 +14,7 @@ const preprod = read('index.html');
 const checks = [
   ['frontend bridge version', read('assets/js/core.js').includes("2.0.0-preprod.4")],
   ['preprod cache bust ESM',
-    preprod.includes('supabase/entry.js?v=esm-6a1')],
+    preprod.includes('supabase/entry.js?v=esm-6a2')],
 
   ['frontend no contiene bridge secret',
     !frontendBackend.includes('PARKING_BRIDGE_SECRET') &&
