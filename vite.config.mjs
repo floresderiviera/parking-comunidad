@@ -38,11 +38,6 @@ function parkingFrontendBundle() {
         source: code,
       });
 
-      for (const [fileName, item] of Object.entries(bundle)) {
-        if (item.type === 'chunk' && fileName.endsWith('.vite-empty.js')) {
-          delete bundle[fileName];
-        }
-      }
     },
   };
 }
@@ -53,9 +48,9 @@ export default defineConfig({
     emptyOutDir: true,
     write: true,
     rollupOptions: {
-      input: 'tools/frontend/vite-empty-entry.js',
+      input: 'assets/js/supabase/entry.js',
       output: {
-        entryFileNames: 'assets/js/.vite-empty.js',
+        entryFileNames: 'assets/js/supabase/entry.js',
       },
     },
   },

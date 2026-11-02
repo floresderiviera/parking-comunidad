@@ -106,20 +106,19 @@ for (const env of ENVIRONMENTS) {
       }
     }
 
-    const finalAdapter = extractAsset(
+    const esmEntry = extractAsset(
       page.text,
-      /src=["'](\.\/assets\/js\/supabase-final-adapter\.js[^"']*)["']/
+      /<script[^>]+type=["']module["'][^>]+src=["'](\.\/assets\/js\/supabase\/entry\.js[^"']*)["'][^>]*>/
     );
 
-    const appInit = extractAsset(
-      page.text,
-      /src=["'](\.\/assets\/js\/app-init\.js[^"']*)["']/
-    );
+    // app-init ya no figura como script estático en index.html:
+    // lo carga entry.js después de completar la composición.
+    const appInit = './assets/js/app-init.js';
 
     const assets = [
       ['CSS', css],
       ['bundle', bundle],
-      ['final adapter', finalAdapter],
+      ['ESM entry', esmEntry],
       ['app-init', appInit],
     ];
 
