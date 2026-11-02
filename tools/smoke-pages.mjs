@@ -106,21 +106,37 @@ for (const env of ENVIRONMENTS) {
       }
     }
 
+    const finalAdapter = extractAsset(
+      page.text,
+      /src=["'](\.\/assets\/js\/supabase-final-adapter\.js[^"']*)["']/
+    );
+
+    const staticAppInit = extractAsset(
+      page.text,
+      /src=["'](\.\/assets\/js\/app-init\.js[^"']*)["']/
+    );
+
     const esmEntry = extractAsset(
       page.text,
       /<script[^>]+type=["']module["'][^>]+src=["'](\.\/assets\/js\/supabase\/entry\.js[^"']*)["'][^>]*>/
     );
 
-    // app-init ya no figura como script estático en index.html:
-    // lo carga entry.js después de completar la composición.
-    const appInit = './assets/js/app-init.js';
-
     const assets = [
       ['CSS', css],
       ['bundle', bundle],
-      ['ESM entry', esmEntry],
-      ['app-init', appInit],
     ];
+
+    if (esmEntry) {
+      assets.push(
+        ['ESM entry', esmEntry],
+        ['app-init', './assets/js/app-init.js']
+      );
+    } else {
+      assets.push(
+        ['final adapter', finalAdapter],
+        ['app-init', staticAppInit]
+      );
+    }
 
     for (const [label, relative] of assets) {
       if (!relative) {
