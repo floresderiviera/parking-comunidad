@@ -3,6 +3,9 @@ import fs from 'node:fs';
 const read = (p) => fs.readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 
 const adapter = read('assets/js/supabase-final-adapter.js');
+const runtime = read('assets/js/supabase/runtime.js');
+const router = read('assets/js/supabase/router.js');
+const frontendBackend = [adapter, runtime, router].join('\n');
 const advanced = read('assets/js/admin/advanced.js');
 const admin = read('supabase/functions/parking-admin/index.ts');
 const bridge = read('legacy-apps-script/LegacyBridge.gs');
@@ -13,7 +16,7 @@ const checks = [
   ['preprod cache bust bridge', preprod.includes('system-v2-bridge')],
 
   ['frontend no contiene bridge secret',
-    !adapter.includes('PARKING_BRIDGE_SECRET') &&
+    !frontendBackend.includes('PARKING_BRIDGE_SECRET') &&
     !advanced.includes('PARKING_BRIDGE_SECRET')],
 
   ['parking-admin usa secrets server-side',
@@ -96,16 +99,16 @@ const checks = [
     advanced.includes('Comprobando en segundo plano')],
 
   ['systemStatus no bloquea por Apps Script',
-    !adapter
+    !router
       .slice(
-        adapter.indexOf("case 'systemStatus'"),
-        adapter.indexOf("case 'systemSetMaintenance'")
+        router.indexOf("case 'systemStatus'"),
+        router.indexOf("case 'systemSetMaintenance'")
       )
       .includes('legacyBridgeStatus')],
 
   ['adapter expone acciones bridge',
-    adapter.includes("case 'systemLegacyBridgeAction'") &&
-    adapter.includes("case 'systemLegacyBridgeCommandStatus'")],
+    router.includes("case 'systemLegacyBridgeAction'") &&
+    router.includes("case 'systemLegacyBridgeCommandStatus'")],
 
   ['bridge no reemplaza doGet',
     !bridge.includes('function doGet(')],

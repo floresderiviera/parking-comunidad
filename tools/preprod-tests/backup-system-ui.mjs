@@ -5,6 +5,11 @@ const adapter = fs.readFileSync(
   'utf8'
 );
 
+const router = fs.readFileSync(
+  'assets/js/supabase/router.js',
+  'utf8'
+);
+
 const system = fs.readFileSync(
   'assets/js/supabase/system.js',
   'utf8'
@@ -23,16 +28,16 @@ const admin = fs.readFileSync(
 const checks = [
   [
     'adapter expone estado backup',
-    adapter.includes("case 'systemBackupStatus'") &&
-    adapter.includes('systemApi.systemBackupStatus(payload)') &&
+    router.includes("case 'systemBackupStatus'") &&
+    router.includes('.systemBackupStatus(') &&
     system.includes("parkingAdmin(") &&
     system.includes("'legacyBackupStatus'")
   ],
 
   [
     'adapter expone ejecución manual',
-    adapter.includes("case 'systemBackupRunNow'") &&
-    adapter.includes('systemApi.systemBackupRunNow(payload)') &&
+    router.includes("case 'systemBackupRunNow'") &&
+    router.includes('.systemBackupRunNow(') &&
     system.includes("parkingAdmin(") &&
     system.includes("'legacyBackupRunNow'")
   ],

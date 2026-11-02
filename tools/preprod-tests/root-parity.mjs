@@ -4,6 +4,7 @@ const read = (path) => fs.readFileSync(new URL(path, import.meta.url), 'utf8');
 const authFn = read('../../supabase/functions/legacy-auth-migrate/index.ts');
 const migration = read('../../supabase/migrations/20261029012700_technical_root_login.sql');
 const adapter = read('../../assets/js/supabase-final-adapter.js');
+const runtime = read('../../assets/js/supabase/runtime.js');
 const profile = read('../../assets/js/supabase/profile.js');
 const provision = read('../sheet-import/root-provision.mjs');
 
@@ -18,7 +19,11 @@ const checks = [
   ['verificador ROOT es PBKDF2 privado', migration.includes("password_algorithm text not null default 'PBKDF2-SHA256'") && migration.includes('password_iterations integer not null default 210000')],
   ['ROOT no usa community_members', migration.includes("v_memberships := '[]'::jsonb")],
   ['ROOT hereda solo roles funcionales no ADMIN', migration.includes("role_name <> 'ADMIN'") && migration.includes('technical_functional_roles')],
-  ['frontend compone ROOT + ADMIN + roles funcionales', adapter.includes("['ROOT', 'ADMIN', ...(data.technical_functional_roles || [])")],
+  ['frontend compone ROOT + ADMIN + roles funcionales',
+    runtime.includes("'ROOT'")
+    && runtime.includes("'ADMIN'")
+    && runtime.includes('technical_functional_roles')
+    && runtime.includes("role !== 'ADMIN'")],
   ['ROOT no puede cambiar password desde perfil normal', profile.includes('La contraseña técnica ROOT se gestiona mediante el procedimiento seguro de administración.')],
   ['provision usa Auth backend y no password literal', provision.includes('ROOT_PASSWORD') && provision.includes('createUser') && !/ROOT_PASSWORD\s*=\s*['\"][^'\"]+/.test(provision)],
   ['provision deriva PBKDF2 sin persistir password plano', provision.includes('pbkdf2Sync') && provision.includes('verifierHash') && provision.includes('verifierSalt')],
