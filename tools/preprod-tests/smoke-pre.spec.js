@@ -74,7 +74,7 @@ test('PRE carga los JS críticos', async ({ page }) => {
       'admin-data.js',
       'auth.js',
       'profile.js',
-      'supabase-final-adapter.js',
+      'entry.js',
       'app-init.js'
     ].forEach(name => {
       if (url.includes(name)) {
@@ -102,7 +102,7 @@ test('PRE carga los JS críticos', async ({ page }) => {
     'dashboard.js',
     'owner.js',
     'search.js',
-    'supabase-final-adapter.js',
+    'entry.js',
     'app-init.js'
   ]) {
     expect(

@@ -3,6 +3,7 @@ import fs from 'node:fs';
 const read = (path) => fs.readFileSync(new URL(path, import.meta.url), 'utf8');
 const html = read('../../index.html');
 const adapter = read('../../assets/js/supabase-final-adapter.js');
+const entry = read('../../assets/js/supabase/entry.js');
 const runtime = read('../../assets/js/supabase/runtime.js');
 const referenceData = read('../../assets/js/supabase/reference-data.js');
 const router = read('../../assets/js/supabase/router.js');
@@ -40,7 +41,9 @@ const checks = [
   ['preproducción carga runtime', html.includes('supabase/runtime.js')],
   ['preproducción carga reference data', html.includes('supabase/reference-data.js')],
   ['preproducción carga router', html.includes('supabase/router.js')],
-  ['preproducción carga final adapter', html.includes('supabase-final-adapter.js')],
+  ['preproducción carga entry ESM',
+    html.includes('type="module"')
+    && html.includes('supabase/entry.js')],
   ['runtime inicializa Supabase', runtime.includes('window.supabase.createClient') && runtime.includes('window.parkingSupabase = sb')],
   ['adapter/router integran módulo control',
     adapter.includes('window.ParkingSupabaseControl({')
@@ -100,7 +103,9 @@ const checks = [
     && settings.includes(".upsert(rows")
     && settings.includes("onConflict: 'community_id,key'")],
   ['bucket público controlado por RLS', migration.includes("'parking-public'") && migration.includes('parking_public_insert_admin')],
-  ['index carga adaptador final', read('../../index.html').includes('supabase-final-adapter.js')],
+  ['index carga composition root ESM',
+    read('../../index.html').includes('supabase/entry.js')
+    && entry.includes('window.server = router.server')],
   ['service role no aparece en frontend final', !backendSurface.includes('SUPABASE_SERVICE_ROLE_KEY')],
   ['ROOT no se crea como membership normal desde owner import', !admin.includes("roles: ['ROOT']")]
 ];

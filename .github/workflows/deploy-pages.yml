@@ -76,9 +76,12 @@ jobs:
             --exclude='dist' \
             pre-src/ _site/preproduccion/
 
-          # El bundle de PRE se publica desde el build de Vite.
+          # Los artefactos frontend de PRE se publican desde Vite.
           cp pre-src/dist/assets/js/app.bundle.js \
             _site/preproduccion/assets/js/app.bundle.js
+
+          cp pre-src/dist/assets/js/supabase/entry.js \
+            _site/preproduccion/assets/js/supabase/entry.js
 
           # PRE usa el index.html de la rama supabase-poc.
           # El rsync anterior lo publica como /preproduccion/index.html.
@@ -88,6 +91,7 @@ jobs:
           test -f _site/preproduccion/index.html
           test -f _site/assets/js/app.bundle.js
           test -f _site/preproduccion/assets/js/app.bundle.js
+          test -f _site/preproduccion/assets/js/supabase/entry.js
 
           echo "=== PRODUCCION ==="
           grep -E 'title>|app\.bundle' _site/index.html
