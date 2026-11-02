@@ -53,6 +53,20 @@ jobs:
           node --check dist/assets/js/app.bundle.js
           node --check assets/js/core.js
 
+      - name: Build production frontend
+        working-directory: main-src
+        run: |
+          set -e
+
+          npm ci
+          npm run build:vite
+
+          cmp -s assets/js/app.bundle.js dist/assets/js/app.bundle.js
+          echo "Production Vite bundle matches committed frontend bundle"
+
+          test -s dist/assets/js/supabase/entry.js
+          echo "Production Vite ESM entry generated"
+
       - name: Build Pages artifact
         run: |
           set -e
@@ -65,6 +79,13 @@ jobs:
             --exclude='.github' \
             --exclude='assets/js/app.bundle.preprod.js' \
             main-src/ _site/
+
+          # PROD publica los artefactos frontend construidos por Vite.
+          cp main-src/dist/assets/js/app.bundle.js \
+            _site/assets/js/app.bundle.js
+
+          cp main-src/dist/assets/js/supabase/entry.js \
+            _site/assets/js/supabase/entry.js
 
           # PREPRODUCCION: siempre sale de supabase-poc.
           mkdir -p _site/preproduccion
@@ -90,6 +111,7 @@ jobs:
           test -f _site/index.html
           test -f _site/preproduccion/index.html
           test -f _site/assets/js/app.bundle.js
+          test -f _site/assets/js/supabase/entry.js
           test -f _site/preproduccion/assets/js/app.bundle.js
           test -f _site/preproduccion/assets/js/supabase/entry.js
 

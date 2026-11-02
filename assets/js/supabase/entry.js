@@ -1,5 +1,9 @@
 'use strict';
 
+import { createRuntime } from './runtime.js';
+import { createReferenceData } from './reference-data.js';
+import { createRouter } from './router.js';
+
 /*
  * 6A-C1
  * Composition root ESM.
@@ -10,7 +14,7 @@
  */
 
 const runtime =
-  window.ParkingSupabaseRuntime();
+  createRuntime();
 
 const {
   sb,
@@ -177,7 +181,7 @@ const {
 } = incidentsApi;
 
 const referenceData =
-  window.ParkingSupabaseReferenceData({
+  createReferenceData({
     sb,
     unwrap,
     invalidate,
@@ -292,7 +296,7 @@ const adminDataApi =
   });
 
 const router =
-  window.ParkingSupabaseRouter({
+  createRouter({
     runtime,
     authApi,
     profileApi,
