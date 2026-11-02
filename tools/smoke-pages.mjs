@@ -111,17 +111,32 @@ for (const env of ENVIRONMENTS) {
       /src=["'](\.\/assets\/js\/supabase-final-adapter\.js[^"']*)["']/
     );
 
-    const appInit = extractAsset(
+    const staticAppInit = extractAsset(
       page.text,
       /src=["'](\.\/assets\/js\/app-init\.js[^"']*)["']/
+    );
+
+    const esmEntry = extractAsset(
+      page.text,
+      /<script[^>]+type=["']module["'][^>]+src=["'](\.\/assets\/js\/supabase\/entry\.js[^"']*)["'][^>]*>/
     );
 
     const assets = [
       ['CSS', css],
       ['bundle', bundle],
-      ['final adapter', finalAdapter],
-      ['app-init', appInit],
     ];
+
+    if (esmEntry) {
+      assets.push(
+        ['ESM entry', esmEntry],
+        ['app-init', './assets/js/app-init.js']
+      );
+    } else {
+      assets.push(
+        ['final adapter', finalAdapter],
+        ['app-init', staticAppInit]
+      );
+    }
 
     for (const [label, relative] of assets) {
       if (!relative) {
