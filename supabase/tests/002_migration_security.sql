@@ -1,16 +1,16 @@
 begin;
 select plan(16);
 
-select has_table('public', 'migration_runs');
-select has_table('public', 'migration_run_items');
-select has_table('public', 'file_objects');
-select has_table('private', 'legacy_auth_credentials');
-select has_column('public', 'communities', 'legacy_id');
-select has_column('public', 'profiles', 'last_access_at');
-select has_column('public', 'audit_log', 'legacy_entity_id');
-select has_column('public', 'audit_log', 'entity_id');
-select has_column('public', 'qr_controls', 'vehicle_id');
-select has_column('public', 'plate_controls', 'vehicle_id');
+select has_table('public', 'migration_runs', 'public.migration_runs table exists');
+select has_table('public', 'migration_run_items', 'public.migration_run_items table exists');
+select has_table('public', 'file_objects', 'public.file_objects table exists');
+select has_table('private', 'legacy_auth_credentials', 'private.legacy_auth_credentials table exists');
+select has_column('public', 'communities', 'legacy_id', 'public.communities.legacy_id exists');
+select has_column('public', 'profiles', 'last_access_at', 'public.profiles.last_access_at exists');
+select has_column('public', 'audit_log', 'legacy_entity_id', 'public.audit_log.legacy_entity_id exists');
+select has_column('public', 'audit_log', 'entity_id', 'public.audit_log.entity_id exists');
+select has_column('public', 'qr_controls', 'vehicle_id', 'public.qr_controls.vehicle_id exists');
+select has_column('public', 'plate_controls', 'vehicle_id', 'public.plate_controls.vehicle_id exists');
 select has_function('public', 'legacy_auth_get_for_migration', array['text']);
 select ok(not has_function_privilege('anon', 'public.legacy_auth_get_for_migration(text)', 'EXECUTE'), 'anon cannot read legacy credentials');
 select ok(not has_function_privilege('authenticated', 'public.legacy_auth_get_for_migration(text)', 'EXECUTE'), 'authenticated cannot read legacy credentials');
