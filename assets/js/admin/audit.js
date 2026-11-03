@@ -1,4 +1,4 @@
-function auditValue(value,name){if(!value)return '—';return name?`<b>${esc(name)}</b><span class="subtle">${esc(value)}</span>`:esc(value)}
+function auditValue(value,name){if(value===null||value===undefined||value==='')return '—';return name?`<b>${esc(name)}</b><span class="subtle">${esc(value)}</span>`:esc(value)}
 function auditDateOnly(v){return String(v||'').slice(0,10)}
 function auditPresetRange(preset){
   const now=new Date(),local=d=>{const x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)},today=local(now);
