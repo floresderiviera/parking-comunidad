@@ -38,6 +38,17 @@ declare
   visible_ids uuid[];
   tested integer := 0;
 begin
+  -- This migration originally validated the production import cutover.
+  -- A clean local rebuild has no imported owners yet, so there is
+  -- nothing to validate. Any non-empty partial import is still required
+  -- to contain exactly the expected 68 pure owners.
+  if not exists (
+    select 1
+      from private._rls_validation_expected
+  ) then
+    return 0;
+  end if;
+
   for owner in
     select e.user_id, e.dwelling_ids
       from private._rls_validation_expected e
