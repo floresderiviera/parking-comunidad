@@ -52,7 +52,21 @@ function monitorBrowser(page) {
   let context = 'inicio';
 
   page.on('pageerror', error => {
-    errors.push(`[${context}] pageerror: ${error.message}`);
+    let detail = '';
+
+    if (error?.stack) {
+      detail = error.stack;
+    } else if (error?.message) {
+      detail = error.message;
+    } else {
+      try {
+        detail = JSON.stringify(error);
+      } catch (_) {
+        detail = String(error);
+      }
+    }
+
+    errors.push(`[${context}] pageerror: ${detail}`);
   });
 
   page.on('console', msg => {
