@@ -1,8 +1,12 @@
 import { defineConfig } from 'vite';
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const sources = [
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const legacySources = [
   'assets/js/core.js',
   'assets/js/records-shared.js',
   'assets/js/auth-navigation.js',
@@ -19,40 +23,64 @@ const sources = [
 function parkingFrontendBundle() {
   return {
     name: 'parking-frontend-bundle',
-
     buildStart() {
-      for (const file of sources) {
-        this.addWatchFile(path.resolve(file));
+      for (const file of legacySources) {
+        const fullPath = path.resolve(__dirname, file);
+        if (fs.existsSync(fullPath)) {
+          this.addWatchFile(fullPath);
+        }
       }
     },
+    generateBundle() {
+      const code = legacySources
+        .map((file) => {
+          const fullPath = path.resolve(__dirname, file);
+          if (!fs.existsSync(fullPath)) {
+            return '';
+          }
+          return fs.readFileSync(fullPath, 'utf8').replace(/\s+$/, '');
+        })
+        .filter(Boolean)
+        .join('\n') + '\n';
 
-    generateBundle(_options, bundle) {
-      const code =
-        sources
-          .map(file => fs.readFileSync(path.resolve(file), 'utf8').replace(/\s+$/, ''))
-          .join('\n') + '\n';
+      if (!code.trim()) return;
 
       this.emitFile({
         type: 'asset',
         fileName: 'assets/js/app.bundle.js',
         source: code,
       });
-
     },
   };
 }
 
 export default defineConfig({
+  base: './',
+  plugins: [parkingFrontendBundle()],
   build: {
+    target: 'es2020',
+    sourcemap: true,
+    cssCodeSplit: false,
     outDir: 'dist',
     emptyOutDir: true,
-    write: true,
     rollupOptions: {
-      input: 'assets/js/supabase/entry.js',
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        scanner: path.resolve(__dirname, 'scanner/index.html'),
+      },
       output: {
-        entryFileNames: 'assets/js/supabase/entry.js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash][extname]',
       },
     },
   },
-  plugins: [parkingFrontendBundle()],
+  server: {
+    host: '0.0.0.0',
+    port: 4173,
+  },
+  preview: {
+    host: '0.0.0.0',
+    port: 4173,
+  },
 });
