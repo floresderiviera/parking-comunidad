@@ -1,5 +1,24 @@
 'use strict';
 
+function mergeUnique(values = []) {
+  return [...new Set(
+    (Array.isArray(values) ? values : [values])
+      .filter((value) => value != null)
+      .map((value) => String(value).trim())
+      .filter(Boolean)
+  )];
+}
+
+function asArray(value) {
+  if (Array.isArray(value)) return value;
+  if (value == null) return [];
+  return [value];
+}
+
+function fallbackPublicSettings() {
+  return window.INITIAL_PUBLIC_SETTINGS || {};
+}
+
 export function createRuntime() {
   const cfg = window.SUPABASE_CONFIG;
 
@@ -43,22 +62,16 @@ export function createRuntime() {
   const cached = async (key, loader, ttl = CACHE_MS) => {
     const hit = cache.get(key);
 
-    if (
-      hit &&
-      Date.now() - hit.at < ttl
-    ) {
+    if (hit && Date.now() - hit.at < ttl) {
       return hit.value;
     }
 
     const value = await loader();
 
-    cache.set(
-      key,
-      {
-        at: Date.now(),
-        value
-      }
-    );
+    cache.set(key, {
+      at: Date.now(),
+      value
+    });
 
     return value;
   };
@@ -66,11 +79,13 @@ export function createRuntime() {
   const invalidate = () => {
     cache.clear();
     bootstrapCache = null;
+    publicStateCache = null;
+    publicStateCachedAt = 0;
   };
 
   const unwrap = (result) => {
-    if (result.error) throw result.error;
-    return result.data;
+    if (result?.error) throw result.error;
+    return result?.data;
   };
 
   const normalizePlate = (value) => String(value || '')
@@ -95,43 +110,29 @@ export function createRuntime() {
     const bytes = atob(encoded);
     const out = new Uint8Array(bytes.length);
 
-    for (
-      let i = 0;
-      i < bytes.length;
-      i += 1
-    ) {
+    for (let i = 0; i < bytes.length; i += 1) {
       out[i] = bytes.charCodeAt(i);
     }
 
     return {
-      blob: new Blob(
-        [out],
-        { type: mime }
-      ),
+      blob: new Blob([out], { type: mime }),
       mime
     };
   };
 
-  async function parkingAdmin(
-    action,
-    payload = {}
-  ) {
-    const {
-      data: sessionData,
-      error: sessionError
-    } = await sb.auth.getSession();
+  const getSessionAccessToken = async () => {
+    const { data, error } = await sb.auth.getSession();
+    const accessToken = data?.session?.access_token;
 
-    const accessToken =
-      sessionData?.session?.access_token;
-
-    if (
-      sessionError ||
-      !accessToken
-    ) {
-      throw new Error(
-        'La sesión ha caducado. Vuelve a iniciar sesión.'
-      );
+    if (error || !accessToken) {
+      throw new Error('La sesión ha caducado. Vuelve a iniciar sesión.');
     }
+
+    return accessToken;
+  };
+
+  async function parkingAdmin(action, payload = {}) {
+    const accessToken = await getSessionAccessToken();
 
     const response = await fetch(
       `${cfg.url}/functions/v1/parking-admin`,
@@ -142,17 +143,12 @@ export function createRuntime() {
           apikey: cfg.publishableKey,
           authorization: `Bearer ${accessToken}`
         },
-        body: JSON.stringify({
-          action,
-          payload
-        }),
+        body: JSON.stringify({ action, payload }),
         cache: 'no-store'
       }
     );
 
-    const body = await response
-      .json()
-      .catch(() => ({}));
+    const body = await response.json().catch(() => ({}));
 
     if (!response.ok) {
       throw new Error(
@@ -164,9 +160,7 @@ export function createRuntime() {
     return body;
   }
 
-  async function publicAppState(
-    force = false
-  ) {
+  async function publicAppState(force = false) {
     if (
       !force &&
       publicStateCache &&
@@ -176,12 +170,7 @@ export function createRuntime() {
     }
 
     try {
-      const data =
-        unwrap(
-          await sb.rpc(
-            'parking_public_state'
-          )
-        ) || {};
+      const data = unwrap(await sb.rpc('parking_public_state')) || {};
 
       publicStateCache = data;
       publicStateCachedAt = Date.now();
@@ -193,9 +182,7 @@ export function createRuntime() {
           enabled: false,
           message: ''
         },
-        settings:
-          window.INITIAL_PUBLIC_SETTINGS ||
-          {}
+        settings: fallbackPublicSettings()
       };
     }
   }
@@ -205,86 +192,54 @@ export function createRuntime() {
     publicStateCachedAt = Date.now();
   }
 
-  async function appBootstrap(
-    force = false
-  ) {
-    if (
-      !force &&
-      bootstrapCache
-    ) {
+  function buildBootstrapRoles(profile, technicalRoles = []) {
+    const profileRoles = asArray(profile?.roles || []);
+    const technical = asArray(technicalRoles)
+      .map((value) => String(value || '').trim())
+      .filter(Boolean);
+
+    if (profile?.is_root) {
+      return mergeUnique([
+        'ROOT',
+        'ADMIN',
+        ...technical.filter((role) => role !== 'ADMIN')
+      ]);
+    }
+
+    return mergeUnique(profileRoles);
+  }
+
+  async function appBootstrap(force = false) {
+    if (!force && bootstrapCache) {
       return bootstrapCache;
     }
 
-    const data =
-      unwrap(
-        await sb.rpc(
-          'app_bootstrap'
-        )
-      );
+    const data = unwrap(await sb.rpc('app_bootstrap'));
+    const profile = data?.profile || {};
+    const memberships = Array.isArray(data?.memberships) ? data.memberships : [];
+    const roles = buildBootstrapRoles(profile, data?.technical_functional_roles || []);
+    const settings = Object.fromEntries(Object.entries(data?.settings || {}));
 
-    const profile =
-      data.profile ||
-      {};
-
-    const memberships =
-      data.memberships ||
-      [];
-
-    const roles = profile.is_root
-      ? [
-          ...new Set([
-            'ROOT',
-            'ADMIN',
-            ...(
-              data.technical_functional_roles ||
-              []
-            ).filter(
-              (role) => role !== 'ADMIN'
-            )
-          ])
-        ]
-      : [
-          ...new Set(
-            memberships.flatMap(
-              (membership) =>
-                membership.roles ||
-                []
-            )
-          )
-        ];
-
-    const settings =
-      Object.fromEntries(
-        Object.entries(
-          data.settings ||
-          {}
-        )
-      );
+    const mergedRoles = profile.is_root
+      ? roles
+      : mergeUnique(
+          memberships.flatMap((membership) => asArray(membership?.roles || []))
+        );
 
     bootstrapCache = {
       user: {
         ID_Usuario: profile.user_id,
         Email: profile.email || '',
-        Nombre:
-          profile.name ||
-          profile.email ||
-          '',
-        Rol: roles.join(','),
-        Estado:
-          profile.state ||
-          'Activo',
+        Nombre: profile.name || profile.email || '',
+        Rol: mergedRoles.join(','),
+        Estado: profile.state || 'Activo',
         IsRoot: !!profile.is_root,
-        CanConfigure:
-          !!profile.is_root ||
-          roles.includes('ADMIN'),
-        CanSystem:
-          !!profile.is_root
+        CanConfigure: !!profile.is_root || mergedRoles.includes('ADMIN'),
+        CanSystem: !!profile.is_root
       },
-      roles,
-      communityId:
-        data.community_id,
-      dwelling:
-        data.dwelling,
+      roles: mergedRoles,
+      communityId: data?.community_id,
+      dwelling: data?.dwelling,
       settings,
       provider: 'SUPABASE',
       environment: 'staging'
