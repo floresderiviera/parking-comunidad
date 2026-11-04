@@ -7,6 +7,9 @@
     "doc": "docs"
   },
   "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 4173",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 4173",
     "test": "node tools/preprod-tests/system-v2-parity.mjs && node tools/preprod-tests/legacy-bridge-parity.mjs && node tools/preprod-tests/password-delivery-parity.mjs",
     "test:smoke:pre": "playwright test tools/preprod-tests/smoke-pre.spec.js",
     "test:pre": "npm run test && npm run test:smoke:pre",
