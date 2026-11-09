@@ -11,6 +11,55 @@ export function createRuntime() {
     throw new Error('Falta configurar la Publishable Key de Supabase.');
   }
 
+  let activeRequests = 0;
+  let idleWaiters = [];
+
+  function notifyIdle() {
+    if (activeRequests !== 0) return;
+
+    const waiters = idleWaiters;
+    idleWaiters = [];
+
+    for (const resolve of waiters) {
+      resolve();
+    }
+  }
+
+  async function trackedFetch(...args) {
+    activeRequests += 1;
+
+    try {
+      return await fetch(...args);
+    } finally {
+      activeRequests -= 1;
+      notifyIdle();
+    }
+  }
+
+  async function waitForIdle(timeoutMs = 3000) {
+    if (activeRequests === 0) {
+      await new Promise(resolve =>
+        setTimeout(resolve, 50)
+      );
+
+      if (activeRequests === 0) {
+        return true;
+      }
+    }
+
+    return await Promise.race([
+      new Promise(resolve => {
+        idleWaiters.push(() => resolve(true));
+      }),
+      new Promise(resolve => {
+        setTimeout(
+          () => resolve(false),
+          timeoutMs
+        );
+      })
+    ]);
+  }
+
   let sb = window.parkingSupabase;
 
   if (!sb) {
@@ -26,6 +75,9 @@ export function createRuntime() {
           persistSession: true,
           autoRefreshToken: true,
           detectSessionInUrl: true
+        },
+        global: {
+          fetch: trackedFetch
         }
       }
     );
@@ -133,7 +185,7 @@ export function createRuntime() {
       );
     }
 
-    const response = await fetch(
+    const response = await trackedFetch(
       `${cfg.url}/functions/v1/parking-admin`,
       {
         method: 'POST',
@@ -304,6 +356,7 @@ export function createRuntime() {
     parkingAdmin,
     publicAppState,
     setPublicStateCache,
-    appBootstrap
+    appBootstrap,
+    waitForIdle
   };
 }
