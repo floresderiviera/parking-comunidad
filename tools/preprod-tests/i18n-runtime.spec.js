@@ -206,3 +206,174 @@ test('preferencia EN persiste en localStorage y lang HTML', async ({ page }) => 
     await page.locator('html').getAttribute('lang')
   ).toBe('en');
 });
+
+
+test('EN cubre residuos dinámicos de Users Properties Vehicles y temporales', async ({ page }) => {
+  await mount(page, 'en');
+
+  await page.evaluate(() => {
+    document.querySelector('#fixture').innerHTML = `
+      <section>
+        <button id="new-fullwidth">＋ Nuevo</button>
+
+        <h2>Editar usuarios</h2>
+
+        <div>
+          <label>Viviendas asignadas</label>
+          <p>La asignación se gestiona desde Viviendas mediante el propietario responsable.</p>
+        </div>
+
+        <h2>Vivienda y propietario</h2>
+        <button>Abrir vehículos de esta vivienda</button>
+
+        <form>
+          <label>Marca</label>
+          <input>
+          <label>Modelo</label>
+          <input>
+          <div id="temporary-help">
+            Las matrículas temporales se gestionan desde el botón
+            <b>Temporales</b>
+            del vehículo y admiten varios períodos.
+          </div>
+        </form>
+
+        <h1>Períodos temporales</h1>
+        <button>＋ Nuevo período</button>
+        <h2>Vigente</h2>
+        <h2>Próximos</h2>
+        <h2>Históricos</h2>
+        <h2>Anulados</h2>
+        <div>Sin períodos.</div>
+        <h2>Línea de tiempo</h2>
+      </section>
+    `;
+  });
+
+  await expect(
+    page.getByRole('button', { name: '+ New', exact: true })
+  ).toBeVisible();
+
+  await expect(
+    page.getByRole('heading', { name: 'Edit user', exact: true })
+  ).toBeVisible();
+
+  await expect(
+    page.getByText('Assigned properties', { exact: true })
+  ).toBeVisible();
+
+  await expect(
+    page.getByText(
+      'Assignment is managed from Properties through the responsible owner.',
+      { exact: true }
+    )
+  ).toBeVisible();
+
+  await expect(
+    page.getByRole('heading', { name: 'Property and owner', exact: true })
+  ).toBeVisible();
+
+  await expect(
+    page.getByRole('button', {
+      name: 'Open vehicles for this property',
+      exact: true
+    })
+  ).toBeVisible();
+
+  await expect(
+    page.getByText('Make', { exact: true })
+  ).toBeVisible();
+
+  await expect(
+    page.getByText('Model', { exact: true })
+  ).toBeVisible();
+
+  await expect(
+    page.locator('#temporary-help')
+  ).toContainText(
+    "Temporary plates are managed from the vehicle's"
+  );
+
+  await expect(
+    page.locator('#temporary-help')
+  ).toContainText('Temporary plates');
+
+  await expect(
+    page.locator('#temporary-help')
+  ).toContainText(
+    'button and can have multiple periods.'
+  );
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Temporary plate periods',
+      exact: true
+    })
+  ).toBeVisible();
+
+  await expect(
+    page.getByRole('button', {
+      name: '+ New period',
+      exact: true
+    })
+  ).toBeVisible();
+
+  for (const heading of [
+    'Current',
+    'Upcoming',
+    'History',
+    'Cancelled',
+    'Timeline'
+  ]) {
+    await expect(
+      page.getByRole('heading', {
+        name: heading,
+        exact: true
+      })
+    ).toBeVisible();
+  }
+
+  await expect(
+    page.getByText('No periods.', { exact: true })
+  ).toBeVisible();
+});
+
+test('EN no modifica data-label usados estructuralmente por CSS responsive', async ({ page }) => {
+  await mount(page, 'en');
+
+  await page.evaluate(() => {
+    document.querySelector('#fixture').innerHTML = `
+      <table>
+        <tbody>
+          <tr>
+            <td id="property-cell" data-label="Vivienda">Bloque 1, 1 A</td>
+            <td id="state-cell" data-label="Estado">Activo</td>
+            <td id="actions-cell" data-label="Acciones">
+              <button>Editar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+  });
+
+  await expect(
+    page.locator('#state-cell')
+  ).toHaveText('Active');
+
+  await expect(
+    page.getByRole('button', { name: 'Edit', exact: true })
+  ).toBeVisible();
+
+  expect(
+    await page.locator('#property-cell').getAttribute('data-label')
+  ).toBe('Vivienda');
+
+  expect(
+    await page.locator('#state-cell').getAttribute('data-label')
+  ).toBe('Estado');
+
+  expect(
+    await page.locator('#actions-cell').getAttribute('data-label')
+  ).toBe('Acciones');
+});

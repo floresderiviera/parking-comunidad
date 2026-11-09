@@ -582,6 +582,30 @@ const PARKING_UI_EN_EXACT={
   'Estado QR':'QR status',
   'Privado':'Private',
 
+  'Editar usuarios':'Edit user',
+  'Nuevo usuarios':'New user',
+  'Editar viviendas':'Edit property',
+  'Nuevo viviendas':'New property',
+  'Vivienda y propietario':'Property and owner',
+  'Ficha operativa de vivienda':'Property operational details',
+  'Abrir vehículos de esta vivienda':'Open vehicles for this property',
+  '← Viviendas':'← Properties',
+  '＋ Vehículo':'+ Vehicle',
+  '+ Vehículo':'+ Vehicle',
+  '＋ Nuevo vehículo':'+ New vehicle',
+  '+ Nuevo vehículo':'+ New vehicle',
+  '＋ Nuevo período':'+ New period',
+  '+ Nuevo período':'+ New period',
+  'Períodos temporales':'Temporary plate periods',
+  'Vigente':'Current',
+  'Próximos':'Upcoming',
+  'Históricos':'History',
+  'Anulados':'Cancelled',
+  'Sin períodos.':'No periods.',
+  'Línea de tiempo':'Timeline',
+  'La asignación se gestiona desde Viviendas mediante el propietario responsable.':'Assignment is managed from Properties through the responsible owner.',
+  'Las matrículas temporales se gestionan desde el botón':'Temporary plates are managed from the vehicle\'s',
+  'del vehículo y admiten varios períodos.':'button and can have multiple periods.',
   '+ Nuevo':'+ New',
   '+ Nueva':'+ New',
   '+ Añadir vehículo':'+ Add vehicle',
@@ -662,7 +686,7 @@ const PARKING_UI_EN_ATTRIBUTES={
 };
 
 function uiTranslateDynamic(text){
-  let value=String(text??'');
+  let value=String(text??'').replace(/＋/g,'+');
 
   const exact=PARKING_UI_EN_EXACT[value.trim()];
   if(exact!==undefined)return exact;
