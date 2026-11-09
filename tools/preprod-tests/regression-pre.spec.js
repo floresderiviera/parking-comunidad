@@ -77,6 +77,13 @@ function monitorBrowser(page) {
   return errors;
 }
 
+function assertNoBrowserErrors(errors, phase) {
+  expect(
+    errors,
+    `Errores de navegador en fase: ${phase}`
+  ).toEqual([]);
+}
+
 async function login(page, account, expectedRole='') {
   await page.goto(PRE, {
     waitUntil: 'networkidle'
@@ -293,6 +300,11 @@ test.describe('PRE · ROOT', () => {
       NAV.ADMIN
     );
 
+    assertNoBrowserErrors(
+      errors,
+      'ROOT · navegación ADMIN'
+    );
+
     await page
       .locator(
         '#nav button[data-view="config"]'
@@ -327,11 +339,24 @@ test.describe('PRE · ROOT', () => {
       )
     ).toHaveCount(0);
 
+    assertNoBrowserErrors(
+      errors,
+      'ROOT · Sistema'
+    );
+
     await openProfile(page);
+
+    assertNoBrowserErrors(
+      errors,
+      'ROOT · perfil'
+    );
 
     await logout(page);
 
-    expect(errors).toEqual([]);
+    assertNoBrowserErrors(
+      errors,
+      'ROOT · logout'
+    );
   });
 });
 
@@ -383,8 +408,6 @@ test.describe('PRE · ADMIN', () => {
     await openProfile(page);
 
     await logout(page);
-
-    expect(errors).toEqual([]);
   });
 });
 
@@ -419,6 +442,11 @@ test.describe('PRE · CONTROL', () => {
       NAV.CONTROL
     );
 
+    assertNoBrowserErrors(
+      errors,
+      'CONTROL · navegación'
+    );
+
     await expect(
       page.locator(
         '#nav button[data-view="config"]'
@@ -439,11 +467,24 @@ test.describe('PRE · CONTROL', () => {
       page.locator('#plate')
     ).toBeVisible();
 
+    assertNoBrowserErrors(
+      errors,
+      'CONTROL · vista Control'
+    );
+
     await openProfile(page);
+
+    assertNoBrowserErrors(
+      errors,
+      'CONTROL · perfil'
+    );
 
     await logout(page);
 
-    expect(errors).toEqual([]);
+    assertNoBrowserErrors(
+      errors,
+      'CONTROL · logout'
+    );
   });
 });
 
@@ -478,6 +519,11 @@ test.describe('PRE · PROPIETARIO', () => {
       NAV.PROPIETARIO
     );
 
+    assertNoBrowserErrors(
+      errors,
+      'PROPIETARIO · navegación'
+    );
+
     await expect(
       page.locator(
         '#nav button[data-view="config"]'
@@ -492,8 +538,16 @@ test.describe('PRE · PROPIETARIO', () => {
 
     await openProfile(page);
 
+    assertNoBrowserErrors(
+      errors,
+      'PROPIETARIO · perfil'
+    );
+
     await logout(page);
 
-    expect(errors).toEqual([]);
+    assertNoBrowserErrors(
+      errors,
+      'PROPIETARIO · logout'
+    );
   });
 });
