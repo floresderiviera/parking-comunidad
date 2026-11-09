@@ -111,25 +111,42 @@ async function login(page, account, expectedRole='') {
     .getByRole('button', { name: 'Entrar' })
     .click();
 
-  try {
-    await expect(
-      page.locator('#logout')
-    ).toBeVisible({
-      timeout: 15000
-    });
-  } catch (error) {
+  const loginResult = await Promise.race([
+    page.locator('#logout')
+      .waitFor({
+        state: 'visible',
+        timeout: 15000
+      })
+      .then(() => ({
+        type: 'success'
+      })),
+
+    page.locator('#toast')
+      .waitFor({
+        state: 'visible',
+        timeout: 15000
+      })
+      .then(async () => ({
+        type: 'error',
+        message: await page
+          .locator('#toast')
+          .innerText()
+          .catch(() => '')
+      }))
+  ]).catch(() => ({
+    type: 'timeout'
+  }));
+
+  if (loginResult.type !== 'success') {
     const appText = await page
       .locator('#app')
       .innerText()
       .catch(() => '');
 
-    const toastText = await page
-      .locator('#toast')
-      .innerText()
-      .catch(() => '');
-
     throw new Error(
-      `Login no completado para ${account.email}. Toast: ${toastText || '(sin toast)'}. UI visible: ${appText.slice(0, 1200)}`
+      `Login no completado para ${account.email}. Toast: ${
+        loginResult.message || '(sin toast)'
+      }. UI visible: ${appText.slice(0, 1200)}`
     );
   }
 
@@ -213,6 +230,11 @@ async function navigateAll(
     await item.click();
 
     await waitViewReady(page);
+
+    await page.waitForLoadState(
+      'networkidle',
+      { timeout: 15000 }
+    );
 
     await expect(
       page.locator('#main .retry-state')
