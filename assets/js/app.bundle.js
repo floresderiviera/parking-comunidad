@@ -2497,6 +2497,7 @@ async function configurationView(initialTab='identity'){
 
         try{
           const out=await call('systemBackupStatus');
+          if(!box.isConnected)return;
           const backup=out?.backup?.data||out?.backup||{};
           const automatic=backup.automatic||{};
           const last=backup.last||{};
