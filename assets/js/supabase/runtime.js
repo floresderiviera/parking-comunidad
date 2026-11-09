@@ -12,52 +12,42 @@ export function createRuntime() {
   }
 
   let activeRequests = 0;
-  let idleWaiters = [];
-
-  function notifyIdle() {
-    if (activeRequests !== 0) return;
-
-    const waiters = idleWaiters;
-    idleWaiters = [];
-
-    for (const resolve of waiters) {
-      resolve();
-    }
-  }
+  let lastRequestActivity = Date.now();
 
   async function trackedFetch(...args) {
     activeRequests += 1;
+    lastRequestActivity = Date.now();
 
     try {
       return await fetch(...args);
     } finally {
       activeRequests -= 1;
-      notifyIdle();
+      lastRequestActivity = Date.now();
     }
   }
 
-  async function waitForIdle(timeoutMs = 3000) {
-    if (activeRequests === 0) {
+  async function waitForIdle(
+    timeoutMs = 4000,
+    quietMs = 500
+  ) {
+    const startedAt = Date.now();
+
+    while (
+      Date.now() - startedAt < timeoutMs
+    ) {
+      if (
+        activeRequests === 0 &&
+        Date.now() - lastRequestActivity >= quietMs
+      ) {
+        return true;
+      }
+
       await new Promise(resolve =>
         setTimeout(resolve, 50)
       );
-
-      if (activeRequests === 0) {
-        return true;
-      }
     }
 
-    return await Promise.race([
-      new Promise(resolve => {
-        idleWaiters.push(() => resolve(true));
-      }),
-      new Promise(resolve => {
-        setTimeout(
-          () => resolve(false),
-          timeoutMs
-        );
-      })
-    ]);
+    return false;
   }
 
   let sb = window.parkingSupabase;
