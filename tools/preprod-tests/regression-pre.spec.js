@@ -63,7 +63,7 @@ function monitorBrowser(page) {
   return errors;
 }
 
-async function login(page, account) {
+async function login(page, account, expectedRole='') {
   await page.goto(PRE, {
     waitUntil: 'networkidle'
   });
@@ -97,15 +97,42 @@ async function login(page, account) {
     .getByRole('button', { name: 'Entrar' })
     .click();
 
-  await expect(
-    page.locator('#logout')
-  ).toBeVisible({
-    timeout: 15000
-  });
+  try {
+    await expect(
+      page.locator('#logout')
+    ).toBeVisible({
+      timeout: 15000
+    });
+  } catch (error) {
+    const appText = await page
+      .locator('#app')
+      .innerText()
+      .catch(() => '');
+
+    throw new Error(
+      `Login no completado para ${account.email}. UI visible: ${appText.slice(0, 1200)}`
+    );
+  }
 
   await expect(
     page.locator('#nav')
   ).toBeVisible();
+
+  if (expectedRole) {
+    const roleSwitch = page.locator('#role-switch');
+
+    if (await roleSwitch.count()) {
+      await roleSwitch.selectOption(expectedRole);
+
+      await expect(
+        roleSwitch
+      ).toHaveValue(expectedRole);
+
+      await expect(
+        page.locator('#nav')
+      ).toBeVisible();
+    }
+  }
 }
 
 async function waitViewReady(page) {
@@ -211,7 +238,8 @@ test.describe('PRE · ROOT', () => {
 
     await login(
       page,
-      ACCOUNTS.ROOT
+      ACCOUNTS.ROOT,
+      'ADMIN'
     );
 
     await assertDesktopNavigation(
@@ -283,7 +311,8 @@ test.describe('PRE · ADMIN', () => {
 
     await login(
       page,
-      ACCOUNTS.ADMIN
+      ACCOUNTS.ADMIN,
+      'ADMIN'
     );
 
     await assertDesktopNavigation(
@@ -335,7 +364,8 @@ test.describe('PRE · CONTROL', () => {
 
     await login(
       page,
-      ACCOUNTS.CONTROL
+      ACCOUNTS.CONTROL,
+      'CONTROL'
     );
 
     await assertDesktopNavigation(
@@ -353,6 +383,12 @@ test.describe('PRE · CONTROL', () => {
         '#nav button[data-view="config"]'
       )
     ).toHaveCount(0);
+
+    await page
+      .locator('#nav button[data-view="control"]')
+      .click();
+
+    await waitViewReady(page);
 
     await expect(
       page.locator('#scan')
@@ -387,7 +423,8 @@ test.describe('PRE · PROPIETARIO', () => {
 
     await login(
       page,
-      ACCOUNTS.PROPIETARIO
+      ACCOUNTS.PROPIETARIO,
+      'PROPIETARIO'
     );
 
     await assertDesktopNavigation(
