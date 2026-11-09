@@ -377,3 +377,142 @@ test('EN no modifica data-label usados estructuralmente por CSS responsive', asy
     await page.locator('#actions-cell').getAttribute('data-label')
   ).toBe('Acciones');
 });
+
+test('EN cubre residuos detectados en QA visual Admin Owner y Control', async ({ page }) => {
+  await mount(page, 'en');
+
+  await page.evaluate(() => {
+    document.querySelector('#fixture').innerHTML = `
+      <section>
+        <h2 id="access">Acceso de YAEL NAVAS PADILLA</h2>
+        <h2>Acceso asistido</h2>
+        <button>Generar contraseña temporal</button>
+
+        <h2>Nuevo vehículo</h2>
+        <h2 id="replace">Reemplazar vehículo · 2825GYF</h2>
+        <div>Los dos slots están ocupados: el vehículo quedará Desasignado.</div>
+
+        <h2>Buscar matrícula</h2>
+        <div>Situación detectada por Control</div>
+        <div>Registro manual</div>
+        <div>ITV vencida</div>
+
+        <h2 id="stay">Solicitar permanencia prolongada · 2825GYF</h2>
+        <label>Motivo de permanencia</label>
+        <label>Detalle del motivo (opcional)</label>
+        <button>Enviar solicitud</button>
+
+        <div id="slots">2/2 ocupados · 0 libres</div>
+        <div id="property-count">1 vivienda asociada a tu usuario</div>
+        <div id="vehicle-detail">Ficha del vehículo · Bloque 1, 1 A</div>
+        <div id="open-incidents">Incidencias abiertas (3)</div>
+      </section>
+    `;
+  });
+
+  await expect(
+    page.locator('#access')
+  ).toHaveText('Access for YAEL NAVAS PADILLA');
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Assisted access',
+      exact: true
+    })
+  ).toBeVisible();
+
+  await expect(
+    page.getByRole('button', {
+      name: 'Generate temporary password',
+      exact: true
+    })
+  ).toBeVisible();
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'New vehicle',
+      exact: true
+    })
+  ).toBeVisible();
+
+  await expect(
+    page.locator('#replace')
+  ).toHaveText('Replace vehicle · 2825GYF');
+
+  await expect(
+    page.getByText(
+      'Both slots are occupied: the vehicle will remain Unassigned.',
+      { exact: true }
+    )
+  ).toBeVisible();
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Search plate',
+      exact: true
+    })
+  ).toBeVisible();
+
+  await expect(
+    page.getByText(
+      'Situation detected by Access Control',
+      { exact: true }
+    )
+  ).toBeVisible();
+
+  await expect(
+    page.getByText('Manual entry', { exact: true })
+  ).toBeVisible();
+
+  await expect(
+    page.getByText(
+      'Expired vehicle inspection',
+      { exact: true }
+    )
+  ).toBeVisible();
+
+  await expect(
+    page.locator('#stay')
+  ).toHaveText(
+    'Request extended stay · 2825GYF'
+  );
+
+  await expect(
+    page.getByText('Reason for stay', {
+      exact: true
+    })
+  ).toBeVisible();
+
+  await expect(
+    page.getByText('Reason details (optional)', {
+      exact: true
+    })
+  ).toBeVisible();
+
+  await expect(
+    page.getByRole('button', {
+      name: 'Submit request',
+      exact: true
+    })
+  ).toBeVisible();
+
+  await expect(
+    page.locator('#slots')
+  ).toHaveText('2/2 occupied · 0 free');
+
+  await expect(
+    page.locator('#property-count')
+  ).toHaveText(
+    '1 property associated with your account'
+  );
+
+  await expect(
+    page.locator('#vehicle-detail')
+  ).toHaveText(
+    'Vehicle details · Bloque 1, 1 A'
+  );
+
+  await expect(
+    page.locator('#open-incidents')
+  ).toHaveText('Open incidents (3)');
+});

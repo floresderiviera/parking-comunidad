@@ -664,7 +664,101 @@ const PARKING_UI_EN_EXACT={
   'Agrupar por':'Group by',
   'Sin agrupar':'Ungrouped',
   'No tienes incidencias con estos filtros.':'You have no incidents matching these filters.',
-  'No tienes solicitudes con estos filtros.':'You have no requests matching these filters.'
+  'No tienes solicitudes con estos filtros.':'You have no requests matching these filters.',
+
+  /* Visual QA residuals · Admin / Owner / Control */
+  'Acceso asistido':'Assisted access',
+  'Generar contraseña temporal':'Generate temporary password',
+  'Enviar enlace para crear/restablecer contraseña':'Send password setup/reset link',
+  'El método recomendado es enviar a':'The recommended method is to send',
+  'un enlace seguro para crear o restablecer su contraseña.':'a secure link to create or reset the password.',
+  'Si el propietario necesita ayuda, podés generar una contraseña temporal. Se mostrará una sola vez para comunicarla manualmente y no se enviará por correo.':'If the owner needs assistance, you can generate a temporary password. It will be shown only once so it can be communicated manually and will not be sent by email.',
+
+  'Nuevo vehículo':'New vehicle',
+  'Añadir vehículo':'Add vehicle',
+  'Editar vehículo':'Edit vehicle',
+  'Crear vehículo':'Create vehicle',
+  'Revisar y reemplazar':'Review and replace',
+  'Matrícula nueva':'New plate',
+  'Nueva matrícula habitual':'New main plate',
+  'Marca':'Make',
+  'Modelo':'Model',
+  'Observaciones':'Notes',
+  'Tipo':'Type',
+  'Vivienda':'Property',
+  'Selecciona vivienda':'Select property',
+  'Particular':'Private',
+  'Empresa':'Company',
+  'Alquiler':'Rental',
+  'Moto':'Motorcycle',
+  'Otro':'Other',
+
+  'Asignación automática de slot:':'Automatic slot assignment:',
+  'El slot se asigna automáticamente.':'The slot is assigned automatically.',
+  'Se utilizará el primer slot libre de la vivienda. Si los dos están ocupados, el vehículo quedará Desasignado. Las motos no ocupan slot.':'The first available slot for the property will be used. If both slots are occupied, the vehicle will remain Unassigned. Motorcycles do not use a slot.',
+  'Al guardar se asignará automáticamente el Slot 1 y se generará su QR.':'When saved, Slot 1 will be assigned automatically and its QR will be generated.',
+  'Los dos slots están ocupados: el vehículo quedará Desasignado.':'Both slots are occupied: the vehicle will remain Unassigned.',
+  'La moto quedará Activa y no ocupará slot.':'The motorcycle will remain Active and will not use a slot.',
+
+  'Los períodos de matrícula temporal se gestionan desde Temporales. Para cambiar entre moto y vehículo con slot, contacta con administración.':'Temporary plate periods are managed from Temporary plates. To change between a motorcycle and a slotted vehicle, contact the administrator.',
+
+  'Ficha del vehículo':'Vehicle details',
+  'Clase / tipo':'Class / type',
+  'Solicitudes':'Requests',
+  'Expediente de solicitudes asociado a este vehículo.':'Request history associated with this vehicle.',
+  'Abrir Solicitudes':'Open Requests',
+  'Este vehículo todavía no tiene solicitudes registradas.':'This vehicle does not have any requests yet.',
+  'Última actividad':'Last activity',
+
+  'Buscar matrícula':'Search plate',
+  'Buscar':'Search',
+  'Control de acceso':'Access control',
+  'Comprobando el código escaneado.':'Checking the scanned code.',
+  'Comprobando QR…':'Checking QR…',
+  'Validando vehículo y autorización de acceso.':'Validating vehicle and access authorization.',
+  'Volver':'Back',
+  'Reintentar cámara':'Retry camera',
+  'Leer desde una foto':'Read from a photo',
+  'Introducir código':'Enter code',
+  'Apunta al QR y mantenlo dentro del recuadro.':'Point at the QR code and keep it inside the frame.',
+
+  'Situación detectada por Control':'Situation detected by Access Control',
+  'Registro manual':'Manual entry',
+  'Situación':'Situation',
+  'Posible abandono':'Possible abandonment',
+  'Vehículo inmovilizado':'Immobilized vehicle',
+  'Avería prolongada':'Prolonged breakdown',
+  'ITV vencida':'Expired vehicle inspection',
+  'Fuga / pérdida de líquidos':'Fluid leak or loss',
+  'Observación *':'Observation *',
+  'Foto / evidencia *':'Photo / evidence *',
+  'Obligatoria tanto para una nueva incidencia como para un seguimiento.':'Required for both a new incident and a follow-up.',
+
+  'Mis viviendas':'My properties',
+  'Mis vehículos':'My vehicles',
+  'ocupados':'occupied',
+  'libres':'free',
+  'Vehículo':'Vehicle',
+  'Sin slot':'No slot',
+  'No aplica':'Not applicable',
+  'Temporales':'Temporary plates',
+
+  'Solicitar permanencia prolongada':'Request extended stay',
+  'La solicitud debe ser aprobada por administración. Una vez aprobada, Control verá que la permanencia está autorizada durante el período indicado.':'The request must be approved by the administrator. Once approved, Access Control will see that the stay is authorized for the specified period.',
+  'Fecha inicio':'Start date',
+  'Fecha fin prevista':'Expected end date',
+  'Motivo de permanencia':'Reason for stay',
+  'Detalle del motivo':'Reason details',
+  'Detalle del motivo (opcional)':'Reason details (optional)',
+  'Viaje prolongado':'Extended trip',
+  'Vehículo inmovilizado':'Immobilized vehicle',
+  'Enviar solicitud':'Submit request',
+
+  'El vehículo actual quedará de baja. El nuevo quedará registrado sin slot.':'The current vehicle will be deactivated. The new vehicle will be registered without a slot.',
+  'El vehículo actual pasará a Baja, su QR quedará revocado y cualquier temporal vigente será anulado. El nuevo vehículo conservará la misma vivienda. Si corresponde, conservará el slot liberado.':'The current vehicle will be Deactivated, its QR will be revoked and any current temporary plate will be cancelled. The new vehicle will remain assigned to the same property and, where applicable, keep the released slot.',
+
+  'Anterior':'Previous',
+  'Siguiente':'Next'
 };
 
 const PARKING_UI_EN_ATTRIBUTES={
@@ -869,6 +963,46 @@ function uiTranslateDynamic(text){
   value=value.replace(
     /^(\d+) viviendas asignadas$/,
     '$1 assigned properties'
+  );
+
+  value=value.replace(
+    /^Acceso de (.+)$/,
+    'Access for $1'
+  );
+
+  value=value.replace(
+    /^(\d+)\/2 ocupados · (\d+) libres$/,
+    '$1/2 occupied · $2 free'
+  );
+
+  value=value.replace(
+    /^(\d+) vivienda asociada a tu usuario$/,
+    '$1 property associated with your account'
+  );
+
+  value=value.replace(
+    /^(\d+) viviendas asociadas a tu usuario$/,
+    '$1 properties associated with your account'
+  );
+
+  value=value.replace(
+    /^Reemplazar vehículo · (.+)$/,
+    'Replace vehicle · $1'
+  );
+
+  value=value.replace(
+    /^Solicitar permanencia prolongada · (.+)$/,
+    'Request extended stay · $1'
+  );
+
+  value=value.replace(
+    /^Ficha del vehículo · (.+)$/,
+    'Vehicle details · $1'
+  );
+
+  value=value.replace(
+    /^Incidencias abiertas \((\d+)\)$/,
+    'Open incidents ($1)'
   );
 
   value=value.replace(
@@ -3445,7 +3579,10 @@ function ownerAddVehicle(preselectedHousing=''){
   $('#owner-add-housing').onchange=refresh;$('#owner-add-type').onchange=refresh;refresh();$('#owner-add-cancel').onclick=()=>ownerVehicles();$('#owner-add-form').onsubmit=async e=>{e.preventDefault();const b=e.submitter;busy(b);const data=Object.fromEntries(new FormData(e.target));data.ModoPropietario='1';try{const out=await call('saveVehicle',data);toast(out.Tipo==='Moto'?'Moto registrada.':out.Slot?`Vehículo creado y asignado automáticamente al Slot ${out.Slot}.`:'Vehículo registrado sin slot disponible.');await ownerData(true);ownerVehicles()}catch(x){toast(x.message,true);busy(b,false)}};host.scrollIntoView({behavior:'smooth'})
 }
 
-async function ownerGiveLow(v){if(!confirm(`¿Dar de baja ${v.MatriculaHabitual}? Se liberará el slot si corresponde y el vehículo quedará sin QR asignado.`))return;try{await call('saveVehicle',{ID_Vehiculo:v.ID_Vehiculo,MatriculaHabitual:v.MatriculaHabitual,Marca:v.Marca,Modelo:v.Modelo,Tipo:v.Tipo,Estado:'Baja',ModoPropietario:'1'});toast('Vehículo dado de baja.');await ownerData(true);ownerVehicles()}catch(e){err(e)}}
+async function ownerGiveLow(v){const question=currentLanguage()==='en'
+  ?`Deactivate ${v.MatriculaHabitual}? Its slot will be released where applicable and the vehicle will no longer have an assigned QR.`
+  :`¿Dar de baja ${v.MatriculaHabitual}? Se liberará el slot si corresponde y el vehículo quedará sin QR asignado.`;
+if(!confirm(question))return;try{await call('saveVehicle',{ID_Vehiculo:v.ID_Vehiculo,MatriculaHabitual:v.MatriculaHabitual,Marca:v.Marca,Modelo:v.Modelo,Tipo:v.Tipo,Estado:'Baja',ModoPropietario:'1'});toast('Vehículo dado de baja.');await ownerData(true);ownerVehicles()}catch(e){err(e)}}
 async function ownerRequest(v,type){const existing=(state.cache.ownerRequests||[]).some(r=>r.ID_Vehiculo===v.ID_Vehiculo&&r.Tipo===type&&r.Estado==='Abierta');if(existing){toast('Ya existe una solicitud abierta de este tipo.',true);return}if(type==='REACTIVACION_VEHICULO'&&!['Suspendido','Baja'].includes(v.Estado)){toast('Este vehículo no está en un estado que permita solicitar activación.',true);return}if(type==='RENOVACION_QR'&&(v.Tipo==='Moto'||v.Estado!=='Activo'||!['1','2'].includes(String(v.Slot||''))||v.QR_Estado!=='Revocado')){toast(v.Tipo==='Moto'?'Las motos no utilizan QR.':!v.Slot?'El vehículo no tiene slot asignado.':'Solo se puede solicitar renovación cuando el QR está revocado.',true);return}const titulo=type==='REACTIVACION_VEHICULO'?'Solicitar activación':'Solicitar renovación QR',detalle=type==='REACTIVACION_VEHICULO'?(v.Tipo==='Moto'?'Al aprobar, la moto quedará Activa.':'Al aprobar, el vehículo quedará Desasignado. Después podrás asignarle un slot desde Mis vehículos; al asignarlo se generará un QR nuevo.'):'Al aprobar, el QR revocado será reemplazado por uno nuevo.';if(!confirm(`${titulo} para ${v.MatriculaHabitual}?\n\n${detalle}`))return;const motivo=prompt(type==='REACTIVACION_VEHICULO'?'Motivo de la activación (opcional):':'Motivo de la renovación QR (opcional):','');if(motivo===null)return;try{await call('createRequest',{ID_Vehiculo:v.ID_Vehiculo,Tipo:type,Motivo:motivo});toast(type==='REACTIVACION_VEHICULO'?'Solicitud de activación registrada.':'Solicitud de renovación QR registrada.');await ownerData(true);ownerVehicles()}catch(e){err(e)}}
 
 function ownerAssignSlot(v,allVehicles){if(v.Tipo==='Moto'||!['Activo','Desasignado'].includes(v.Estado)){toast('Este vehículo no puede ocupar un slot.',true);return}const same=(allVehicles||[]).filter(x=>x.ID_Vivienda===v.ID_Vivienda&&x.ID_Vehiculo!==v.ID_Vehiculo&&x.Estado==='Activo'&&x.Tipo!=='Moto'),bySlot={};same.forEach(x=>{if(['1','2'].includes(String(x.Slot||'')))bySlot[String(x.Slot)]=x});const host=$('#owner-editor');host.innerHTML=`<form class="card form" id="owner-slot-form"><h2 class="wide">${v.Slot?'Cambiar':'Asignar'} slot · ${esc(v.MatriculaHabitual)}</h2><div class="field wide"><label>Selecciona slot</label><select name="Slot" id="owner-slot-select"><option value="1" ${String(v.Slot)==='1'?'selected':''}>Slot 1${bySlot['1']?' · actualmente '+esc(bySlot['1'].MatriculaHabitual):' · libre'}</option><option value="2" ${String(v.Slot)==='2'?'selected':''}>Slot 2${bySlot['2']?' · actualmente '+esc(bySlot['2'].MatriculaHabitual):' · libre'}</option></select></div><div class="message wide" id="owner-slot-info"></div><div class="wide actions"><button>Confirmar asignación</button><button type="button" class="secondary" id="owner-slot-cancel">Cancelar</button></div></form>`;const select=$('#owner-slot-select'),info=$('#owner-slot-info');const refresh=()=>{const occ=bySlot[select.value];info.innerHTML=occ?`El Slot ${esc(select.value)} está asignado a <b>${esc(occ.MatriculaHabitual)}</b>. Al confirmar, ese vehículo quedará Desasignado y ${esc(v.MatriculaHabitual)} pasará a ocupar el slot con su propia credencial.`:`El Slot ${esc(select.value)} está libre. Se asociará a ${esc(v.MatriculaHabitual)}${v.Estado==='Desasignado'?' y se generará un QR nuevo':''}.`};select.onchange=refresh;refresh();$('#owner-slot-cancel').onclick=()=>host.innerHTML='';$('#owner-slot-form').onsubmit=async e=>{e.preventDefault();const slot=select.value,occ=bySlot[slot];if(occ&&!confirm(`El Slot ${slot} está asignado a ${occ.MatriculaHabitual}.\n\n¿Liberarlo y asignarlo a ${v.MatriculaHabitual}?\n\nEl vehículo anterior quedará Desasignado y no se transferirá su QR.`))return;const b=e.submitter;busy(b);try{const out=await call('assignVehicleSlot',{ID_Vehiculo:v.ID_Vehiculo,Slot:slot,confirmReplace:!!occ});toast(out.message||'Slot actualizado.');await ownerData(true);ownerVehicles()}catch(x){toast(x.message,true);busy(b,false)}};host.scrollIntoView({behavior:'smooth'})}
