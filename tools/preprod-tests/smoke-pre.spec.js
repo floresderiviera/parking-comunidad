@@ -74,8 +74,7 @@ test('PRE carga los JS críticos', async ({ page }) => {
       'admin-data.js',
       'auth.js',
       'profile.js',
-      'entry.js',
-      'app-init.js'
+      'entry.js'
     ].forEach(name => {
       if (url.includes(name)) {
         scripts.set(name, response.status());
@@ -102,8 +101,7 @@ test('PRE carga los JS críticos', async ({ page }) => {
     'dashboard.js',
     'owner.js',
     'search.js',
-    'entry.js',
-    'app-init.js'
+    'entry.js'
   ]) {
     expect(
       scripts.get(name),

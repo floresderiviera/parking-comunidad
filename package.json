@@ -14,7 +14,9 @@
     "check:frontend": "npm run build:frontend && git diff --exit-code -- assets/js/app.bundle.js",
     "build:vite": "vite build",
     "test:regression:pre": "playwright test tools/preprod-tests/regression-pre.spec.js --reporter=line",
-    "test:e2e:pre": "playwright test tools/preprod-tests/smoke-pre.spec.js tools/preprod-tests/regression-pre.spec.js --reporter=line"
+    "test:e2e:pre": "playwright test tools/preprod-tests/smoke-pre.spec.js tools/preprod-tests/regression-pre.spec.js --reporter=line",
+    "test:i18n": "node tools/preprod-tests/i18n-parity.mjs && node tools/preprod-tests/i18n-ui-coverage.mjs",
+    "test:local-gate": "npm test && npm run test:i18n && node tools/preprod-tests/adapter-action-coverage.mjs && node tools/preprod-tests/preproduction-completeness.mjs && npm run build:frontend && npm run build:vite"
   },
   "repository": {
     "type": "git",
