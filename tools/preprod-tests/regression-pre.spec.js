@@ -51,7 +51,9 @@ function monitorBrowser(page) {
   const errors = [];
 
   page.on('pageerror', error => {
-    errors.push(`pageerror: ${error.message}`);
+    errors.push(
+      `pageerror: ${error.stack || error.message}`
+    );
   });
 
   page.on('console', msg => {
