@@ -25,7 +25,8 @@ const {
   asDate,
   dataUrlBlob,
   parkingAdmin,
-  appBootstrap
+  appBootstrap,
+  waitForIdle
 } = runtime;
 
 const authApi =
@@ -33,7 +34,8 @@ const authApi =
     sb,
     unwrap,
     invalidate,
-    appBootstrap
+    appBootstrap,
+    waitForIdle
   });
 
 const {

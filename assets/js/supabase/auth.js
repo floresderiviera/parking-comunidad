@@ -5,7 +5,8 @@
     sb,
     unwrap,
     invalidate,
-    appBootstrap
+    appBootstrap,
+    waitForIdle
   }) => {
     async function sessionUser() {
       const { data, error } =
@@ -185,6 +186,10 @@
           );
         }
       } catch (_) {}
+
+      if (waitForIdle) {
+        await waitForIdle();
+      }
 
       invalidate();
 
