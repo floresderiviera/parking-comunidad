@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const sources = [
+  'assets/js/i18n.js',
   'assets/js/core.js',
   'assets/js/records-shared.js',
   'assets/js/auth-navigation.js',
