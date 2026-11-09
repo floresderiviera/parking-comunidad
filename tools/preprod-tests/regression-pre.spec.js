@@ -71,6 +71,10 @@ async function login(page, account) {
   await page.evaluate(() => {
     localStorage.clear();
     sessionStorage.clear();
+    localStorage.setItem(
+      'parking_language',
+      'es'
+    );
   });
 
   await page.reload({
