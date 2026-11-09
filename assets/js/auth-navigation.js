@@ -515,6 +515,10 @@ function shell(){
         </button>
       </div>
 
+      <div class="desktop-language-switch">
+        ${languageSelectorHtml()}
+      </div>
+
       <div class="who">
         <button
           type="button"
@@ -535,10 +539,6 @@ function shell(){
         <div class="who-role">
           ${roleSelector}
         </div>
-      </div>
-
-      <div class="desktop-language-switch">
-        ${languageSelectorHtml()}
       </div>
 
       <button

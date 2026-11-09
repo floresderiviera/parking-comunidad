@@ -72,6 +72,36 @@ const checks=[
     i18n.includes(
       "'Mis vehículos':'My vehicles'"
     )
+  ],
+  [
+    'incidencias admin traducidas',
+    i18n.includes(
+      "'Críticas':'Critical'"
+    ) &&
+    i18n.includes(
+      "'Vehículos afectados':'Affected vehicles'"
+    ) &&
+    i18n.includes(
+      "'Intentos abiertos':'Open attempts'"
+    ) &&
+    i18n.includes(
+      "'Período':'Period'"
+    )
+  ],
+  [
+    'solicitudes admin traducidas',
+    i18n.includes(
+      "'Expedientes abiertos':'Open cases'"
+    ) &&
+    i18n.includes(
+      "'Viviendas afectadas':'Affected properties'"
+    ) &&
+    i18n.includes(
+      "'Solicitudes resueltas':'Resolved requests'"
+    ) &&
+    i18n.includes(
+      "'Todo':'All'"
+    )
   ]
 ];
 

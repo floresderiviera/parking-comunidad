@@ -255,6 +255,30 @@ const PARKING_UI_EN_EXACT={
   'Resumen':'Overview',
   'Resumen del parking':'Parking overview',
   'Estado general':'General status',
+  'Estado operativo, pendientes y elementos que requieren atención.':'Operational status, pending items and elements requiring attention.',
+  'Viviendas activas':'Active properties',
+  'Vehículos con slot activos':'Active vehicles with slots',
+  'Motos activas':'Active motorcycles',
+  'Control por matrícula':'Plate-based access control',
+  'Suspendidos':'Suspended',
+  'Desasignados':'Unassigned',
+  'De baja':'Deactivated',
+  'Slots ocupados':'Occupied slots',
+  'Requieren revisión':'Require review',
+  'Pendientes de resolución':'Pending resolution',
+  'Incidencias con seguimiento':'Incidents with follow-up',
+  'Más de un intento registrado':'More than one attempt recorded',
+  'Activos sin QR válido':'Active vehicles without a valid QR',
+  'No incluye motos':'Motorcycles excluded',
+  'Temporales vigentes':'Active temporary plates',
+  'Temporales que vencen ≤ 7 días':'Temporary plates expiring within 7 days',
+  'Revisar próximos vencimientos':'Review upcoming expirations',
+  'Actividad últimos 30 días':'Activity in the last 30 days',
+  'Incidencias registradas':'Incidents recorded',
+  'Solicitudes registradas':'Requests recorded',
+  'Altas de vehículos':'Vehicles added',
+  'Requiere atención':'Requires attention',
+  'No hay elementos que requieran atención especial.':'No items require special attention.',
   'Pendientes':'Pending',
   'Revisión de datos':'Data review',
   'Usuarios':'Users',
@@ -402,6 +426,52 @@ const PARKING_UI_EN_EXACT={
   'Descargar PNG':'Download PNG',
 
   'Solicitudes abiertas':'Open requests',
+  'Bandeja de gestión agrupada por vehículo o matrícula observada.':'Management inbox grouped by vehicle or observed plate.',
+  'Bandeja de gestión agrupada por vehículo o matrícula. Expedientes y lista comparten los mismos filtros.':'Management inbox grouped by vehicle or plate. Cases and list share the same filters.',
+
+  'Críticas':'Critical',
+  'Vehículos afectados':'Affected vehicles',
+  'Intentos abiertos':'Open attempts',
+  'Pendientes de resolver':'Pending resolution',
+  'Abiertas con prioridad crítica':'Open with critical priority',
+  'Matrículas con casos abiertos':'Plates with open cases',
+  'Acumulados en incidencias abiertas':'Accumulated across open incidents',
+
+  'Expedientes abiertos':'Open cases',
+  'Viviendas afectadas':'Affected properties',
+  'Solicitudes resueltas':'Resolved requests',
+  'Solicitudes por resolver':'Requests pending resolution',
+  'Vehículos o matrículas con solicitudes abiertas':'Vehicles or plates with open requests',
+  'Con solicitudes abiertas':'With open requests',
+  'Aprobadas o rechazadas':'Approved or rejected',
+
+  'Período':'Period',
+  'Todo':'All',
+  'Anterior':'Previous',
+  'Siguiente':'Next',
+
+  'Exportar Excel':'Export Excel',
+
+  'No hay expedientes que coincidan con los filtros.':'No cases match the filters.',
+  'No hay incidencias.':'No incidents.',
+  'No hay solicitudes.':'No requests.',
+
+  'Crítica':'Critical',
+  'Alta':'High',
+  'Media':'Medium',
+
+  'Matrícula no registrada':'Unregistered plate',
+  'Acceso no autorizado':'Unauthorized access',
+  'QR no presentado':'QR not presented',
+  'QR no corresponde con matrícula':'QR does not match plate',
+  'Uso indebido':'Misuse',
+  'Vehículo inmovilizado / posible abandono':'Immobilized vehicle / possible abandonment',
+  'Estacionamiento o ubicación indebida':'Improper parking or location',
+  'Fuga / pérdida de líquidos':'Fluid leak or loss',
+
+  'Activación':'Activation',
+  'Renovación QR':'QR renewal',
+  'Permanencia prolongada':'Extended stay',
   'Incidencias abiertas':'Open incidents',
   'Lista de solicitudes':'Request list',
   'Lista de incidencias':'Incident list',
@@ -562,6 +632,31 @@ function uiTranslateDynamic(text){
   );
 
   value=value.replace(
+    /^(\d+) registradas$/,
+    '$1 registered'
+  );
+
+  value=value.replace(
+    /^(\d+) registrados$/,
+    '$1 registered'
+  );
+
+  value=value.replace(
+    /^(\d+) libres de (\d+)$/,
+    '$1 free of $2'
+  );
+
+  value=value.replace(
+    /^= (\d+) vs\. 30 días anteriores$/,
+    '= $1 vs. previous 30 days'
+  );
+
+  value=value.replace(
+    /^([+-]?\d+) vs\. 30 días anteriores$/,
+    '$1 vs. previous 30 days'
+  );
+
+  value=value.replace(
     /^(\d+) motos activas$/,
     '$1 active motorcycles'
   );
@@ -604,6 +699,46 @@ function uiTranslateDynamic(text){
   value=value.replace(
     /^Solicitud abierta: (.+)$/,
     'Open request: $1'
+  );
+
+  value=value.replace(
+    /^(\d+) expedientes? · (\d+) incidencias?$/,
+    '$1 cases · $2 incidents'
+  );
+
+  value=value.replace(
+    /^(\d+) expedientes? · (\d+) solicitudes?$/,
+    '$1 cases · $2 requests'
+  );
+
+  value=value.replace(
+    /^Página (\d+) de (\d+) · (\d+) registros$/,
+    'Page $1 of $2 · $3 records'
+  );
+
+  value=value.replace(
+    /^Página (\d+) de (\d+) · (\d+) registro$/,
+    'Page $1 of $2 · $3 record'
+  );
+
+  value=value.replace(
+    /^(\d+) expediente$/,
+    '$1 case'
+  );
+
+  value=value.replace(
+    /^(\d+) expedientes$/,
+    '$1 cases'
+  );
+
+  value=value.replace(
+    /^(\d+) incidencias$/,
+    '$1 incidents'
+  );
+
+  value=value.replace(
+    /^(\d+) solicitudes$/,
+    '$1 requests'
   );
 
   return value;
@@ -817,8 +952,8 @@ function languageSelectorHtml(className='language-switch'){
   const lang=currentLanguage();
 
   return `<div class="${className}" role="group" aria-label="${esc(t('language.selector'))}">
-    <button type="button" class="secondary compact language-option ${lang==='es'?'active':''}" data-language="es" aria-pressed="${lang==='es'}">ES</button>
-    <button type="button" class="secondary compact language-option ${lang==='en'?'active':''}" data-language="en" aria-pressed="${lang==='en'}">EN</button>
+    <button type="button" class="secondary compact language-option ${lang==='es'?'active':''}" data-language="es" aria-pressed="${lang==='es'}">🇪🇸 ES</button>
+    <button type="button" class="secondary compact language-option ${lang==='en'?'active':''}" data-language="en" aria-pressed="${lang==='en'}">🇬🇧 EN</button>
   </div>`;
 }
 
@@ -1696,6 +1831,10 @@ function shell(){
         </button>
       </div>
 
+      <div class="desktop-language-switch">
+        ${languageSelectorHtml()}
+      </div>
+
       <div class="who">
         <button
           type="button"
@@ -1716,10 +1855,6 @@ function shell(){
         <div class="who-role">
           ${roleSelector}
         </div>
-      </div>
-
-      <div class="desktop-language-switch">
-        ${languageSelectorHtml()}
       </div>
 
       <button
