@@ -60,6 +60,20 @@ function monitorBrowser(page) {
     }
   });
 
+  page.on('response', response => {
+    if (response.status() === 401) {
+      errors.push(
+        `http 401: ${response.request().method()} ${response.url()}`
+      );
+    }
+  });
+
+  page.on('requestfailed', request => {
+    errors.push(
+      `requestfailed: ${request.method()} ${request.url()} :: ${request.failure()?.errorText || 'unknown'}`
+    );
+  });
+
   return errors;
 }
 
@@ -109,8 +123,13 @@ async function login(page, account, expectedRole='') {
       .innerText()
       .catch(() => '');
 
+    const toastText = await page
+      .locator('#toast')
+      .innerText()
+      .catch(() => '');
+
     throw new Error(
-      `Login no completado para ${account.email}. UI visible: ${appText.slice(0, 1200)}`
+      `Login no completado para ${account.email}. Toast: ${toastText || '(sin toast)'}. UI visible: ${appText.slice(0, 1200)}`
     );
   }
 
