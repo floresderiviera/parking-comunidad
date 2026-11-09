@@ -664,7 +664,101 @@ const PARKING_UI_EN_EXACT={
   'Agrupar por':'Group by',
   'Sin agrupar':'Ungrouped',
   'No tienes incidencias con estos filtros.':'You have no incidents matching these filters.',
-  'No tienes solicitudes con estos filtros.':'You have no requests matching these filters.'
+  'No tienes solicitudes con estos filtros.':'You have no requests matching these filters.',
+
+  /* Visual QA residuals · Admin / Owner / Control */
+  'Acceso asistido':'Assisted access',
+  'Generar contraseña temporal':'Generate temporary password',
+  'Enviar enlace para crear/restablecer contraseña':'Send password setup/reset link',
+  'El método recomendado es enviar a':'The recommended method is to send',
+  'un enlace seguro para crear o restablecer su contraseña.':'a secure link to create or reset the password.',
+  'Si el propietario necesita ayuda, podés generar una contraseña temporal. Se mostrará una sola vez para comunicarla manualmente y no se enviará por correo.':'If the owner needs assistance, you can generate a temporary password. It will be shown only once so it can be communicated manually and will not be sent by email.',
+
+  'Nuevo vehículo':'New vehicle',
+  'Añadir vehículo':'Add vehicle',
+  'Editar vehículo':'Edit vehicle',
+  'Crear vehículo':'Create vehicle',
+  'Revisar y reemplazar':'Review and replace',
+  'Matrícula nueva':'New plate',
+  'Nueva matrícula habitual':'New main plate',
+  'Marca':'Make',
+  'Modelo':'Model',
+  'Observaciones':'Notes',
+  'Tipo':'Type',
+  'Vivienda':'Property',
+  'Selecciona vivienda':'Select property',
+  'Particular':'Private',
+  'Empresa':'Company',
+  'Alquiler':'Rental',
+  'Moto':'Motorcycle',
+  'Otro':'Other',
+
+  'Asignación automática de slot:':'Automatic slot assignment:',
+  'El slot se asigna automáticamente.':'The slot is assigned automatically.',
+  'Se utilizará el primer slot libre de la vivienda. Si los dos están ocupados, el vehículo quedará Desasignado. Las motos no ocupan slot.':'The first available slot for the property will be used. If both slots are occupied, the vehicle will remain Unassigned. Motorcycles do not use a slot.',
+  'Al guardar se asignará automáticamente el Slot 1 y se generará su QR.':'When saved, Slot 1 will be assigned automatically and its QR will be generated.',
+  'Los dos slots están ocupados: el vehículo quedará Desasignado.':'Both slots are occupied: the vehicle will remain Unassigned.',
+  'La moto quedará Activa y no ocupará slot.':'The motorcycle will remain Active and will not use a slot.',
+
+  'Los períodos de matrícula temporal se gestionan desde Temporales. Para cambiar entre moto y vehículo con slot, contacta con administración.':'Temporary plate periods are managed from Temporary plates. To change between a motorcycle and a slotted vehicle, contact the administrator.',
+
+  'Ficha del vehículo':'Vehicle details',
+  'Clase / tipo':'Class / type',
+  'Solicitudes':'Requests',
+  'Expediente de solicitudes asociado a este vehículo.':'Request history associated with this vehicle.',
+  'Abrir Solicitudes':'Open Requests',
+  'Este vehículo todavía no tiene solicitudes registradas.':'This vehicle does not have any requests yet.',
+  'Última actividad':'Last activity',
+
+  'Buscar matrícula':'Search plate',
+  'Buscar':'Search',
+  'Control de acceso':'Access control',
+  'Comprobando el código escaneado.':'Checking the scanned code.',
+  'Comprobando QR…':'Checking QR…',
+  'Validando vehículo y autorización de acceso.':'Validating vehicle and access authorization.',
+  'Volver':'Back',
+  'Reintentar cámara':'Retry camera',
+  'Leer desde una foto':'Read from a photo',
+  'Introducir código':'Enter code',
+  'Apunta al QR y mantenlo dentro del recuadro.':'Point at the QR code and keep it inside the frame.',
+
+  'Situación detectada por Control':'Situation detected by Access Control',
+  'Registro manual':'Manual entry',
+  'Situación':'Situation',
+  'Posible abandono':'Possible abandonment',
+  'Vehículo inmovilizado':'Immobilized vehicle',
+  'Avería prolongada':'Prolonged breakdown',
+  'ITV vencida':'Expired vehicle inspection',
+  'Fuga / pérdida de líquidos':'Fluid leak or loss',
+  'Observación *':'Observation *',
+  'Foto / evidencia *':'Photo / evidence *',
+  'Obligatoria tanto para una nueva incidencia como para un seguimiento.':'Required for both a new incident and a follow-up.',
+
+  'Mis viviendas':'My properties',
+  'Mis vehículos':'My vehicles',
+  'ocupados':'occupied',
+  'libres':'free',
+  'Vehículo':'Vehicle',
+  'Sin slot':'No slot',
+  'No aplica':'Not applicable',
+  'Temporales':'Temporary plates',
+
+  'Solicitar permanencia prolongada':'Request extended stay',
+  'La solicitud debe ser aprobada por administración. Una vez aprobada, Control verá que la permanencia está autorizada durante el período indicado.':'The request must be approved by the administrator. Once approved, Access Control will see that the stay is authorized for the specified period.',
+  'Fecha inicio':'Start date',
+  'Fecha fin prevista':'Expected end date',
+  'Motivo de permanencia':'Reason for stay',
+  'Detalle del motivo':'Reason details',
+  'Detalle del motivo (opcional)':'Reason details (optional)',
+  'Viaje prolongado':'Extended trip',
+  'Vehículo inmovilizado':'Immobilized vehicle',
+  'Enviar solicitud':'Submit request',
+
+  'El vehículo actual quedará de baja. El nuevo quedará registrado sin slot.':'The current vehicle will be deactivated. The new vehicle will be registered without a slot.',
+  'El vehículo actual pasará a Baja, su QR quedará revocado y cualquier temporal vigente será anulado. El nuevo vehículo conservará la misma vivienda. Si corresponde, conservará el slot liberado.':'The current vehicle will be Deactivated, its QR will be revoked and any current temporary plate will be cancelled. The new vehicle will remain assigned to the same property and, where applicable, keep the released slot.',
+
+  'Anterior':'Previous',
+  'Siguiente':'Next'
 };
 
 const PARKING_UI_EN_ATTRIBUTES={
@@ -869,6 +963,46 @@ function uiTranslateDynamic(text){
   value=value.replace(
     /^(\d+) viviendas asignadas$/,
     '$1 assigned properties'
+  );
+
+  value=value.replace(
+    /^Acceso de (.+)$/,
+    'Access for $1'
+  );
+
+  value=value.replace(
+    /^(\d+)\/2 ocupados · (\d+) libres$/,
+    '$1/2 occupied · $2 free'
+  );
+
+  value=value.replace(
+    /^(\d+) vivienda asociada a tu usuario$/,
+    '$1 property associated with your account'
+  );
+
+  value=value.replace(
+    /^(\d+) viviendas asociadas a tu usuario$/,
+    '$1 properties associated with your account'
+  );
+
+  value=value.replace(
+    /^Reemplazar vehículo · (.+)$/,
+    'Replace vehicle · $1'
+  );
+
+  value=value.replace(
+    /^Solicitar permanencia prolongada · (.+)$/,
+    'Request extended stay · $1'
+  );
+
+  value=value.replace(
+    /^Ficha del vehículo · (.+)$/,
+    'Vehicle details · $1'
+  );
+
+  value=value.replace(
+    /^Incidencias abiertas \((\d+)\)$/,
+    'Open incidents ($1)'
   );
 
   value=value.replace(
