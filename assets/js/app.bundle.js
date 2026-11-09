@@ -567,7 +567,80 @@ const PARKING_UI_EN_EXACT={
   'No verificado':'Not verified',
 
   'Sí':'Yes',
-  'No':'No'
+  'No':'No',
+
+  'Rol':'Role',
+  'Perfiles':'Profiles',
+  'Viviendas asignadas':'Assigned properties',
+  'Bloque':'Block',
+  'Planta':'Floor',
+  'Apartamento':'Apartment',
+  'Ficha':'Details',
+  'Contraseña':'Password',
+  'Cerrar sesiones':'Sign out sessions',
+  'Reemplazar':'Replace',
+  'Estado QR':'QR status',
+  'Privado':'Private',
+
+  '+ Nuevo':'+ New',
+  '+ Nueva':'+ New',
+  '+ Añadir vehículo':'+ Add vehicle',
+
+  'Ver vehículo':'View vehicle',
+  'Este QR identifica al vehículo y valida la matrícula habitual o la temporal vigente.':'This QR identifies the vehicle and validates the main plate or the current temporary plate.',
+
+  'Las matrículas temporales se gestionan desde el botón Temporales del vehículo y admiten varios períodos.':'Temporary plates are managed from the vehicle Temporary plates action and may contain multiple periods.',
+  'Activo requiere slot. Libres: Slot 1, Slot 2':'Active status requires a slot. Available: Slot 1, Slot 2',
+
+  'Desde':'From',
+  'Hasta':'To',
+  'Últimos 30 días':'Last 30 days',
+
+  'CONFIGURACIÓN':'SETTINGS',
+  'Identidad, carga inicial de datos y estado técnico del sistema.':'Identity, initial data import and system technical status.',
+  'Identidad de la comunidad':'Community identity',
+  'Datos generales e identidad visual. Los cambios se aplican al login y a la cabecera.':'General information and visual identity. Changes are applied to sign-in and the header.',
+  'Nombre oficial':'Official name',
+  'Descripción':'Description',
+  'Correo de contacto':'Contact email',
+  'Dirección':'Address',
+  'URL del logo (opcional)':'Logo URL (optional)',
+  'Gestión de acceso y parking de la comunidad':'Community access and parking management',
+
+  'Logo':'Logo',
+  'Puedes subir una imagen desde tu equipo o utilizar una URL. Se usa en el login y en la cabecera.':'You can upload an image from your device or use a URL. It is used on the sign-in screen and header.',
+  'Elegir logo':'Choose logo',
+  'Quitar':'Remove',
+
+  'La prioridad sube automáticamente según la cantidad de intentos diarios registrados. El intento inicial cuenta como 1.':'Priority increases automatically according to the number of daily attempts recorded. The initial attempt counts as 1.',
+  'Atención desde':'Attention from',
+  'Alta desde':'High from',
+  'Crítica desde':'Critical from',
+
+  'Puedes elegirlos manualmente o sugerirlos automáticamente a partir del logo.':'You can choose them manually or generate suggestions automatically from the logo.',
+  'La sugerencia no se guarda hasta pulsar “Guardar configuración”.':'The suggestion is not saved until you select “Save settings”.',
+
+  'Importación de viviendas y propietarios':'Import properties and owners',
+  'Carga inicial o actualización controlada de viviendas, propietarios y correos. La importación siempre muestra una previsualización antes de aplicar cambios.':'Initial import or controlled update of properties, owners and emails. The import always shows a preview before applying changes.',
+  'La plantilla puede utilizar Viviendas existentes o crear las que falten si activas esa opción durante la importación. Los cambios se registran en Auditoría.':'The template can use existing properties or create missing ones when that option is enabled during import. Changes are recorded in Audit.',
+
+  'Escanea, comprueba y registra en pocos segundos.':'Scan, check and record in seconds.',
+
+  'Resumen de tus viviendas, vehículos y gestiones.':'Summary of your properties, vehicles and activity.',
+  'Vivienda asociada':'Associated property',
+  'Ver viviendas':'View properties',
+  'Vehículos registrados':'Registered vehicles',
+  'Vehículos con slot':'Vehicles with slots',
+  'Permanencias autorizadas':'Authorized stays',
+  'Solicitudes aprobadas':'Approved requests',
+  'Mis propiedades':'My properties',
+  'vivienda asociada a tu usuario':'property associated with your account',
+  'Avisar permanencia':'Report extended stay',
+
+  'Agrupar por':'Group by',
+  'Sin agrupar':'Ungrouped',
+  'No tienes incidencias con estos filtros.':'You have no incidents matching these filters.',
+  'No tienes solicitudes con estos filtros.':'You have no requests matching these filters.'
 };
 
 const PARKING_UI_EN_ATTRIBUTES={
@@ -582,7 +655,10 @@ const PARKING_UI_EN_ATTRIBUTES={
   'Describe lo observado en este nuevo intento...':'Describe what you observed during this follow-up...',
   'Qué se hizo, contacto con propietario, observaciones...':'Action taken, contact with owner, notes...',
   'Indica el motivo de la permanencia.':'Enter the reason for the long stay.',
-  'Podés agregar un detalle si lo considerás necesario.':'You may add further details if needed.'
+  'Podés agregar un detalle si lo considerás necesario.':'You may add further details if needed.',
+  'Buscar en esta sección...':'Search this section...',
+  'Buscar en matrículas o vivienda...':'Search plates or property...',
+  'Buscar en matrículas o vivienda…':'Search plates or property...'
 };
 
 function uiTranslateDynamic(text){
@@ -739,6 +815,56 @@ function uiTranslateDynamic(text){
   value=value.replace(
     /^(\d+) solicitudes$/,
     '$1 requests'
+  );
+
+  value=value.replace(
+    /^(\d+) viviendas?$/,
+    '$1 properties'
+  );
+
+  value=value.replace(
+    /^(\d+) vehículos registrados$/,
+    '$1 registered vehicles'
+  );
+
+  value=value.replace(
+    /^(\d+) slots libres$/,
+    '$1 free slots'
+  );
+
+  value=value.replace(
+    /^(\d+) solicitudes en total$/,
+    '$1 total requests'
+  );
+
+  value=value.replace(
+    /^(\d+) incidencias asociadas$/,
+    '$1 associated incidents'
+  );
+
+  value=value.replace(
+    /^(\d+) viviendas asignadas$/,
+    '$1 assigned properties'
+  );
+
+  value=value.replace(
+    /^(\d+) con slot · (\d+) motos$/,
+    '$1 with slots · $2 motorcycles'
+  );
+
+  value=value.replace(
+    /^CONTROL · PROPIETARIO$/,
+    'Access control · Owner'
+  );
+
+  value=value.replace(
+    /^PROPIETARIO$/,
+    'Owner'
+  );
+
+  value=value.replace(
+    /^CONTROL$/,
+    'Access control'
   );
 
   return value;
