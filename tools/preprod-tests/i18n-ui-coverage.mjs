@@ -32,7 +32,9 @@ const context = {
   document: {
     documentElement: {
       lang: 'es'
-    }
+    },
+    body: null,
+    addEventListener() {}
   }
 };
 
