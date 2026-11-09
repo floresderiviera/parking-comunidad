@@ -28,9 +28,10 @@ function renderMaintenanceScreen(publicState={}){
   const maintenance=publicState.maintenance||{},settings=Object.assign({},window.INITIAL_PUBLIC_SETTINGS||{},publicState.settings||{});
   applyParkingSettings(settings);
   const name=settings.NombreOficial||'Parking Comunidad',logo=settings.LogoUrl||'';
-  $('#app').innerHTML=`<main class="maintenance-page"><section class="card maintenance-card"><div class="maintenance-brand">${logo?`<img src="${esc(logo)}" alt="Logo de ${esc(name)}">`:'<div class="mark">P</div>'}</div><div class="eyebrow">MANTENIMIENTO</div><h1>${esc(name)}</h1><p>${esc(maintenance.message||'Sistema temporalmente en mantenimiento. Volveremos a estar disponibles en breve.')}</p><div class="maintenance-note">El acceso y el escáner están temporalmente pausados para evitar cambios durante la actualización.</div><div class="actions maintenance-actions"><button type="button" class="secondary" id="maintenance-retry">Comprobar de nuevo</button><button type="button" class="secondary" id="maintenance-root-login">Acceso técnico ROOT</button></div></section></main>`;
+  $('#app').innerHTML=`<main class="maintenance-page"><section class="card maintenance-card"><div style="display:flex;justify-content:flex-end">${languageSelectorHtml()}</div><div class="maintenance-brand">${logo?`<img src="${esc(logo)}" alt="${esc(name)}">`:'<div class="mark">P</div>'}</div><div class="eyebrow">${esc(t('maintenance.title'))}</div><h1>${esc(name)}</h1><p>${esc(maintenance.message||t('maintenance.defaultMessage'))}</p><div class="maintenance-note">${esc(t('maintenance.note'))}</div><div class="actions maintenance-actions"><button type="button" class="secondary" id="maintenance-retry">${esc(t('maintenance.retry'))}</button><button type="button" class="secondary" id="maintenance-root-login">${esc(t('maintenance.root'))}</button></div></section></main>`;
+  bindLanguageSelectors($('#app'));
   const retry=$('#maintenance-retry');if(retry)retry.onclick=()=>location.reload();
-  const rootLogin=$('#maintenance-root-login');if(rootLogin)rootLogin.onclick=()=>login('Modo mantenimiento activo. Acceso exclusivo ROOT.');
+  const rootLogin=$('#maintenance-root-login');if(rootLogin)rootLogin.onclick=()=>login();
 }
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const SERVER_TIMEOUT_MS=18000;

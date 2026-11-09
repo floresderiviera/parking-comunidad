@@ -188,6 +188,67 @@ const PARKING_I18N={
   }
 };
 
+
+Object.assign(PARKING_I18N.es,{
+  shell:{
+    profile:'Perfil',
+    activeProfile:'Perfil activo',
+    openMenu:'Abrir menú',
+    menu:'Menú',
+    more:'Más',
+    moreSections:'Más secciones',
+    closeMenu:'Cerrar menú',
+    mobileNavigation:'Navegación móvil',
+    openMyData:'Abrir Mis datos'
+  },
+  authExtra:{
+    loginIntro:'Accede con tu email y contraseña.',
+    recoveryTitle:'Crear nueva contraseña',
+    recoveryIntro:'Introduce una nueva contraseña para tu cuenta.',
+    resetSent:'Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.',
+    resetRequestError:'No se pudo solicitar el restablecimiento.',
+    passwordMismatch:'Las contraseñas no coinciden.',
+    passwordInvalid:'La contraseña debe tener al menos 8 caracteres, una letra y un número.',
+    passwordUpdated:'Contraseña actualizada correctamente. Ya puedes iniciar sesión.',
+    passwordUpdateError:'No se pudo actualizar la contraseña.'
+  },
+  errors:{
+    configurationForbidden:'No tienes permisos para acceder a Configuración.',
+    loadGeneric:'No se pudo cargar la información.',
+    loadView:'No se pudo cargar {view}.'
+  }
+});
+
+Object.assign(PARKING_I18N.en,{
+  shell:{
+    profile:'Profile',
+    activeProfile:'Active profile',
+    openMenu:'Open menu',
+    menu:'Menu',
+    more:'More',
+    moreSections:'More sections',
+    closeMenu:'Close menu',
+    mobileNavigation:'Mobile navigation',
+    openMyData:'Open My details'
+  },
+  authExtra:{
+    loginIntro:'Sign in with your email and password.',
+    recoveryTitle:'Create new password',
+    recoveryIntro:'Enter a new password for your account.',
+    resetSent:'If the email is registered, you will receive a link to reset your password.',
+    resetRequestError:'The password reset request could not be completed.',
+    passwordMismatch:'The passwords do not match.',
+    passwordInvalid:'The password must contain at least 8 characters, one letter and one number.',
+    passwordUpdated:'Password updated successfully. You can now sign in.',
+    passwordUpdateError:'The password could not be updated.'
+  },
+  errors:{
+    configurationForbidden:'You do not have permission to access Settings.',
+    loadGeneric:'The information could not be loaded.',
+    loadView:'Could not load {view}.'
+  }
+});
+
 function i18nGet(object,path){
   return String(path||'')
     .split('.')
