@@ -216,6 +216,20 @@ Object.assign(PARKING_I18N.es,{
     configurationForbidden:'No tienes permisos para acceder a Configuración.',
     loadGeneric:'No se pudo cargar la información.',
     loadView:'No se pudo cargar {view}.'
+  },
+  scanner:{
+    title:'Escanear QR',
+    starting:'Iniciando cámara…',
+    openCamera:'▣ ABRIR CÁMARA',
+    back:'← VOLVER',
+    intro:'Apunta al QR. Al detectarlo, volverás automáticamente con el resultado.',
+    requesting:'Solicitando permiso de cámara…',
+    libraryError:'No se pudo cargar el lector QR.',
+    invalidQr:'El QR leído no contiene un enlace válido.',
+    detected:'QR detectado. Volviendo…',
+    aiming:'Apunta al QR y mantenlo dentro del recuadro.',
+    cameraError:'No se pudo iniciar la cámara automáticamente. Pulsa “ABRIR CÁMARA” y revisa el permiso si el navegador lo solicita.',
+    maintenance:'Sistema temporalmente en mantenimiento.'
   }
 });
 
@@ -246,6 +260,20 @@ Object.assign(PARKING_I18N.en,{
     configurationForbidden:'You do not have permission to access Settings.',
     loadGeneric:'The information could not be loaded.',
     loadView:'Could not load {view}.'
+  },
+  scanner:{
+    title:'Scan QR code',
+    starting:'Starting camera…',
+    openCamera:'▣ OPEN CAMERA',
+    back:'← BACK',
+    intro:'Point the camera at the QR code. Once detected, you will return automatically with the result.',
+    requesting:'Requesting camera permission…',
+    libraryError:'The QR reader could not be loaded.',
+    invalidQr:'The scanned QR code does not contain a valid link.',
+    detected:'QR code detected. Returning…',
+    aiming:'Point at the QR code and keep it inside the frame.',
+    cameraError:'The camera could not be started automatically. Select “OPEN CAMERA” and check the permission if your browser asks for it.',
+    maintenance:'The system is temporarily under maintenance.'
   }
 });
 
@@ -779,6 +807,166 @@ const PARKING_UI_EN_ATTRIBUTES={
   'Buscar en matrículas o vivienda…':'Search plates or property...'
 };
 
+Object.assign(PARKING_UI_EN_EXACT,{
+  'Búsqueda global':'Global search',
+  'La plantilla puede utilizar viviendas existentes o crear las que falten si activas esa opción durante la importación. Los cambios se registran en Auditoría.':'The template can use existing properties or create missing ones when that option is enabled during import. Changes are recorded in Audit.',
+  'Puedes pegar una URL o subir un archivo desde el panel de Logo':'You can paste a URL or upload a file from the Logo panel',
+  'Matrícula asociada al QR':'Plate linked to the QR code',
+  'Los dos slots están ocupados: el vehículo quedará':'Both slots are occupied: the vehicle will remain',
+  'Busca matrículas, viviendas, propietarios, incidencias y solicitudes.':'Search plates, properties, owners, incidents and requests.',
+  'Matrículas, viviendas, propietarios, incidencias y solicitudes.':'Plates, properties, owners, incidents and requests.',
+  'Abrir':'Open',
+  'Solo muestra incoherencias de datos. Los pendientes operativos se gestionan desde Resumen.':'Only data inconsistencies are shown. Operational pending items are managed from Overview.',
+  'El vehículo actual pasará a':'The current vehicle will become',
+  'Última solicitud:':'Latest request:',
+  'PNG, JPG, WEBP o GIF. Máximo 6 MB.':'PNG, JPG, WEBP or GIF. Maximum 6 MB.',
+  'Comprobando plataforma, mantenimiento e integraciones.':'Checking platform, maintenance and integrations.',
+  'Comprobando sistema…':'Checking system…',
+  'Copia automática de la base de datos en Google Drive.':'Automatic database backup to Google Drive.',
+  'Último backup':'Latest backup',
+  'Abrir último backup':'Open latest backup',
+  'Estado real de la aplicación Supabase publicada en GitHub Pages.':'Live status of the Supabase application published on GitHub Pages.',
+  'Base de datos, autenticación, RLS y Edge Functions.':'Database, authentication, RLS and Edge Functions.',
+  'ROOT técnico':'Technical ROOT',
+  'Auditoría histórica':'Historical audit',
+  'Auditoría total':'Total audit',
+  'Bloquea la aplicación y el escáner para usuarios normales durante el cutover. ROOT conserva el acceso.':'Blocks the application and scanner for regular users during cutover. ROOT retains access.',
+  'El cambio queda registrado en Auditoría.':'The change is recorded in Audit.',
+  'Ejecutar diagnóstico':'Run diagnostics',
+  'Sin comprobación ejecutada.':'No check has been run.',
+  'Diagnóstico':'Diagnostics',
+  'Comprueba Supabase Auth, RLS, base de datos y Edge Functions. No envía correos ni modifica datos.':'Checks Supabase Auth, RLS, the database and Edge Functions. It does not send email or modify data.',
+  'Prueba rápida':'Quick test',
+  'Diagnóstico completo':'Full diagnostics',
+  'Selecciona una comprobación.':'Select a check.',
+  'Llamadas de esta sesión':'Calls in this session',
+  'Resumen de llamadas realizadas por este navegador.':'Summary of calls made by this browser.',
+  'Ejecutando diagnóstico…':'Running diagnostics…',
+  'Las reglas de consistencia no detectaron incidencias.':'The consistency rules found no issues.',
+  'Todavía no hay llamadas registradas.':'No calls have been recorded yet.',
+  'No hay errores registrados en las últimas operaciones.':'No errors were recorded in recent operations.',
+  'Limpiar métricas':'Clear metrics',
+  'Éxito':'Success',
+  'Últimos errores':'Recent errors',
+  'Selecciona al menos un vehículo.':'Select at least one vehicle.',
+  'Colores sugeridos desde el logo.':'Colours suggested from the logo.',
+  'Configuración guardada.':'Settings saved.',
+  '¿Ejecutar ahora una copia completa de Supabase en Google Drive?':'Run a full Supabase backup to Google Drive now?',
+  '¿Activar modo mantenimiento? Los usuarios normales y el escáner quedarán bloqueados hasta que ROOT lo desactive.':'Enable maintenance mode? Regular users and the scanner will remain blocked until ROOT disables it.',
+  'Se ejecutarán lotes de 5, 10 y 20 lecturas simultáneas desde este navegador. ¿Continuar?':'Batches of 5, 10 and 20 concurrent reads will run from this browser. Continue?',
+  '¿Limpiar las métricas técnicas guardadas en este navegador?':'Clear the technical metrics stored in this browser?',
+  'Logo subido. Pulsa “Guardar configuración” para aplicarlo.':'Logo uploaded. Select “Save settings” to apply it.',
+  'El logo se quitará al guardar la configuración.':'The logo will be removed when settings are saved.',
+  'Colores sugeridos desde el logo. Revísalos y guarda para aplicarlos.':'Colours suggested from the logo. Review and save them to apply the changes.',
+  'Últimos 7 días':'Last 7 days',
+  'Mes anterior':'Previous month',
+  'No hay registros para los filtros seleccionados.':'No records match the selected filters.',
+  '← Anterior':'← Previous',
+  'Siguiente →':'Next →',
+  'Situación:':'Situation:',
+  'Matrícula observada:':'Observed plate:',
+  'Matrícula asociada al QR:':'Plate linked to the QR code:',
+  'Fuga / pérdida':'Leak / loss',
+  'Situación detectada':'Detected situation',
+  'Vehículo vinculado':'Linked vehicle',
+  'Tipo vehículo':'Vehicle type',
+  'Estado actual':'Current status',
+  'Estado al crear':'Status when created',
+  'Estado al solicitar':'Status when requested',
+  'Slot actual':'Current slot',
+  'Slot origen':'Original slot',
+  'Acción de cierre:':'Closing action:',
+  'Acción realizada':'Action taken',
+  'Acción realizada:':'Action taken:',
+  'Ver detalle':'View details',
+  'Vehículos relacionados:':'Related vehicles:',
+  'No hay incidencias abiertas.':'No open incidents.',
+  'No hay incidencias resueltas.':'No resolved incidents.',
+  'Selecciona la acción realizada.':'Select the action taken.',
+  'Incidencia resuelta y cerrada.':'Incident resolved and closed.',
+  'Optimizando fotografía…':'Optimising photo…',
+  'Debes adjuntar una fotografía antes de registrar la incidencia.':'You must attach a photo before recording the incident.',
+  'Indica la matrícula realmente observada.':'Enter the plate that was actually observed.',
+  'La matrícula observada debe ser distinta de la asociada al QR.':'The observed plate must be different from the plate linked to the QR code.',
+  'Carga viviendas, propietarios y emails en una única operación. Los usuarios nuevos se crean como PROPIETARIO activo y sin contraseña.':'Import properties, owners and email addresses in one operation. New users are created as active OWNER accounts without a password.',
+  'Desactivado: solo actualiza viviendas ya existentes. Activado: da de alta las que no encuentre.':'Disabled: only updates existing properties. Enabled: creates missing properties.',
+  'Esta vivienda todavía no tiene vehículos registrados.':'This property does not have any registered vehicles yet.',
+  'Contraseña temporal generada.':'Temporary password generated.',
+  'Copiala ahora. No quedará visible después de cerrar esta pantalla.':'Copy it now. It will no longer be visible after this screen is closed.',
+  'Uno o dos perfiles. Se admite ADMIN + PROPIETARIO o CONTROL + PROPIETARIO; no ADMIN + CONTROL.':'One or two profiles. ADMIN + OWNER or ACCESS CONTROL + OWNER are allowed; ADMIN + ACCESS CONTROL is not.',
+  'La moto quedará':'The motorcycle will remain',
+  'Al guardar se asignará automáticamente el':'When saved, the following will be assigned automatically:',
+  'Los dos slots están ocupados. El vehículo quedará':'Both slots are occupied. The vehicle will remain',
+  'Este vehículo no tiene un QR válido. Debe estar Activo y con QR Activo.':'This vehicle does not have a valid QR code. It must be Active with an Active QR code.',
+  'Contraseña copiada.':'Password copied.',
+  'No se pudo copiar automáticamente.':'It could not be copied automatically.',
+  'Selecciona uno o dos perfiles.':'Select one or two profiles.',
+  'ADMIN + CONTROL no es una combinación permitida.':'ADMIN + ACCESS CONTROL is not an allowed combination.',
+  'Datos guardados.':'Data saved.',
+  'Las motos se controlan por matrícula y no utilizan QR.':'Motorcycles are checked by plate and do not use QR codes.',
+  'El QR anterior dejará de ser válido. ¿Continuar?':'The previous QR code will no longer be valid. Continue?',
+  'El QR anterior dejará de ser válido. ¿Generar uno nuevo?':'The previous QR code will no longer be valid. Generate a new one?',
+  'El QR quedará revocado y dejará de autorizar accesos. ¿Continuar?':'The QR code will be revoked and will no longer authorize access. Continue?',
+  'Desasignado: registrado sin slot y sin QR.':'Unassigned: registered without a slot or QR code.',
+  'Suspendido/Baja: sin slot y sin QR asignado. La vuelta al circuito requiere una solicitud de activación aprobada.':'Suspended/Deactivated: no slot or QR code assigned. Returning to the access process requires an approved activation request.',
+  'Las motos no ocupan slot y se controlan por matrícula.':'Motorcycles do not use a slot and are checked by plate.',
+  'Motivo:':'Reason:',
+  'Resolución:':'Resolution:',
+  'EXPEDIENTE DE SOLICITUDES':'REQUEST CASE',
+  'Ver ficha del vehículo':'View vehicle details',
+  'No hay solicitudes abiertas para este vehículo.':'There are no open requests for this vehicle.',
+  'Todavía no hay solicitudes resueltas.':'There are no resolved requests yet.',
+  'Observaciones de resolución (opcional):':'Resolution notes (optional):',
+  'Motivo del rechazo (opcional):':'Rejection reason (optional):',
+  '¿Rechazar esta solicitud? No se modificará el vehículo.':'Reject this request? The vehicle will not be modified.',
+  'Solicitud rechazada.':'Request rejected.',
+  '⌕ BUSCAR MATRÍCULA':'⌕ SEARCH PLATE',
+  '! INCIDENCIAS ABIERTAS':'! OPEN INCIDENTS',
+  '▣ ESCANEAR QR':'▣ SCAN QR',
+  '+ REGISTRAR INCIDENCIA':'+ RECORD INCIDENT',
+  'No se pudo iniciar la cámara en directo. Revisa el permiso del navegador o usa “Leer desde una foto”.':'The live camera could not be started. Check the browser permission or use “Read from a photo”.',
+  'Al registrar el seguimiento se reevaluará el evento completo. Si la matrícula observada corresponde a otro vehículo, las incidencias existentes recibirán seguimiento y las patas nuevas se crearán como incidencias nuevas.':'Recording the follow-up will re-evaluate the entire event. If the observed plate belongs to another vehicle, existing incidents will receive a follow-up and new branches will be created as new incidents.',
+  'Temporal vigente:':'Current temporary plate:',
+  'La fotografía del seguimiento es obligatoria.':'A follow-up photo is required.',
+  '7 días':'7 days',
+  '30 días':'30 days',
+  'Estado vehículo':'Vehicle status',
+  'Este QR no está disponible.':'This QR code is not available.',
+  'Los períodos de matrícula temporal se gestionan desde':'Temporary plate periods are managed from',
+  'Se asignará automáticamente el':'The following will be assigned automatically:',
+  'Mínimo 8 caracteres, con una letra y un número.':'Minimum 8 characters, including one letter and one number.',
+  'No tienes viviendas asignadas.':'You have no assigned properties.',
+  'No hay vehículos que coincidan con los filtros.':'No vehicles match the filters.',
+  'Ver fotografía':'View photo',
+  'No tienes viviendas asociadas.':'You have no associated properties.',
+  'Vehículo actualizado.':'Vehicle updated.',
+  'No hay viviendas activas disponibles.':'There are no active properties available.',
+  'Vehículo dado de baja.':'Vehicle deactivated.',
+  'Ya existe una solicitud abierta de este tipo.':'An open request of this type already exists.',
+  'Este vehículo no está en un estado que permita solicitar activación.':'This vehicle is not in a status that allows an activation request.',
+  'Este vehículo no puede ocupar un slot.':'This vehicle cannot use a slot.',
+  'Slot liberado.':'Slot released.',
+  'Vehículo reemplazado.':'Vehicle replaced.',
+  'Ya existe una solicitud de permanencia abierta para este vehículo.':'An open extended-stay request already exists for this vehicle.',
+  'Para Otro tenés que indicar el detalle del motivo.':'For Other, you must enter the reason details.',
+  'La fecha fin no puede ser anterior a la fecha inicio.':'The end date cannot be earlier than the start date.',
+  'Solicitud de permanencia enviada a administración.':'Extended-stay request sent to the administrator.',
+  'Datos actualizados.':'Details updated.',
+  'Contraseña actualizada.':'Password updated.',
+  'Selecciona una vivienda para añadir el vehículo.':'Select a property before adding the vehicle.',
+  'Anular':'Cancel',
+  'Nueva fecha hasta':'New end date',
+  'Observación (opcional)':'Note (optional)',
+  'Confirmar prórroga':'Confirm extension',
+  'TEMPORAL VIGENTE':'CURRENT TEMPORARY PLATE',
+  'Abrir solicitud':'Open request',
+  'Abrir incidencia':'Open incident',
+  'Motivo de la prórroga':'Reason for extension',
+  'Período guardado.':'Period saved.',
+  'Temporal prorrogado.':'Temporary plate period extended.',
+  'Período anulado.':'Period cancelled.'
+});
+
 function uiTranslateDynamic(text){
   let value=String(text??'').replace(/＋/g,'+');
 
@@ -971,6 +1159,161 @@ function uiTranslateDynamic(text){
   );
 
   value=value.replace(
+    /^Viviendas asignadas(.*)$/,
+    'Assigned properties$1'
+  );
+
+  value=value.replace(
+    /^(.+)\s+¿Confirmar operación\?$/,
+    '$1 Confirm operation?'
+  );
+
+  value=value.replace(
+    /^REEMPLAZO DE VEHÍCULO\s+Anterior: (.+) → Baja\s+Nuevo: (.+)\s+(.+)\s+(.+)\s+¿Confirmar\?$/,
+    'VEHICLE REPLACEMENT Previous: $1 → Deactivated New: $2 $3 $4 Confirm?'
+  );
+
+  value=value.replace(
+    /^(.+)\s+¿Confirmar\?$/,
+    '$1 Confirm?'
+  );
+
+  value=value.replace(
+    /^(.+) vehículo\(s\) actualizados\.$/,
+    '$1 vehicle(s) updated.'
+  );
+
+  value=value.replace(
+    /^(.+)\. Se registrará en Auditoría\. ¿Continuar\?$/,
+    '$1. The action will be recorded in Audit. Continue?'
+  );
+
+  value=value.replace(
+    /^Vehículo reemplazado por (.+)\.$/,
+    'Vehicle replaced with $1.'
+  );
+
+  value=value.replace(
+    /^Vehículo (.+)\.$/,
+    'Vehicle $1.'
+  );
+
+  value=value.replace(
+    /^¿Cerrar todas las sesiones activas de (.+)\?$/,
+    'Sign out all active sessions for $1?'
+  );
+
+  value=value.replace(
+    /^¿Enviar a (.+) un enlace para crear\/restablecer su contraseña\?$/,
+    'Send $1 a link to create or reset their password?'
+  );
+
+  value=value.replace(
+    /^¿Generar una contraseña temporal para (.+)\?\s+La contraseña actual dejará de ser válida\.$/,
+    'Generate a temporary password for $1? The current password will no longer be valid.'
+  );
+
+  value=value.replace(
+    /^Importación completada: (.+)$/,
+    'Import completed: $1'
+  );
+
+  value=value.replace(
+    /^(.+)\.\s+(.+)\s+Objetivo: (.+)\.\s+¿Confirmar y cerrar la incidencia\?$/,
+    '$1. $2 Target: $3. Confirm and close the incident?'
+  );
+
+  value=value.replace(
+    /^Ya existe una incidencia abierta equivalente:\s+(.+)\s+¿Registrar el intento de hoy como seguimiento\?$/,
+    'An equivalent open incident already exists: $1 Record today’s attempt as a follow-up?'
+  );
+
+  value=value.replace(
+    /^(.+) de (.+)\.\s+(.+)\s+¿Continuar\?$/,
+    '$1 for $2. $3 Continue?'
+  );
+
+  value=value.replace(
+    /^El Slot (.+) está asignado a (.+)\. ¿Liberarlo y asignarlo a (.+)\? El vehículo anterior quedará Desasignado y no se transferirá su QR\.$/,
+    'Slot $1 is assigned to $2. Release it and assign it to $3? The previous vehicle will become Unassigned and its QR code will not be transferred.'
+  );
+
+  value=value.replace(
+    /^¿Liberar el Slot (.+) de (.+)\? El vehículo quedará registrado pero sin QR asociado\.$/,
+    'Release Slot $1 from $2? The vehicle will remain registered without an associated QR code.'
+  );
+
+  value=value.replace(
+    /^¿Confirmar el reemplazo de (.+) por (.+)\?$/,
+    'Confirm replacement of $1 with $2?'
+  );
+
+  value=value.replace(
+    /^Prorrogar (.+) hasta (.+)\. ¿Continuar\?$/,
+    'Extend $1 until $2. Continue?'
+  );
+
+  value=value.replace(
+    /^¿Anular el período (.+) del (.+) al (.+)\?$/,
+    'Cancel the $1 period from $2 to $3?'
+  );
+
+  value=value.replace(
+    /^Se muestran las (.+) más recientes de (.+)\.$/,
+    'Showing the $1 most recent of $2.'
+  );
+
+  value=value.replace(
+    /^Vehículos relacionados \((.+)\):$/,
+    'Related vehicles ($1):'
+  );
+
+  value=value.replace(
+    /^(.+) incidencias en este intento$/,
+    '$1 incidents in this attempt'
+  );
+
+  value=value.replace(
+    /^(.+) simultáneas$/,
+    '$1 concurrent'
+  );
+
+  value=value.replace(
+    /^Últimas (.+) operaciones conservadas en este dispositivo$/,
+    'Last $1 operations stored on this device'
+  );
+
+  value=value.replace(
+    /^(.+) llamada(.+) · media (.+) ms · P95 (.+) ms · máx\. (.+) ms (.+)$/,
+    '$1 call$2 · average $3 ms · P95 $4 ms · max. $5 ms $6'
+  );
+
+  value=value.replace(
+    /^(.+) fila(.+) válida(.+)$/,
+    '$1 valid row$2$3'
+  );
+
+  value=value.replace(
+    /^Buscar en (.+)$/,
+    'Search $1'
+  );
+
+  value=value.replace(
+    /^(.+) slot · (.+)$/,
+    '$1 slot · $2'
+  );
+
+  value=value.replace(
+    /^(.+) incidencia(.+)$/,
+    '$1 incident$2'
+  );
+
+  value=value.replace(
+    /^(.+) solicitud(.+)$/,
+    '$1 request$2'
+  );
+
+  value=value.replace(
     /^(\d+)\/2 ocupados · (\d+) libres$/,
     '$1/2 occupied · $2 free'
   );
@@ -1028,35 +1371,110 @@ function uiTranslateDynamic(text){
   return value;
 }
 
+const parkingI18nTextState=new WeakMap();
+const parkingI18nAttributeState=new WeakMap();
+
+function parkingDictionaryPairs(){
+  const pairs=[];
+  const visit=(es,en)=>{
+    for(const key of Object.keys(es||{})){
+      if(
+        es[key] &&
+        typeof es[key]==='object' &&
+        !Array.isArray(es[key])
+      ){
+        visit(es[key],en?.[key]);
+        continue;
+      }
+      if(typeof en?.[key]==='string'){
+        pairs.push([en[key],String(es[key])]);
+      }
+    }
+  };
+  visit(PARKING_I18N.es,PARKING_I18N.en);
+  Object.entries(PARKING_UI_EN_EXACT).forEach(([es,en])=>{
+    pairs.push([en,es]);
+  });
+  return pairs.sort((a,b)=>b[0].length-a[0].length);
+}
+
+const PARKING_UI_ES_REVERSE=new Map(parkingDictionaryPairs());
+
+function uiTranslateToSpanish(text){
+  const value=String(text??'');
+  return PARKING_UI_ES_REVERSE.get(value.trim())??value;
+}
+
+function uiText(text){
+  const value=String(text??'');
+  return currentLanguage()==='en'
+    ? uiTranslateDynamic(value)
+    : uiTranslateToSpanish(value);
+}
+
+const PARKING_NATIVE_DIALOGS=typeof window==='undefined'
+  ? {}
+  : {
+      alert:window.alert?.bind(window),
+      confirm:window.confirm?.bind(window),
+      prompt:window.prompt?.bind(window)
+    };
+
+function uiAlert(message){
+  return PARKING_NATIVE_DIALOGS.alert?.(uiText(message));
+}
+
+function uiConfirm(message){
+  return PARKING_NATIVE_DIALOGS.confirm?.(uiText(message));
+}
+
+function uiPrompt(message,defaultValue=''){
+  return PARKING_NATIVE_DIALOGS.prompt?.(
+    uiText(message),
+    defaultValue
+  );
+}
+
+if(typeof window!=='undefined'){
+  window.alert=uiAlert;
+  window.confirm=uiConfirm;
+  window.prompt=uiPrompt;
+}
+
 function translateUiTextNode(node){
-  if(
-    currentLanguage()!=='en' ||
-    !node ||
-    node.nodeType!==Node.TEXT_NODE
-  )return;
+  if(!node || node.nodeType!==Node.TEXT_NODE)return;
 
-  const original=node.nodeValue||'';
-  const trimmed=original.trim();
-
+  const current=node.nodeValue||'';
+  const trimmed=current.trim();
   if(!trimmed)return;
 
-  const translated=uiTranslateDynamic(trimmed);
+  if(currentLanguage()!=='en'){
+    const saved=parkingI18nTextState.get(node);
+    if(!saved)return;
+    const original=saved.original;
+    const prefix=current.match(/^\s*/)?.[0]||'';
+    const suffix=current.match(/\s*$/)?.[0]||'';
+    const restored=uiTranslateToSpanish(original);
+    if(restored!==trimmed)node.nodeValue=prefix+restored+suffix;
+    parkingI18nTextState.delete(node);
+    return;
+  }
 
-  if(translated===trimmed)return;
+  const saved=parkingI18nTextState.get(node);
+  if(saved && trimmed===saved.translated)return;
 
-  const prefix=original.match(/^\s*/)?.[0]||'';
-  const suffix=original.match(/\s*$/)?.[0]||'';
+  const original=trimmed;
+  const translated=uiTranslateDynamic(original);
+  if(translated===original)return;
+  parkingI18nTextState.set(node,{original,translated});
 
-  node.nodeValue=
-    prefix+translated+suffix;
+  const prefix=current.match(/^\s*/)?.[0]||'';
+  const suffix=current.match(/\s*$/)?.[0]||'';
+  node.nodeValue=prefix+translated+suffix;
 }
 
 function translateUiElement(el){
-  if(
-    currentLanguage()!=='en' ||
-    !el ||
-    el.nodeType!==Node.ELEMENT_NODE
-  )return;
+  if(!el || el.nodeType!==Node.ELEMENT_NODE)return;
 
   if(el.tagName==='OPTION'){
     if(!el.hasAttribute('value')){
@@ -1067,6 +1485,8 @@ function translateUiElement(el){
     }
   }
 
+  const savedAttributes=parkingI18nAttributeState.get(el)||{};
+
   for(const attr of [
     'placeholder',
     'title',
@@ -1076,16 +1496,40 @@ function translateUiElement(el){
 
     if(!value)continue;
 
+    if(currentLanguage()!=='en'){
+      if(!savedAttributes[attr])continue;
+      const original=savedAttributes[attr];
+      el.setAttribute(attr,uiTranslateToSpanish(original));
+      continue;
+    }
+
+    const original=savedAttributes[attr]??value;
+
     const translated=
-      PARKING_UI_EN_ATTRIBUTES[value] ??
-      PARKING_UI_EN_EXACT[value] ??
-      uiTranslateDynamic(value);
+      PARKING_UI_EN_ATTRIBUTES[original] ??
+      PARKING_UI_EN_EXACT[original] ??
+      uiTranslateDynamic(original);
 
     if(translated!==value){
+      savedAttributes[attr]=original;
       el.setAttribute(
         attr,
         translated
       );
+    }
+  }
+
+  parkingI18nAttributeState.set(el,savedAttributes);
+
+  const responsiveLabel=el.getAttribute('data-label');
+  if(responsiveLabel){
+    if(currentLanguage()==='en'){
+      el.setAttribute(
+        'data-i18n-label',
+        uiTranslateDynamic(responsiveLabel)
+      );
+    }else{
+      el.removeAttribute('data-i18n-label');
     }
   }
 
@@ -1097,8 +1541,6 @@ function translateUiElement(el){
 }
 
 function translateRenderedUi(root=document){
-  if(currentLanguage()!=='en')return;
-
   if(root.nodeType===Node.ELEMENT_NODE){
     translateUiElement(root);
   }
@@ -1122,8 +1564,6 @@ function startParkingI18nObserver(){
 
   parkingI18nObserver=
     new MutationObserver(mutations=>{
-      if(currentLanguage()!=='en')return;
-
       for(const mutation of mutations){
         for(const node of mutation.addedNodes){
           if(node.nodeType===Node.TEXT_NODE){
@@ -1213,7 +1653,7 @@ function translateRole(value){
     : t(`roles.${raw}`);
 }
 
-function setParkingLanguage(language,{reload=true}={}){
+function setParkingLanguage(language,{reload=false}={}){
   if(language!=='es'&&language!=='en')return false;
 
   PARKING_LANGUAGE=language;
@@ -1227,7 +1667,19 @@ function setParkingLanguage(language,{reload=true}={}){
 
   document.documentElement.lang=language;
 
-  if(reload)location.reload();
+  if(reload){
+    location.reload();
+    return true;
+  }
+
+  translateRenderedUi(document);
+  bindLanguageSelectors(document);
+  window.dispatchEvent(
+    new CustomEvent(
+      'parking:languagechange',
+      {detail:{language}}
+    )
+  );
 
   return true;
 }
@@ -1243,9 +1695,12 @@ function languageSelectorHtml(className='language-switch'){
 
 function bindLanguageSelectors(root=document){
   root.querySelectorAll('[data-language]').forEach(button=>{
-    button.addEventListener('click',()=>{
+    button.onclick=()=>{
       setParkingLanguage(button.dataset.language);
-    });
+    };
+    const active=button.dataset.language===currentLanguage();
+    button.classList.toggle('active',active);
+    button.setAttribute('aria-pressed',String(active));
   });
 }
 
