@@ -3,6 +3,14 @@ const status=document.getElementById('status');
 const fallback=document.getElementById('fallback');
 const back=document.getElementById('back');
 const returnUrl=new URLSearchParams(location.search).get('return')||'';
+function renderScannerLanguage(){
+  document.title=t('scanner.title');
+  document.getElementById('scanner-title').textContent=t('scanner.title');
+  document.getElementById('scanner-intro').textContent=t('scanner.intro');
+  fallback.textContent=t('scanner.openCamera');
+  back.textContent=t('scanner.back');
+  bindLanguageSelectors(document);
+}
 function show(msg,bad=false){status.textContent=msg;status.className='message'+(bad?' bad':'')}
 function parkingToken(text){
   try{const u=new URL(text);return u.protocol==='https:'?(u.searchParams.get('q')||''):''}catch(e){return ''}
@@ -16,19 +24,19 @@ function scanTarget(text){
 async function stop(){if(scanner){try{await scanner.stop()}catch(e){}try{scanner.clear()}catch(e){}scanner=null}}
 async function start(){
   if(done||starting)return;
-  starting=true;fallback.style.display='none';show('Solicitando permiso de cámara…');
+  starting=true;fallback.style.display='none';show(t('scanner.requesting'));
   try{
-    if(typeof Html5Qrcode==='undefined')throw new Error('No se pudo cargar el lector QR.');
+    if(typeof Html5Qrcode==='undefined')throw new Error(t('scanner.libraryError'));
     scanner=new Html5Qrcode('reader');
     await scanner.start({facingMode:'environment'},{fps:12,qrbox:(w,h)=>{const s=Math.floor(Math.min(w,h)*.72);return{width:s,height:s}},aspectRatio:1.333},async text=>{
       if(done)return;
-      if(!validParkingUrl(text)){show('El QR leído no contiene un enlace válido.',true);return}
-      done=true;navigator.vibrate?.(100);show('QR detectado. Volviendo…');await stop();window.location.href=scanTarget(text);
+      if(!validParkingUrl(text)){show(t('scanner.invalidQr'),true);return}
+      done=true;navigator.vibrate?.(100);show(t('scanner.detected'));await stop();window.location.href=scanTarget(text);
     },()=>{});
-    show('Apunta al QR y mantenlo dentro del recuadro.');
+    show(t('scanner.aiming'));
   }catch(e){
     await stop();
-    show('No se pudo iniciar la cámara automáticamente. Pulsa “ABRIR CÁMARA” y revisa el permiso si el navegador lo solicita.',true);
+    show(t('scanner.cameraError'),true);
     fallback.style.display='block';
   }finally{starting=false}
 }
@@ -43,15 +51,20 @@ async function publicState(){
   }catch(_e){return null}
 }
 async function bootScanner(){
+  renderScannerLanguage();
   const state=await publicState();
   const settings=state?.settings||{},logo=String(settings.LogoUrl||'').trim();
-  if(settings.NombreOficial)document.title=`Escanear QR · ${settings.NombreOficial}`;
+  if(settings.NombreOficial)document.title=`${t('scanner.title')} · ${settings.NombreOficial}`;
   if(logo){let icon=document.querySelector('link[rel="icon"]');if(!icon){icon=document.createElement('link');icon.rel='icon';document.head.appendChild(icon)}icon.href=logo}
   if(state?.maintenance?.enabled){
-    done=true;show(state.maintenance.message||'Sistema temporalmente en mantenimiento.',true);
+    done=true;show(state.maintenance.message||t('scanner.maintenance'),true);
     document.getElementById('reader').style.display='none';fallback.style.display='none';
     return;
   }
   setTimeout(start,150);
 }
+window.addEventListener('parking:languagechange',()=>{
+  renderScannerLanguage();
+  if(!done)show(t('scanner.aiming'));
+});
 window.addEventListener('load',bootScanner);

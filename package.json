@@ -15,7 +15,7 @@
     "build:vite": "vite build",
     "test:regression:pre": "playwright test tools/preprod-tests/regression-pre.spec.js --reporter=line",
     "test:e2e:pre": "playwright test tools/preprod-tests/smoke-pre.spec.js tools/preprod-tests/regression-pre.spec.js --reporter=line",
-    "test:i18n": "node tools/preprod-tests/i18n-parity.mjs && node tools/preprod-tests/i18n-ui-coverage.mjs && node tools/preprod-tests/i18n-runtime-parity.mjs && npm run test:i18n:browser",
+    "test:i18n": "node tools/preprod-tests/i18n-parity.mjs && node tools/preprod-tests/i18n-ui-coverage.mjs && node tools/preprod-tests/i18n-runtime-parity.mjs && node tools/preprod-tests/i18n-source-audit.mjs && npm run test:i18n:browser",
     "test:local-gate": "npm test && npm run test:i18n && node tools/preprod-tests/adapter-action-coverage.mjs && node tools/preprod-tests/preproduction-completeness.mjs && npm run build:frontend && npm run build:vite",
     "test:i18n:browser": "playwright test tools/preprod-tests/i18n-runtime.spec.js --reporter=line"
   },

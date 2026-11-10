@@ -8,15 +8,26 @@
 </head>
 <body>
 <main>
-  <section class="hero"><h1>Escanear QR</h1></section>
+  <div class="scanner-language" role="group" aria-label="Idioma">
+    <button type="button" class="secondary" data-language="es">🇪🇸 ES</button>
+    <button type="button" class="secondary" data-language="en">🇬🇧 EN</button>
+  </div>
+  <section class="hero"><h1 id="scanner-title">Escanear QR</h1></section>
   <section class="card">
     <div id="status" class="message">Iniciando cámara…</div>
     <div id="reader"></div>
     <div class="actions"><button id="fallback" type="button">▣ ABRIR CÁMARA</button><button id="back" class="secondary" type="button">← VOLVER</button></div>
-    <p class="muted" style="font-size:.85rem">Apunta al QR. Al detectarlo, volverás automáticamente con el resultado.</p>
+    <p id="scanner-intro" class="muted" style="font-size:.85rem">Apunta al QR. Al detectarlo, volverás automáticamente con el resultado.</p>
   </section>
 </main>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+  const requestedLanguage = new URLSearchParams(location.search).get('lang');
+  if (requestedLanguage === 'es' || requestedLanguage === 'en') {
+    localStorage.setItem('parking_language', requestedLanguage);
+  }
+</script>
+<script src="../assets/js/i18n.js?v=i18n-complete"></script>
 <script src="../assets/js/supabase-config.js?v=system-v2"></script>
 <script src="scanner.js?v=system-v2"></script>
 </body>
