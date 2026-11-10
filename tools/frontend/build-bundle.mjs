@@ -5,6 +5,7 @@ import crypto from 'node:crypto';
 const root = process.cwd();
 
 const sources = [
+  'assets/js/i18n.js',
   'assets/js/core.js',
   'assets/js/records-shared.js',
   'assets/js/auth-navigation.js',

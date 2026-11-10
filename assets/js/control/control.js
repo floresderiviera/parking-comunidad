@@ -5,7 +5,7 @@ async function control(token=''){
     return;
   }
   const returnUrl=WEB_APP_URL||location.href.split('?')[0];
-  const scannerUrl=EXTERNAL_SCANNER_URL+'?return='+encodeURIComponent(returnUrl);
+  const scannerUrl=EXTERNAL_SCANNER_URL+'?return='+encodeURIComponent(returnUrl)+'&lang='+encodeURIComponent(currentLanguage());
   $('#main').innerHTML=`<section class="hero"><h1>Control de acceso</h1><p>Escanea, comprueba y registra en pocos segundos.</p></section><div id="control-body" class="grid"><a class="btn big" id="scan" href="${esc(scannerUrl)}" target="_top">▣ ESCANEAR QR</a><button class="big" id="plate">⌕ BUSCAR MATRÍCULA</button><button class="big secondary" id="open-inc">! INCIDENCIAS ABIERTAS</button><button class="big secondary" id="new-inc">＋ REGISTRAR INCIDENCIA</button></div>`;
   $('#plate').onclick=plateSearch;$('#open-inc').onclick=incidents;$('#new-inc').onclick=()=>{state.scanResult=null;incidentForm({source:'Manual',status:'Registro manual',manualEntry:true})};
 }
@@ -19,7 +19,7 @@ async function startScanner(){
     $('#camera-error').innerHTML='<div class="message">Apunta al QR y mantenlo dentro del recuadro.</div>';
   }catch(e){state.scanner=null;$('#camera-error').innerHTML=`<div class="message bad">No se pudo iniciar la cámara en directo. Revisa el permiso del navegador o usa “Leer desde una foto”.</div>`}
 }
-function manualQr(){const value=prompt('Pega la URL del QR o escribe su token:');if(value&&value.trim())lookupQr(value.trim())}
+function manualQr(){const value=uiPrompt('Pega la URL del QR o escribe su token:');if(value&&value.trim())lookupQr(value.trim())}
 async function lookupQr(value){try{const r=await call('scanQr',{token:value});resultCard(r)}catch(e){err(e)}}
 function plateSearch(){$('#control-body').innerHTML=`<div class="card wide"><div class="head"><h2>Buscar matrícula</h2><button class="secondary" id="cback">Volver</button></div><form id="search-form" class="actions"><input class="search" name="plate" placeholder="1234 ABC" required><button>Buscar</button></form></div>`;$('#cback').onclick=()=>control();$('#search-form').onsubmit=async e=>{e.preventDefault();try{resultCard(await call('searchPlate',{plate:new FormData(e.target).get('plate')}))}catch(x){err(x)}}}
 

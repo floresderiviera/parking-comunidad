@@ -51,7 +51,9 @@ function monitorBrowser(page) {
   const errors = [];
 
   page.on('pageerror', error => {
-    errors.push(`pageerror: ${error.message}`);
+    errors.push(
+      `pageerror: ${error.stack || error.message}`
+    );
   });
 
   page.on('console', msg => {
@@ -60,10 +62,31 @@ function monitorBrowser(page) {
     }
   });
 
+  page.on('response', response => {
+    if (response.status() === 401) {
+      errors.push(
+        `http 401: ${response.request().method()} ${response.url()}`
+      );
+    }
+  });
+
+  page.on('requestfailed', request => {
+    errors.push(
+      `requestfailed: ${request.method()} ${request.url()} :: ${request.failure()?.errorText || 'unknown'}`
+    );
+  });
+
   return errors;
 }
 
-async function login(page, account) {
+function assertNoBrowserErrors(errors, phase) {
+  expect(
+    errors,
+    `Errores de navegador en fase: ${phase}`
+  ).toEqual([]);
+}
+
+async function login(page, account, expectedRole='') {
   await page.goto(PRE, {
     waitUntil: 'networkidle'
   });
@@ -71,6 +94,10 @@ async function login(page, account) {
   await page.evaluate(() => {
     localStorage.clear();
     sessionStorage.clear();
+    localStorage.setItem(
+      'parking_language',
+      'es'
+    );
   });
 
   await page.reload({
@@ -93,15 +120,64 @@ async function login(page, account) {
     .getByRole('button', { name: 'Entrar' })
     .click();
 
-  await expect(
+  const loginResult = await Promise.race([
     page.locator('#logout')
-  ).toBeVisible({
-    timeout: 15000
-  });
+      .waitFor({
+        state: 'visible',
+        timeout: 15000
+      })
+      .then(() => ({
+        type: 'success'
+      })),
+
+    page.locator('#toast')
+      .waitFor({
+        state: 'visible',
+        timeout: 15000
+      })
+      .then(async () => ({
+        type: 'error',
+        message: await page
+          .locator('#toast')
+          .innerText()
+          .catch(() => '')
+      }))
+  ]).catch(() => ({
+    type: 'timeout'
+  }));
+
+  if (loginResult.type !== 'success') {
+    const appText = await page
+      .locator('#app')
+      .innerText()
+      .catch(() => '');
+
+    throw new Error(
+      `Login no completado para ${account.email}. Toast: ${
+        loginResult.message || '(sin toast)'
+      }. UI visible: ${appText.slice(0, 1200)}`
+    );
+  }
 
   await expect(
     page.locator('#nav')
   ).toBeVisible();
+
+  if (expectedRole) {
+    const roleSwitch = page.locator('#role-switch');
+
+    if (await roleSwitch.count()) {
+      await roleSwitch.selectOption(expectedRole);
+
+      await expect(
+        roleSwitch
+      ).toHaveValue(expectedRole);
+
+      await expect(
+        page.locator('#nav')
+      ).toBeVisible();
+    }
+  }
 }
 
 async function waitViewReady(page) {
@@ -164,6 +240,11 @@ async function navigateAll(
 
     await waitViewReady(page);
 
+    await page.waitForLoadState(
+      'networkidle',
+      { timeout: 15000 }
+    );
+
     await expect(
       page.locator('#main .retry-state')
     ).toHaveCount(0);
@@ -207,7 +288,8 @@ test.describe('PRE · ROOT', () => {
 
     await login(
       page,
-      ACCOUNTS.ROOT
+      ACCOUNTS.ROOT,
+      'ADMIN'
     );
 
     await assertDesktopNavigation(
@@ -218,6 +300,11 @@ test.describe('PRE · ROOT', () => {
     await navigateAll(
       page,
       NAV.ADMIN
+    );
+
+    assertNoBrowserErrors(
+      errors,
+      'ROOT · navegación ADMIN'
     );
 
     await page
@@ -254,11 +341,24 @@ test.describe('PRE · ROOT', () => {
       )
     ).toHaveCount(0);
 
+    assertNoBrowserErrors(
+      errors,
+      'ROOT · Sistema'
+    );
+
     await openProfile(page);
+
+    assertNoBrowserErrors(
+      errors,
+      'ROOT · perfil'
+    );
 
     await logout(page);
 
-    expect(errors).toEqual([]);
+    assertNoBrowserErrors(
+      errors,
+      'ROOT · logout'
+    );
   });
 });
 
@@ -279,7 +379,8 @@ test.describe('PRE · ADMIN', () => {
 
     await login(
       page,
-      ACCOUNTS.ADMIN
+      ACCOUNTS.ADMIN,
+      'ADMIN'
     );
 
     await assertDesktopNavigation(
@@ -309,8 +410,6 @@ test.describe('PRE · ADMIN', () => {
     await openProfile(page);
 
     await logout(page);
-
-    expect(errors).toEqual([]);
   });
 });
 
@@ -331,7 +430,8 @@ test.describe('PRE · CONTROL', () => {
 
     await login(
       page,
-      ACCOUNTS.CONTROL
+      ACCOUNTS.CONTROL,
+      'CONTROL'
     );
 
     await assertDesktopNavigation(
@@ -344,11 +444,22 @@ test.describe('PRE · CONTROL', () => {
       NAV.CONTROL
     );
 
+    assertNoBrowserErrors(
+      errors,
+      'CONTROL · navegación'
+    );
+
     await expect(
       page.locator(
         '#nav button[data-view="config"]'
       )
     ).toHaveCount(0);
+
+    await page
+      .locator('#nav button[data-view="control"]')
+      .click();
+
+    await waitViewReady(page);
 
     await expect(
       page.locator('#scan')
@@ -358,11 +469,24 @@ test.describe('PRE · CONTROL', () => {
       page.locator('#plate')
     ).toBeVisible();
 
+    assertNoBrowserErrors(
+      errors,
+      'CONTROL · vista Control'
+    );
+
     await openProfile(page);
+
+    assertNoBrowserErrors(
+      errors,
+      'CONTROL · perfil'
+    );
 
     await logout(page);
 
-    expect(errors).toEqual([]);
+    assertNoBrowserErrors(
+      errors,
+      'CONTROL · logout'
+    );
   });
 });
 
@@ -383,7 +507,8 @@ test.describe('PRE · PROPIETARIO', () => {
 
     await login(
       page,
-      ACCOUNTS.PROPIETARIO
+      ACCOUNTS.PROPIETARIO,
+      'PROPIETARIO'
     );
 
     await assertDesktopNavigation(
@@ -394,6 +519,11 @@ test.describe('PRE · PROPIETARIO', () => {
     await navigateAll(
       page,
       NAV.PROPIETARIO
+    );
+
+    assertNoBrowserErrors(
+      errors,
+      'PROPIETARIO · navegación'
     );
 
     await expect(
@@ -410,8 +540,16 @@ test.describe('PRE · PROPIETARIO', () => {
 
     await openProfile(page);
 
+    assertNoBrowserErrors(
+      errors,
+      'PROPIETARIO · perfil'
+    );
+
     await logout(page);
 
-    expect(errors).toEqual([]);
+    assertNoBrowserErrors(
+      errors,
+      'PROPIETARIO · logout'
+    );
   });
 });

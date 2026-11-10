@@ -30,43 +30,75 @@ async function init(){if(new URLSearchParams(location.search).get('resetPassword
   }catch(e){login(e.message)}
 }
 
+function bindPublicLanguageSelectors(rerender){
+  document.querySelectorAll('#app [data-language]').forEach(button=>{
+    button.onclick=()=>{
+      const language=button.dataset.language;
+      if(language===currentLanguage())return;
+      setParkingLanguage(language);
+      rerender();
+    };
+  });
+}
+
 function forgotPassword(){
   const logo=appLogoUrl(),name=appDisplayName(),description=appDescription();
+
   $('#app').innerHTML=`<main class="login"><section class="card">
+    <div class="login-language-switch-wrap">
+      ${languageSelectorHtml('language-switch login-language-switch')}
+    </div>
+
     <div class="login-brand">
-      ${logo?`<img class="login-logo" src="${esc(logo)}" alt="Logo de ${esc(name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">`:''}
+      ${logo?`<img class="login-logo" src="${esc(logo)}" alt="${esc(name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">`:''}
       <div class="mark" style="${logo?'display:none':''}">P</div>
     </div>
-    <h1>Restablecer contraseña</h1>
+
+    <h1>${esc(t('auth.resetPassword'))}</h1>
     <p class="muted login-description">${esc(description)}</p>
-    <p class="muted">Introduce el email asociado a tu cuenta.</p>
+    <p class="muted">${esc(t('auth.resetIntro'))}</p>
+
     <form id="forgot-form">
       <div class="field" style="text-align:left">
-        <label>Email</label>
+        <label>${esc(t('auth.email'))}</label>
         <input id="forgot-email" type="email" required autocomplete="email">
       </div>
-      <button style="margin-top:1rem">Enviar enlace</button>
+      <button style="margin-top:1rem">${esc(t('auth.sendLink'))}</button>
     </form>
+
     <button type="button" class="secondary" id="forgot-back" style="width:100%;margin-top:.7rem">
-      Volver al inicio de sesión
+      ${esc(t('auth.backToLogin'))}
     </button>
+
     <div id="forgot-result"></div>
   </section></main>`;
+
+  bindLanguageSelectors($('#app'));
+  bindPublicLanguageSelectors(forgotPassword);
 
   $('#forgot-back').onclick=()=>login();
 
   $('#forgot-form').onsubmit=async e=>{
     e.preventDefault();
+
     const b=e.submitter;
     busy(b);
+
     try{
-      await server('requestPasswordReset',$('#forgot-email').value);
-      $('#forgot-result').innerHTML=`<div class="message" style="margin-top:1rem">
-        Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.
-      </div>`;
+      await server(
+        'requestPasswordReset',
+        $('#forgot-email').value
+      );
+
+      $('#forgot-result').innerHTML=
+        `<div class="message" style="margin-top:1rem">${esc(t('authExtra.resetSent'))}</div>`;
+
       e.target.reset();
     }catch(x){
-      toast(x.message||'No se pudo solicitar el restablecimiento.',true);
+      toast(
+        x.message||t('authExtra.resetRequestError'),
+        true
+      );
     }finally{
       busy(b,false);
     }
@@ -75,54 +107,90 @@ function forgotPassword(){
 
 function recoveryPassword(){
   const logo=appLogoUrl(),name=appDisplayName();
+
   $('#app').innerHTML=`<main class="login"><section class="card">
+    <div class="login-language-switch-wrap">
+      ${languageSelectorHtml('language-switch login-language-switch')}
+    </div>
+
     <div class="login-brand">
-      ${logo?`<img class="login-logo" src="${esc(logo)}" alt="Logo de ${esc(name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">`:''}
+      ${logo?`<img class="login-logo" src="${esc(logo)}" alt="${esc(name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">`:''}
       <div class="mark" style="${logo?'display:none':''}">P</div>
     </div>
-    <h1>Crear nueva contraseña</h1>
-    <p class="muted">Introduce una nueva contraseña para tu cuenta.</p>
+
+    <h1>${esc(t('authExtra.recoveryTitle'))}</h1>
+    <p class="muted">${esc(t('authExtra.recoveryIntro'))}</p>
+
     <form id="recovery-form">
       <div class="field" style="text-align:left">
-        <label>Nueva contraseña</label>
+        <label>${esc(t('auth.newPassword'))}</label>
         <input id="recovery-password" type="password" minlength="8" required autocomplete="new-password">
       </div>
+
       <div class="field" style="text-align:left;margin-top:.8rem">
-        <label>Repetir contraseña</label>
+        <label>${esc(t('auth.repeatPassword'))}</label>
         <input id="recovery-confirm" type="password" minlength="8" required autocomplete="new-password">
       </div>
-      <p class="muted" style="font-size:.8rem">Mínimo 8 caracteres, una letra y un número.</p>
-      <button>Guardar nueva contraseña</button>
+
+      <p class="muted" style="font-size:.8rem">${esc(t('auth.passwordRule'))}</p>
+
+      <button>${esc(t('auth.savePassword'))}</button>
     </form>
   </section></main>`;
 
+  bindLanguageSelectors($('#app'));
+  bindPublicLanguageSelectors(recoveryPassword);
+
   $('#recovery-form').onsubmit=async e=>{
     e.preventDefault();
+
     const password=$('#recovery-password').value;
     const confirmPassword=$('#recovery-confirm').value;
 
     if(password!==confirmPassword){
-      toast('Las contraseñas no coinciden.',true);
+      toast(t('authExtra.passwordMismatch'),true);
       return;
     }
 
-    if(password.length<8||!/[A-Za-zÁÉÍÓÚáéíóúÑñ]/.test(password)||!/\d/.test(password)){
-      toast('La contraseña debe tener al menos 8 caracteres, una letra y un número.',true);
+    if(
+      password.length<8 ||
+      !/[A-Za-zÁÉÍÓÚáéíóúÑñ]/.test(password) ||
+      !/\d/.test(password)
+    ){
+      toast(t('authExtra.passwordInvalid'),true);
       return;
     }
 
     const b=e.submitter;
     busy(b);
+
     try{
       await server('completePasswordReset',password);
-      history.replaceState({},document.title,location.pathname);
+
+      history.replaceState(
+        {},
+        document.title,
+        location.pathname
+      );
+
       await server('logout').catch(()=>{});
+
       state.token='';
       state.user=null;
-      localStorage.removeItem('parking_token');
-      login('Contraseña actualizada correctamente. Ya puedes iniciar sesión.');
+
+      localStorage.removeItem(
+        'parking_token'
+      );
+
+      login(
+        t('authExtra.passwordUpdated')
+      );
     }catch(x){
-      toast(x.message||'No se pudo actualizar la contraseña.',true);
+      toast(
+        x.message||t('authExtra.passwordUpdateError'),
+        true
+      );
+
       busy(b,false);
     }
   };
@@ -130,53 +198,563 @@ function recoveryPassword(){
 
 function login(message=''){
   const renderLogin=()=>{
-    const logo=appLogoUrl(),name=appDisplayName(),description=appDescription();
-    $('#app').innerHTML=`<main class="login"><section class="card"><div class="login-brand">${logo?`<img class="login-logo" src="${esc(logo)}" alt="Logo de ${esc(name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">`:''}<div class="mark" style="${logo?'display:none':''}">P</div></div><h1>${esc(name)}</h1><p class="muted login-description">${esc(description)}</p><p class="muted">Accede con tu email y contraseña.</p>${message?`<div class="message bad">${esc(message)}</div>`:''}<form id="login-form"><div class="field" style="text-align:left"><label>Email</label><input id="email" type="email" required autocomplete="username"></div><div class="field" style="text-align:left;margin-top:.8rem"><label>Contraseña</label><input id="password" type="password" required autocomplete="current-password"></div><button>Entrar</button></form><button type="button" class="secondary" id="forgot-password" style="width:100%;margin-top:.7rem">¿Olvidaste tu contraseña?</button><p class="muted" style="font-size:.8rem;margin-top:1rem">Si todavía no tienes contraseña, solicítala al administrador.</p></section></main>`;
-    $('#forgot-password').onclick=()=>forgotPassword();$('#login-form').onsubmit=async e=>{e.preventDefault();const b=e.submitter;busy(b);try{const out=await server('loginWithPassword',$('#email').value,$('#password').value);state.token=out.token;state.user=out.user;state.cache={};localStorage.setItem('parking_token',out.token);try{const boot=await call('bootstrap');state.user=boot.user||state.user;state.cache.bootstrap=boot;applyParkingSettings(boot.settings)}catch(_e){}let publicState={};try{publicState=await server('getPublicAppState')}catch(_e){}if(publicState?.maintenance?.enabled&&!state.user?.IsRoot){renderMaintenanceScreen(publicState);return}const roles=userRoles(),startRole=preferredUiRole(roles);saveUiState({activeRole:startRole,view:defaultViewForRole(startRole)});state.activeRole=startRole;shell();if(INITIAL_TOKEN&&activeUiRole()==='CONTROL'){state.view='control';rememberCurrentView('control');renderNav();await control(INITIAL_TOKEN)}else go(defaultViewForRole(activeUiRole()))}catch(x){toast(x.message,true);busy(b,false)}};
+    const logo=appLogoUrl();
+    const name=appDisplayName();
+    const description=appDescription();
+
+    $('#app').innerHTML=`<main class="login"><section class="card">
+      <div class="login-language-switch-wrap">
+        ${languageSelectorHtml('language-switch login-language-switch')}
+      </div>
+
+      <div class="login-brand">
+        ${logo?`<img class="login-logo" src="${esc(logo)}" alt="${esc(name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">`:''}
+        <div class="mark" style="${logo?'display:none':''}">P</div>
+      </div>
+
+      <h1>${esc(name)}</h1>
+
+      <p class="muted login-description">
+        ${esc(description)}
+      </p>
+
+      <p class="muted">
+        ${esc(t('authExtra.loginIntro'))}
+      </p>
+
+      ${message?`<div class="message bad">${esc(message)}</div>`:''}
+
+      <form id="login-form">
+        <div class="field" style="text-align:left">
+          <label>${esc(t('auth.email'))}</label>
+          <input id="email" type="email" required autocomplete="username">
+        </div>
+
+        <div class="field" style="text-align:left;margin-top:.8rem">
+          <label>${esc(t('auth.password'))}</label>
+          <input id="password" type="password" required autocomplete="current-password">
+        </div>
+
+        <button>${esc(t('auth.enter'))}</button>
+      </form>
+
+      <button type="button" class="secondary" id="forgot-password" style="width:100%;margin-top:.7rem">
+        ${esc(t('auth.forgotPassword'))}
+      </button>
+
+      <p class="muted" style="font-size:.8rem;margin-top:1rem">
+        ${esc(t('auth.noPassword'))}
+      </p>
+    </section></main>`;
+
+    bindLanguageSelectors($('#app'));
+    bindPublicLanguageSelectors(renderLogin);
+
+    $('#forgot-password').onclick=
+      ()=>forgotPassword();
+
+    $('#login-form').onsubmit=async e=>{
+      e.preventDefault();
+
+      const b=e.submitter;
+      busy(b);
+
+      try{
+        const out=await server(
+          'loginWithPassword',
+          $('#email').value,
+          $('#password').value
+        );
+
+        state.token=out.token;
+        state.user=out.user;
+        state.cache={};
+
+        localStorage.setItem(
+          'parking_token',
+          out.token
+        );
+
+        try{
+          const boot=await call('bootstrap');
+          state.user=boot.user||state.user;
+          state.cache.bootstrap=boot;
+          applyParkingSettings(
+            boot.settings
+          );
+        }catch(_e){}
+
+        let publicState={};
+
+        try{
+          publicState=
+            await server('getPublicAppState');
+        }catch(_e){}
+
+        if(
+          publicState?.maintenance?.enabled &&
+          !state.user?.IsRoot
+        ){
+          renderMaintenanceScreen(publicState);
+          return;
+        }
+
+        const roles=userRoles();
+        const startRole=
+          preferredUiRole(roles);
+
+        saveUiState({
+          activeRole:startRole,
+          view:defaultViewForRole(startRole)
+        });
+
+        state.activeRole=startRole;
+
+        shell();
+
+        if(
+          INITIAL_TOKEN &&
+          activeUiRole()==='CONTROL'
+        ){
+          state.view='control';
+          rememberCurrentView('control');
+          renderNav();
+          await control(INITIAL_TOKEN);
+        }else{
+          go(
+            defaultViewForRole(
+              activeUiRole()
+            )
+          );
+        }
+      }catch(x){
+        toast(x.message,true);
+        busy(b,false);
+      }
+    };
   };
+
   renderLogin();
-  if(!Object.keys(appSettings()).length){server('getPublicParkingSettings').then(settings=>{state.cache.bootstrap=Object.assign({},state.cache.bootstrap||{},{settings});applyParkingSettings(settings);if(!state.token)renderLogin()}).catch(e=>console.warn('No se pudo cargar la configuración pública',e))}
+
+  if(!Object.keys(appSettings()).length){
+    server('getPublicParkingSettings')
+      .then(settings=>{
+        state.cache.bootstrap=
+          Object.assign(
+            {},
+            state.cache.bootstrap||{},
+            {settings}
+          );
+
+        applyParkingSettings(settings);
+
+        if(!state.token){
+          renderLogin();
+        }
+      })
+      .catch(e=>
+        console.warn(
+          'No se pudo cargar la configuración pública',
+          e
+        )
+      );
+  }
 }
+
 function isMobileViewport(){return window.matchMedia&&window.matchMedia('(max-width:720px)').matches}
 function canViewConfiguration(){return activeUiRole()==='ADMIN'}
 function navigationItemsForRole(role){
-  return {
-    ADMIN:[['dashboard','Resumen'],['dataReview','Revisión de datos'],['users','Usuarios'],['housing','Viviendas'],['vehicles','Vehículos'],['incidents','Incidencias'],['requests','Solicitudes'],['audit','Auditoría'],['config','Configuración']],
-    CONTROL:[['control','Control'],['incidents','Incidencias']],
-    PROPIETARIO:[['ownerHome','Inicio'],['ownerHousing','Mis viviendas'],['ownerVehicles','Mis vehículos'],['ownerIncidents','Mis incidencias'],['ownerRequests','Mis solicitudes']]
+  const views={
+    ADMIN:[
+      'dashboard',
+      'dataReview',
+      'users',
+      'housing',
+      'vehicles',
+      'incidents',
+      'requests',
+      'audit',
+      'config'
+    ],
+    CONTROL:[
+      'control',
+      'incidents'
+    ],
+    PROPIETARIO:[
+      'ownerHome',
+      'ownerHousing',
+      'ownerVehicles',
+      'ownerIncidents',
+      'ownerRequests'
+    ]
   }[role]||[];
+
+  return views.map(
+    view=>[view,viewLabel(view)]
+  );
 }
+
 function mobileNavigationForRole(role){
-  if(role==='ADMIN')return {
-    primary:[['dashboard','Inicio','⌂'],['housing','Viviendas','⌂'],['vehicles','Vehículos','▣']],
-    more:[['dataReview','Revisión de datos'],['users','Usuarios'],['incidents','Incidencias'],['requests','Solicitudes'],['config','Configuración']]
+  if(role==='ADMIN'){
+    return {
+      primary:[
+        ['dashboard',viewLabel('ownerHome'),'⌂'],
+        ['housing',viewLabel('housing'),'⌂'],
+        ['vehicles',viewLabel('vehicles'),'▣']
+      ],
+      more:[
+        'dataReview',
+        'users',
+        'incidents',
+        'requests',
+        'config'
+      ].map(
+        view=>[view,viewLabel(view)]
+      )
+    };
+  }
+
+  if(role==='CONTROL'){
+    return {
+      primary:[
+        ['control',viewLabel('control'),'✓'],
+        ['incidents',viewLabel('incidents'),'!']
+      ],
+      more:[]
+    };
+  }
+
+  return {
+    primary:[
+      ['ownerHome',viewLabel('ownerHome'),'⌂'],
+      ['ownerHousing',viewLabel('housing'),'⌂'],
+      ['ownerVehicles',viewLabel('vehicles'),'▣']
+    ],
+    more:[
+      'ownerIncidents',
+      'ownerRequests'
+    ].map(
+      view=>[view,viewLabel(view)]
+    )
   };
-  if(role==='CONTROL')return {primary:[['control','Control','✓'],['incidents','Incidencias','!']],more:[]};
-  return {primary:[['ownerHome','Inicio','⌂'],['ownerHousing','Viviendas','⌂'],['ownerVehicles','Vehículos','▣']],more:[['ownerIncidents','Mis incidencias'],['ownerRequests','Mis solicitudes']]};
 }
+
 function shell(){
-  const roles=userRoles(),active=activeUiRole();
-  const roleSelector=roles.length>1?`<label class="role-switch-wrap"><span>Perfil</span><select id="role-switch" class="role-switch" aria-label="Perfil activo">${roles.map(r=>`<option value="${esc(r)}" ${r===active?'selected':''}>${esc(r)}</option>`).join('')}</select></label>`:`<span class="role-single">${esc(active)}</span>`;
-  const mobileRoleSelector=roles.length>1?`<div class="mobile-role-row"><span>Perfil</span><select id="mobile-role-switch" class="mobile-role-switch" aria-label="Perfil activo">${roles.map(r=>`<option value="${esc(r)}" ${r===active?'selected':''}>${esc(r)}</option>`).join('')}</select></div>`:`<div class="mobile-role-row"><span>Perfil</span><b>${esc(active)}</b></div>`;
-  $('#app').innerHTML=`<header class="top"><div class="brand">${appBrandHtml(true)}</div><div class="mobile-header-actions"><button type="button" class="mobile-icon-btn mobile-user-trigger" id="mobile-user-trigger" aria-label="Abrir menú" aria-expanded="false" title="Menú">☰</button></div><div class="mobile-user-menu" id="mobile-user-menu" aria-hidden="true"><div class="mobile-user-summary"><b>${esc(state.user.Nombre)}</b><span>${esc(state.user.Email||'')}</span></div>${mobileRoleSelector}<button type="button" class="mobile-menu-action mobile-menu-search" id="mobile-menu-search"><span>⌕</span><span>Buscar</span></button><button type="button" class="mobile-menu-action" id="mobile-profile"><span>👤</span><span>Mis datos</span></button><button type="button" class="mobile-menu-action danger-text" id="mobile-logout"><span>↪</span><span>Salir</span></button></div><div class="who"><button type="button" class="who-name" id="profile-link" aria-label="Abrir Mis datos" title="Abrir Mis datos"><span class="who-name-text">${esc(state.user.Nombre)}</span><span class="who-profile-hint">Mis datos</span></button><div class="who-role">${roleSelector}</div></div><button class="secondary" id="logout">Salir</button></header><div class="section-nav"><nav class="nav" id="nav"></nav><button type="button" class="global-search-trigger global-search-trigger-desktop" id="global-search-trigger" aria-label="Buscar" title="Buscar">⌕<span>Buscar</span></button></div><nav class="mobile-dock" id="mobile-nav" data-role="${esc(active)}" aria-label="Navegación móvil"></nav><div class="mobile-more-sheet" id="mobile-more-sheet" aria-hidden="true"><button type="button" class="mobile-sheet-backdrop" id="mobile-more-backdrop" aria-label="Cerrar menú"></button><section class="mobile-sheet-panel" role="dialog" aria-modal="true" aria-labelledby="mobile-more-title"><div class="mobile-sheet-handle"></div><div class="mobile-sheet-head"><b id="mobile-more-title">Más secciones</b><button type="button" class="mobile-sheet-close" id="mobile-more-close" aria-label="Cerrar">×</button></div><div class="mobile-more-list" id="mobile-more-list"></div></section></div><main class="wrap" id="main"></main>`;
-  const profileLink=$('#profile-link');if(profileLink)profileLink.addEventListener('click',e=>{e.preventDefault();go('profile')});
-  document.querySelectorAll('.global-search-trigger').forEach(searchBtn=>searchBtn.addEventListener('click',()=>openGlobalSearchOverlay()));
-  const menuSearch=$('#mobile-menu-search');if(menuSearch)menuSearch.onclick=()=>{closeMobileMenus();openGlobalSearchOverlay()};
-  const mobileTrigger=$('#mobile-user-trigger');if(mobileTrigger)mobileTrigger.onclick=e=>{e.stopPropagation();toggleMobileUserMenu()};
-  const mobileProfile=$('#mobile-profile');if(mobileProfile)mobileProfile.onclick=()=>{closeMobileMenus();go('profile')};
-  const rs=$('#role-switch');if(rs)rs.addEventListener('change',()=>setActiveUiRole(rs.value));
-  const mrs=$('#mobile-role-switch');if(mrs)mrs.addEventListener('change',()=>setActiveUiRole(mrs.value));
-  const doLogout=async()=>{closeMobileMenus();await server('logout',state.token);localStorage.removeItem('parking_token');clearUiState();state.token='';login()};
-  $('#logout').onclick=doLogout;const mobileLogout=$('#mobile-logout');if(mobileLogout)mobileLogout.onclick=doLogout;
-  const moreClose=$('#mobile-more-close'),moreBackdrop=$('#mobile-more-backdrop');if(moreClose)moreClose.onclick=closeMobileMore;if(moreBackdrop)moreBackdrop.onclick=closeMobileMore;
+  const roles=userRoles();
+  const active=activeUiRole();
+
+  const roleSelector=
+    roles.length>1
+      ?`<label class="role-switch-wrap">
+          <span>${esc(t('shell.profile'))}</span>
+          <select id="role-switch" class="role-switch" aria-label="${esc(t('shell.activeProfile'))}">
+            ${roles.map(r=>`<option value="${esc(r)}" ${r===active?'selected':''}>${esc(translateRole(r))}</option>`).join('')}
+          </select>
+        </label>`
+      :`<span class="role-single">${esc(translateRole(active))}</span>`;
+
+  const mobileRoleSelector=
+    roles.length>1
+      ?`<div class="mobile-role-row">
+          <span>${esc(t('shell.profile'))}</span>
+          <select id="mobile-role-switch" class="mobile-role-switch" aria-label="${esc(t('shell.activeProfile'))}">
+            ${roles.map(r=>`<option value="${esc(r)}" ${r===active?'selected':''}>${esc(translateRole(r))}</option>`).join('')}
+          </select>
+        </div>`
+      :`<div class="mobile-role-row">
+          <span>${esc(t('shell.profile'))}</span>
+          <b>${esc(translateRole(active))}</b>
+        </div>`;
+
+  $('#app').innerHTML=`
+    <header class="top">
+      <div class="brand">
+        ${appBrandHtml(true)}
+      </div>
+
+      <div class="mobile-header-actions">
+        <button
+          type="button"
+          class="mobile-icon-btn mobile-user-trigger"
+          id="mobile-user-trigger"
+          aria-label="${esc(t('shell.openMenu'))}"
+          aria-expanded="false"
+          title="${esc(t('shell.menu'))}"
+        >☰</button>
+      </div>
+
+      <div
+        class="mobile-user-menu"
+        id="mobile-user-menu"
+        aria-hidden="true"
+      >
+        <div class="mobile-user-summary">
+          <b>${esc(state.user.Nombre)}</b>
+          <span>${esc(state.user.Email||'')}</span>
+        </div>
+
+        ${mobileRoleSelector}
+
+        <div style="padding:.35rem .7rem">
+          ${languageSelectorHtml(
+            'language-switch mobile-language-switch'
+          )}
+        </div>
+
+        <button
+          type="button"
+          class="mobile-menu-action mobile-menu-search"
+          id="mobile-menu-search"
+        >
+          <span>⌕</span>
+          <span>${esc(t('common.search'))}</span>
+        </button>
+
+        <button
+          type="button"
+          class="mobile-menu-action"
+          id="mobile-profile"
+        >
+          <span>👤</span>
+          <span>${esc(t('auth.myData'))}</span>
+        </button>
+
+        <button
+          type="button"
+          class="mobile-menu-action danger-text"
+          id="mobile-logout"
+        >
+          <span>↪</span>
+          <span>${esc(t('auth.signOut'))}</span>
+        </button>
+      </div>
+
+      <div class="desktop-language-switch">
+        ${languageSelectorHtml()}
+      </div>
+
+      <div class="who">
+        <button
+          type="button"
+          class="who-name"
+          id="profile-link"
+          aria-label="${esc(t('shell.openMyData'))}"
+          title="${esc(t('shell.openMyData'))}"
+        >
+          <span class="who-name-text">
+            ${esc(state.user.Nombre)}
+          </span>
+
+          <span class="who-profile-hint">
+            ${esc(t('auth.myData'))}
+          </span>
+        </button>
+
+        <div class="who-role">
+          ${roleSelector}
+        </div>
+      </div>
+
+      <button
+        class="secondary"
+        id="logout"
+      >
+        ${esc(t('auth.signOut'))}
+      </button>
+    </header>
+
+    <div class="section-nav">
+      <nav class="nav" id="nav"></nav>
+
+      <button
+        type="button"
+        class="global-search-trigger global-search-trigger-desktop"
+        id="global-search-trigger"
+        aria-label="${esc(t('common.search'))}"
+        title="${esc(t('common.search'))}"
+      >
+        ⌕
+        <span>${esc(t('common.search'))}</span>
+      </button>
+    </div>
+
+    <nav
+      class="mobile-dock"
+      id="mobile-nav"
+      data-role="${esc(active)}"
+      aria-label="${esc(t('shell.mobileNavigation'))}"
+    ></nav>
+
+    <div
+      class="mobile-more-sheet"
+      id="mobile-more-sheet"
+      aria-hidden="true"
+    >
+      <button
+        type="button"
+        class="mobile-sheet-backdrop"
+        id="mobile-more-backdrop"
+        aria-label="${esc(t('shell.closeMenu'))}"
+      ></button>
+
+      <section
+        class="mobile-sheet-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="mobile-more-title"
+      >
+        <div class="mobile-sheet-handle"></div>
+
+        <div class="mobile-sheet-head">
+          <b id="mobile-more-title">
+            ${esc(t('shell.moreSections'))}
+          </b>
+
+          <button
+            type="button"
+            class="mobile-sheet-close"
+            id="mobile-more-close"
+            aria-label="${esc(t('common.close'))}"
+          >×</button>
+        </div>
+
+        <div
+          class="mobile-more-list"
+          id="mobile-more-list"
+        ></div>
+      </section>
+    </div>
+
+    <main
+      class="wrap"
+      id="main"
+    ></main>
+  `;
+
+  bindLanguageSelectors($('#app'));
+
+  const profileLink=$('#profile-link');
+
+  if(profileLink){
+    profileLink.addEventListener(
+      'click',
+      e=>{
+        e.preventDefault();
+        go('profile');
+      }
+    );
+  }
+
+  document
+    .querySelectorAll('.global-search-trigger')
+    .forEach(
+      searchBtn=>
+        searchBtn.addEventListener(
+          'click',
+          ()=>openGlobalSearchOverlay()
+        )
+    );
+
+  const menuSearch=
+    $('#mobile-menu-search');
+
+  if(menuSearch){
+    menuSearch.onclick=()=>{
+      closeMobileMenus();
+      openGlobalSearchOverlay();
+    };
+  }
+
+  const mobileTrigger=
+    $('#mobile-user-trigger');
+
+  if(mobileTrigger){
+    mobileTrigger.onclick=e=>{
+      e.stopPropagation();
+      toggleMobileUserMenu();
+    };
+  }
+
+  const mobileProfile=
+    $('#mobile-profile');
+
+  if(mobileProfile){
+    mobileProfile.onclick=()=>{
+      closeMobileMenus();
+      go('profile');
+    };
+  }
+
+  const rs=$('#role-switch');
+
+  if(rs){
+    rs.addEventListener(
+      'change',
+      ()=>setActiveUiRole(rs.value)
+    );
+  }
+
+  const mrs=$('#mobile-role-switch');
+
+  if(mrs){
+    mrs.addEventListener(
+      'change',
+      ()=>setActiveUiRole(mrs.value)
+    );
+  }
+
+  const doLogout=async()=>{
+    closeMobileMenus();
+
+    await server(
+      'logout',
+      state.token
+    );
+
+    localStorage.removeItem(
+      'parking_token'
+    );
+
+    clearUiState();
+
+    state.token='';
+    login();
+  };
+
+  $('#logout').onclick=doLogout;
+
+  const mobileLogout=
+    $('#mobile-logout');
+
+  if(mobileLogout){
+    mobileLogout.onclick=doLogout;
+  }
+
+  const moreClose=
+    $('#mobile-more-close');
+
+  const moreBackdrop=
+    $('#mobile-more-backdrop');
+
+  if(moreClose){
+    moreClose.onclick=
+      closeMobileMore;
+  }
+
+  if(moreBackdrop){
+    moreBackdrop.onclick=
+      closeMobileMore;
+  }
+
   renderNav();
 }
+
 function renderMobileNavigation(){
   const role=activeUiRole(),model=mobileNavigationForRole(role),dock=$('#mobile-nav'),moreList=$('#mobile-more-list');if(!dock||!moreList)return;
   dock.dataset.role=role;
   const isMoreActive=model.more.some(([v])=>v===state.view),hasMore=model.more.length>0;
   const dockItems=model.primary.map(([v,l,icon])=>`<button type="button" class="mobile-dock-item ${state.view===v?'active':''}" data-mobile-view="${v}"><span class="mobile-dock-icon">${icon}</span><span>${esc(l)}</span></button>`);
-  if(hasMore)dockItems.push(`<button type="button" class="mobile-dock-item ${isMoreActive?'active':''}" id="mobile-more-trigger"><span class="mobile-dock-icon">•••</span><span>Más</span></button>`);
+  if(hasMore)dockItems.push(`<button type="button" class="mobile-dock-item ${isMoreActive?'active':''}" id="mobile-more-trigger"><span class="mobile-dock-icon">•••</span><span>${esc(t('shell.more'))}</span></button>`);
   dock.dataset.count=String(dockItems.length);dock.innerHTML=dockItems.join('');
   moreList.innerHTML=model.more.map(([v,l])=>`<button type="button" class="mobile-more-item ${state.view===v?'active':''}" data-mobile-view="${v}"><span>${esc(l)}</span><span aria-hidden="true">›</span></button>`).join('');
   dock.querySelectorAll('[data-mobile-view]').forEach(b=>b.onclick=()=>{const view=b.dataset.mobileView;closeMobileMenus();go(view)});
@@ -197,7 +775,7 @@ function openMobileMore(){const sheet=$('#mobile-more-sheet');if(!sheet||!$('#mo
 function closeMobileMore(){const sheet=$('#mobile-more-sheet');if(sheet){sheet.classList.remove('open');sheet.setAttribute('aria-hidden','true')}document.body.classList.remove('mobile-sheet-open')}
 function closeMobileMenus(){closeMobileUserMenu();closeMobileMore()}
 function stopScanner(){if(state.scanner){try{state.scanner.stop().catch(()=>{})}catch(e){}state.scanner=null}}
-function viewLabel(view){const labels={dashboard:'Resumen',search:'Buscar',config:'Configuración',dataReview:'Revisión de datos',users:'Usuarios',housing:'Viviendas',vehicles:'Vehículos',incidents:'Incidencias',requests:'Solicitudes',audit:'Auditoría',control:'Control',ownerHome:'Inicio',ownerHousing:'Mis viviendas',ownerVehicles:'Mis vehículos',ownerRequests:'Mis solicitudes',ownerIncidents:'Mis incidencias',profile:'Mis datos'};return labels[view]||'Parking'}
-function renderLoading(view){const main=$('#main');if(!main)return;main.innerHTML=`<section class="card loading-state"><div class="spinner"></div><h2>${esc(viewLabel(view))}</h2><p class="muted">Cargando datos…</p></section>`}
-function go(view){if(view==='audit'&&activeUiRole()==='ADMIN'&&isMobileViewport())view='dashboard';if(view==='config'&&!canViewConfiguration()){view=defaultViewForRole(activeUiRole());toast('No tienes permisos para acceder a Configuración.',true)}if(view==='control'&&activeUiRole()!=='CONTROL'){view=defaultViewForRole(activeUiRole())}closeMobileMenus();stopScanner();state.view=view;rememberCurrentView(view);state.navSeq++;renderNav();renderLoading(view);const fn=({dashboard,search:globalSearchView,config:configurationView,dataReview:consistencyReviewView,users,housing,vehicles,incidents,requests,audit,control,ownerHome,ownerHousing,ownerVehicles,ownerIncidents,ownerRequests,profile}[view]||ownerHome);Promise.resolve().then(fn).then(()=>enhanceMobileFilterBars()).catch(err)}
-function err(e){const message=(e&&e.message)||String(e)||'No se pudo cargar la información.';toast(message,true);const main=$('#main');if(!main)return;const stillLoading=!!main.querySelector('.loading-state,.spinner')||!main.textContent.trim();if(stillLoading){const view=state.view;main.innerHTML=`<section class="card retry-state"><h2>No se pudo cargar ${esc(viewLabel(view).toLowerCase())}</h2><p class="muted">${esc(message)}</p><div class="actions"><button id="retry-view">Reintentar</button><button class="secondary" id="retry-home">Ir al inicio</button></div></section>`;$('#retry-view').onclick=()=>go(view);$('#retry-home').onclick=()=>go(defaultViewForRole(activeUiRole()))}}
+function viewLabel(view){const key={dashboard:'dashboard',search:null,config:'config',dataReview:'dataReview',users:'users',housing:'housing',vehicles:'vehicles',incidents:'incidents',requests:'requests',audit:'audit',control:'control',ownerHome:'ownerHome',ownerHousing:'ownerHousing',ownerVehicles:'ownerVehicles',ownerRequests:'ownerRequests',ownerIncidents:'ownerIncidents',profile:'profile'}[view];return key?t(`nav.${key}`):(view==='search'?t('common.search'):'Parking')}
+function renderLoading(view){const main=$('#main');if(!main)return;main.innerHTML=`<section class="card loading-state"><div class="spinner"></div><h2>${esc(viewLabel(view))}</h2><p class="muted">${esc(t('common.loading'))}</p></section>`}
+function go(view){if(view==='audit'&&activeUiRole()==='ADMIN'&&isMobileViewport())view='dashboard';if(view==='config'&&!canViewConfiguration()){view=defaultViewForRole(activeUiRole());toast(t('errors.configurationForbidden'),true)}if(view==='control'&&activeUiRole()!=='CONTROL'){view=defaultViewForRole(activeUiRole())}closeMobileMenus();stopScanner();state.view=view;rememberCurrentView(view);state.navSeq++;renderNav();renderLoading(view);const fn=({dashboard,search:globalSearchView,config:configurationView,dataReview:consistencyReviewView,users,housing,vehicles,incidents,requests,audit,control,ownerHome,ownerHousing,ownerVehicles,ownerIncidents,ownerRequests,profile}[view]||ownerHome);Promise.resolve().then(fn).then(()=>enhanceMobileFilterBars()).catch(err)}
+function err(e){const message=(e&&e.message)||String(e)||t('errors.loadGeneric');toast(message,true);const main=$('#main');if(!main)return;const stillLoading=!!main.querySelector('.loading-state,.spinner')||!main.textContent.trim();if(stillLoading){const view=state.view;main.innerHTML=`<section class="card retry-state"><h2>${esc(t('errors.loadView',{view:viewLabel(view)}))}</h2><p class="muted">${esc(message)}</p><div class="actions"><button id="retry-view">${esc(t('common.retry'))}</button><button class="secondary" id="retry-home">${esc(t('common.home'))}</button></div></section>`;$('#retry-view').onclick=()=>go(view);$('#retry-home').onclick=()=>go(defaultViewForRole(activeUiRole()))}}

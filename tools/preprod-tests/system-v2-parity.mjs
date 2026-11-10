@@ -2,6 +2,7 @@ import fs from 'node:fs';
 
 const read = (p) => fs.readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 const core = read('assets/js/core.js');
+const i18n = read('assets/js/i18n.js');
 const nav = read('assets/js/auth-navigation.js');
 const advanced = read('assets/js/admin/advanced.js');
 const adapter = read('assets/js/supabase-final-adapter.js');
@@ -18,7 +19,11 @@ const checks = [
     && core.includes("'2.0.0-preprod.4'")
     && core.includes("'2.0.0'")],
   ['favicon dinamico', core.includes("dataset.parkingFavicon='1'") && core.includes("apple-touch-icon")],
-  ['pantalla mantenimiento', core.includes('renderMaintenanceScreen') && core.includes('Acceso técnico ROOT')],
+  ['pantalla mantenimiento',
+    core.includes('renderMaintenanceScreen')
+    && core.includes("t('maintenance.root')")
+    && i18n.includes("root:'Acceso técnico ROOT'")
+    && i18n.includes("root:'ROOT technical access'")],
   ['init consulta estado publico', nav.includes("server('getPublicAppState')")],
   ['Sistema ya no muestra Hojas', !advanced.includes('<span>Hojas</span>')],
   ['Sistema ya no ofrece Benchmark Sheets', !advanced.includes('Benchmark Sheets')],
