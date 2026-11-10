@@ -2258,8 +2258,8 @@ function login(message=''){
     const description=appDescription();
 
     $('#app').innerHTML=`<main class="login"><section class="card">
-      <div style="display:flex;justify-content:flex-end;margin-bottom:.5rem">
-        ${languageSelectorHtml()}
+      <div class="login-language-switch-wrap">
+        ${languageSelectorHtml('language-switch login-language-switch')}
       </div>
 
       <div class="login-brand">
