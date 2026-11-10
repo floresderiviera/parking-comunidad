@@ -2085,12 +2085,23 @@ async function init(){if(new URLSearchParams(location.search).get('resetPassword
   }catch(e){login(e.message)}
 }
 
+function bindPublicLanguageSelectors(rerender){
+  document.querySelectorAll('#app [data-language]').forEach(button=>{
+    button.onclick=()=>{
+      const language=button.dataset.language;
+      if(language===currentLanguage())return;
+      setParkingLanguage(language);
+      rerender();
+    };
+  });
+}
+
 function forgotPassword(){
   const logo=appLogoUrl(),name=appDisplayName(),description=appDescription();
 
   $('#app').innerHTML=`<main class="login"><section class="card">
-    <div style="display:flex;justify-content:flex-end;margin-bottom:.5rem">
-      ${languageSelectorHtml()}
+    <div class="login-language-switch-wrap">
+      ${languageSelectorHtml('language-switch login-language-switch')}
     </div>
 
     <div class="login-brand">
@@ -2118,6 +2129,7 @@ function forgotPassword(){
   </section></main>`;
 
   bindLanguageSelectors($('#app'));
+  bindPublicLanguageSelectors(forgotPassword);
 
   $('#forgot-back').onclick=()=>login();
 
@@ -2152,8 +2164,8 @@ function recoveryPassword(){
   const logo=appLogoUrl(),name=appDisplayName();
 
   $('#app').innerHTML=`<main class="login"><section class="card">
-    <div style="display:flex;justify-content:flex-end;margin-bottom:.5rem">
-      ${languageSelectorHtml()}
+    <div class="login-language-switch-wrap">
+      ${languageSelectorHtml('language-switch login-language-switch')}
     </div>
 
     <div class="login-brand">
@@ -2182,6 +2194,7 @@ function recoveryPassword(){
   </section></main>`;
 
   bindLanguageSelectors($('#app'));
+  bindPublicLanguageSelectors(recoveryPassword);
 
   $('#recovery-form').onsubmit=async e=>{
     e.preventDefault();
@@ -2290,6 +2303,7 @@ function login(message=''){
     </section></main>`;
 
     bindLanguageSelectors($('#app'));
+    bindPublicLanguageSelectors(renderLogin);
 
     $('#forgot-password').onclick=
       ()=>forgotPassword();
