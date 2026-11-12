@@ -199,7 +199,8 @@ Object.assign(PARKING_I18N.es,{
     moreSections:'Más secciones',
     closeMenu:'Cerrar menú',
     mobileNavigation:'Navegación móvil',
-    openMyData:'Abrir Mis datos'
+    openMyData:'Abrir Mis datos',
+    userManual:'Manual de usuario'
   },
   authExtra:{
     loginIntro:'Accede con tu email y contraseña.',
@@ -243,7 +244,8 @@ Object.assign(PARKING_I18N.en,{
     moreSections:'More sections',
     closeMenu:'Close menu',
     mobileNavigation:'Mobile navigation',
-    openMyData:'Open My details'
+    openMyData:'Open My details',
+    userManual:'User manual'
   },
   authExtra:{
     loginIntro:'Sign in with your email and password.',

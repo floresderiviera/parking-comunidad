@@ -199,7 +199,8 @@ Object.assign(PARKING_I18N.es,{
     moreSections:'Más secciones',
     closeMenu:'Cerrar menú',
     mobileNavigation:'Navegación móvil',
-    openMyData:'Abrir Mis datos'
+    openMyData:'Abrir Mis datos',
+    userManual:'Manual de usuario'
   },
   authExtra:{
     loginIntro:'Accede con tu email y contraseña.',
@@ -243,7 +244,8 @@ Object.assign(PARKING_I18N.en,{
     moreSections:'More sections',
     closeMenu:'Close menu',
     mobileNavigation:'Mobile navigation',
-    openMyData:'Open My details'
+    openMyData:'Open My details',
+    userManual:'User manual'
   },
   authExtra:{
     loginIntro:'Sign in with your email and password.',
@@ -2469,6 +2471,25 @@ function login(message=''){
 }
 
 function isMobileViewport(){return window.matchMedia&&window.matchMedia('(max-width:720px)').matches}
+function userManualUrl(){
+  const file=currentLanguage()==='en'
+    ?'Community_Parking_User_Manual_EN.pdf'
+    :'Manual_Usuario_Parking_Comunidad_ES.pdf';
+
+  return new URL(
+    `./docs/user-manual/${file}`,
+    location.href
+  ).href;
+}
+
+function openUserManual(){
+  window.open(
+    userManualUrl(),
+    '_blank',
+    'noopener,noreferrer'
+  );
+}
+
 function canViewConfiguration(){return activeUiRole()==='ADMIN'}
 function navigationItemsForRole(role){
   const views={
@@ -2628,6 +2649,15 @@ function shell(){
 
         <button
           type="button"
+          class="mobile-menu-action"
+          id="mobile-user-manual"
+        >
+          <span>?</span>
+          <span>${esc(t('shell.userManual'))}</span>
+        </button>
+
+        <button
+          type="button"
           class="mobile-menu-action danger-text"
           id="mobile-logout"
         >
@@ -2661,6 +2691,14 @@ function shell(){
           ${roleSelector}
         </div>
       </div>
+
+      <button
+        class="secondary"
+        id="user-manual"
+        title="${esc(t('shell.userManual'))}"
+      >
+        ${esc(t('shell.userManual'))}
+      </button>
 
       <button
         class="secondary"
@@ -2789,6 +2827,23 @@ function shell(){
     mobileProfile.onclick=()=>{
       closeMobileMenus();
       go('profile');
+    };
+  }
+
+  const manualButton=$('#user-manual');
+
+  if(manualButton){
+    manualButton.onclick=()=>{
+      openUserManual();
+    };
+  }
+
+  const mobileManual=$('#mobile-user-manual');
+
+  if(mobileManual){
+    mobileManual.onclick=()=>{
+      closeMobileMenus();
+      openUserManual();
     };
   }
 
