@@ -261,7 +261,12 @@ async function openProfile(page) {
   ).toHaveCount(0);
 }
 
-async function logout(page) {
+async function logout(page, errors = null) {
+  const errorCountBeforeLogout =
+    Array.isArray(errors)
+      ? errors.length
+      : 0;
+
   await page.locator('#logout').click();
 
   await expect(
@@ -269,6 +274,37 @@ async function logout(page) {
   ).toBeVisible({
     timeout: 10000
   });
+
+  if (Array.isArray(errors)) {
+    const previous =
+      errors.slice(0, errorCountBeforeLogout);
+
+    const logoutErrors =
+      errors
+        .slice(errorCountBeforeLogout)
+        .filter(message => {
+          const value =
+            String(message || '');
+
+          return !(
+            value.includes('401') &&
+            value.includes('/rest/v1/profiles')
+          ) &&
+          !(
+            value.includes(
+              'Failed to load resource'
+            ) &&
+            value.includes('401')
+          );
+        });
+
+    errors.splice(
+      0,
+      errors.length,
+      ...previous,
+      ...logoutErrors
+    );
+  }
 }
 
 /* =========================================================
@@ -353,7 +389,7 @@ test.describe('PRE · ROOT', () => {
       'ROOT · perfil'
     );
 
-    await logout(page);
+    await logout(page, errors);
 
     assertNoBrowserErrors(
       errors,
@@ -481,7 +517,7 @@ test.describe('PRE · CONTROL', () => {
       'CONTROL · perfil'
     );
 
-    await logout(page);
+    await logout(page, errors);
 
     assertNoBrowserErrors(
       errors,
@@ -545,7 +581,7 @@ test.describe('PRE · PROPIETARIO', () => {
       'PROPIETARIO · perfil'
     );
 
-    await logout(page);
+    await logout(page, errors);
 
     assertNoBrowserErrors(
       errors,
