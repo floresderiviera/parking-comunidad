@@ -1878,3 +1878,28 @@ button.vehicle-alert-chip:hover{filter:brightness(.97)}
     display:none;
   }
 }
+
+/* Idioma dentro de Mis datos */
+.profile-language-card{
+  margin-top:1rem;
+}
+
+.profile-language-card h3{
+  margin-top:0;
+  margin-bottom:.35rem;
+}
+
+.profile-language-help{
+  margin:.1rem 0 .8rem;
+}
+
+.profile-language-switch{
+  display:flex;
+  gap:.5rem;
+  flex-wrap:wrap;
+}
+
+.profile-language-switch .language-option{
+  min-width:78px;
+}
+

@@ -381,6 +381,39 @@ function openUserManual(){
   );
 }
 
+function renderProfileLanguageSettings(){
+  const main=$('#main');
+
+  if(
+    !main ||
+    state.view!=='profile' ||
+    main.querySelector('#profile-language-settings')
+  ){
+    return;
+  }
+
+  const section=document.createElement('section');
+
+  section.className='card profile-language-card';
+  section.id='profile-language-settings';
+
+  section.innerHTML=`
+    <h3>${esc(t('language.selector'))}</h3>
+    <p class="muted profile-language-help">
+      ${currentLanguage()==='en'
+        ?'Choose the language used by the application and user manual.'
+        :'Selecciona el idioma de la aplicación y del manual de usuario.'}
+    </p>
+    ${languageSelectorHtml(
+      'language-switch profile-language-switch'
+    )}
+  `;
+
+  main.appendChild(section);
+
+  bindLanguageSelectors(section);
+}
+
 function canViewConfiguration(){return activeUiRole()==='ADMIN'}
 function navigationItemsForRole(role){
   const views={
@@ -555,10 +588,6 @@ function shell(){
           <span>↪</span>
           <span>${esc(t('auth.signOut'))}</span>
         </button>
-      </div>
-
-      <div class="desktop-language-switch">
-        ${languageSelectorHtml()}
       </div>
 
       <div class="who">
@@ -830,5 +859,14 @@ function closeMobileMenus(){closeMobileUserMenu();closeMobileMore()}
 function stopScanner(){if(state.scanner){try{state.scanner.stop().catch(()=>{})}catch(e){}state.scanner=null}}
 function viewLabel(view){const key={dashboard:'dashboard',search:null,config:'config',dataReview:'dataReview',users:'users',housing:'housing',vehicles:'vehicles',incidents:'incidents',requests:'requests',audit:'audit',control:'control',ownerHome:'ownerHome',ownerHousing:'ownerHousing',ownerVehicles:'ownerVehicles',ownerRequests:'ownerRequests',ownerIncidents:'ownerIncidents',profile:'profile'}[view];return key?t(`nav.${key}`):(view==='search'?t('common.search'):'Parking')}
 function renderLoading(view){const main=$('#main');if(!main)return;main.innerHTML=`<section class="card loading-state"><div class="spinner"></div><h2>${esc(viewLabel(view))}</h2><p class="muted">${esc(t('common.loading'))}</p></section>`}
-function go(view){if(view==='audit'&&activeUiRole()==='ADMIN'&&isMobileViewport())view='dashboard';if(view==='config'&&!canViewConfiguration()){view=defaultViewForRole(activeUiRole());toast(t('errors.configurationForbidden'),true)}if(view==='control'&&activeUiRole()!=='CONTROL'){view=defaultViewForRole(activeUiRole())}closeMobileMenus();stopScanner();state.view=view;rememberCurrentView(view);state.navSeq++;renderNav();renderLoading(view);const fn=({dashboard,search:globalSearchView,config:configurationView,dataReview:consistencyReviewView,users,housing,vehicles,incidents,requests,audit,control,ownerHome,ownerHousing,ownerVehicles,ownerIncidents,ownerRequests,profile}[view]||ownerHome);Promise.resolve().then(fn).then(()=>enhanceMobileFilterBars()).catch(err)}
+function go(view){if(view==='audit'&&activeUiRole()==='ADMIN'&&isMobileViewport())view='dashboard';if(view==='config'&&!canViewConfiguration()){view=defaultViewForRole(activeUiRole());toast(t('errors.configurationForbidden'),true)}if(view==='control'&&activeUiRole()!=='CONTROL'){view=defaultViewForRole(activeUiRole())}closeMobileMenus();stopScanner();state.view=view;rememberCurrentView(view);state.navSeq++;renderNav();renderLoading(view);const fn=({dashboard,search:globalSearchView,config:configurationView,dataReview:consistencyReviewView,users,housing,vehicles,incidents,requests,audit,control,ownerHome,ownerHousing,ownerVehicles,ownerIncidents,ownerRequests,profile}[view]||ownerHome);Promise.resolve()
+  .then(fn)
+  .then(()=>{
+    enhanceMobileFilterBars();
+
+    if(view==='profile'){
+      renderProfileLanguageSettings();
+    }
+  })
+  .catch(err)}
 function err(e){const message=(e&&e.message)||String(e)||t('errors.loadGeneric');toast(message,true);const main=$('#main');if(!main)return;const stillLoading=!!main.querySelector('.loading-state,.spinner')||!main.textContent.trim();if(stillLoading){const view=state.view;main.innerHTML=`<section class="card retry-state"><h2>${esc(t('errors.loadView',{view:viewLabel(view)}))}</h2><p class="muted">${esc(message)}</p><div class="actions"><button id="retry-view">${esc(t('common.retry'))}</button><button class="secondary" id="retry-home">${esc(t('common.home'))}</button></div></section>`;$('#retry-view').onclick=()=>go(view);$('#retry-home').onclick=()=>go(defaultViewForRole(activeUiRole()))}}
