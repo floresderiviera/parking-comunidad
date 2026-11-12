@@ -135,13 +135,15 @@ async function printSelectedVehicleQrs(rows){
     root.innerHTML=pages.join('');
     document.body.appendChild(root);
 
+    const size=qrSize();
+
     valid.forEach((v,i)=>{
       new QRCode(
         document.getElementById(`bulk-qr-code-${i}`),
         {
           text:qrTarget(v.QR_Token),
-          width:512,
-          height:512,
+          width:size,
+          height:size,
           correctLevel:QRCode.CorrectLevel.L
         }
       );
