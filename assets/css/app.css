@@ -26,7 +26,12 @@
 
 #qr img,
 #owner-qr-code img{
-  display:none!important;
+  display:block!important;
+  width:auto!important;
+  height:auto!important;
+  max-width:100%!important;
+  margin:0 auto!important;
+  image-rendering:pixelated;
 }
 
 @media print{
