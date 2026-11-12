@@ -2673,6 +2673,14 @@ function shell(){
       <div class="who">
         <button
           type="button"
+          class="manual-icon-btn"
+          id="user-manual"
+          aria-label="${esc(t('shell.userManual'))}"
+          title="${esc(t('shell.userManual'))}"
+        >?</button>
+
+        <button
+          type="button"
           class="who-name"
           id="profile-link"
           aria-label="${esc(t('shell.openMyData'))}"
@@ -2691,14 +2699,6 @@ function shell(){
           ${roleSelector}
         </div>
       </div>
-
-      <button
-        class="secondary"
-        id="user-manual"
-        title="${esc(t('shell.userManual'))}"
-      >
-        ${esc(t('shell.userManual'))}
-      </button>
 
       <button
         class="secondary"
