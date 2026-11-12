@@ -2139,6 +2139,24 @@ async function init(){if(new URLSearchParams(location.search).get('resetPassword
   }catch(e){login(e.message)}
 }
 
+function rerenderAuthenticatedUiOnLanguageChange(){
+  if(!state.user)return;
+
+  const currentView=state.view || restoredStartView();
+
+  shell();
+  go(currentView);
+}
+
+if(!window.__parkingLanguageShellBound){
+  window.__parkingLanguageShellBound=true;
+
+  window.addEventListener(
+    'parking:languagechange',
+    rerenderAuthenticatedUiOnLanguageChange
+  );
+}
+
 function bindPublicLanguageSelectors(rerender){
   document.querySelectorAll('#app [data-language]').forEach(button=>{
     button.onclick=()=>{
@@ -2518,7 +2536,7 @@ function renderProfileLanguageSettings(){
     )}
   `;
 
-  main.appendChild(section);
+  main.prepend(section);
 
   bindLanguageSelectors(section);
 }
@@ -2700,29 +2718,31 @@ function shell(){
       </div>
 
       <div class="who">
-        <button
-          type="button"
-          class="manual-icon-btn"
-          id="user-manual"
-          aria-label="${esc(t('shell.userManual'))}"
-          title="${esc(t('shell.userManual'))}"
-        >?</button>
+        <div class="who-main-row">
+          <button
+            type="button"
+            class="manual-icon-btn"
+            id="user-manual"
+            aria-label="${esc(t('shell.userManual'))}"
+            title="${esc(t('shell.userManual'))}"
+          >?</button>
 
-        <button
-          type="button"
-          class="who-name"
-          id="profile-link"
-          aria-label="${esc(t('shell.openMyData'))}"
-          title="${esc(t('shell.openMyData'))}"
-        >
-          <span class="who-name-text">
-            ${esc(state.user.Nombre)}
-          </span>
+          <button
+            type="button"
+            class="who-name"
+            id="profile-link"
+            aria-label="${esc(t('shell.openMyData'))}"
+            title="${esc(t('shell.openMyData'))}"
+          >
+            <span class="who-name-text">
+              ${esc(state.user.Nombre)}
+            </span>
 
-          <span class="who-profile-hint">
-            ${esc(t('auth.myData'))}
-          </span>
-        </button>
+            <span class="who-profile-hint">
+              ${esc(t('auth.myData'))}
+            </span>
+          </button>
+        </div>
 
         <div class="who-role">
           ${roleSelector}

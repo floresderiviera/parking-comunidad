@@ -1902,3 +1902,41 @@ button.vehicle-alert-chip:hover{filter:brightness(.97)}
 .profile-language-switch .language-option{
   min-width:78px;
 }
+
+/* Cabecera: ayuda + Mis datos alineados */
+.who{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  gap:.15rem;
+}
+
+.who-main-row{
+  display:flex;
+  align-items:center;
+  gap:.45rem;
+}
+
+.who-main-row .manual-icon-btn{
+  align-self:center;
+  margin:0;
+}
+
+.who-role{
+  margin-left:calc(34px + .45rem);
+  margin-top:.1rem;
+}
+
+/* Idioma primero dentro de Mis datos */
+.profile-language-card{
+  margin-top:0;
+  margin-bottom:1rem;
+}
+
+@media(max-width:720px){
+  .who-main-row,
+  .who-role{
+    display:none;
+  }
+}
