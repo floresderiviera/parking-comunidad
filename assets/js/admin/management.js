@@ -64,6 +64,110 @@ function openOwnerImporter(){
   $('#owner-import-confirm').onclick=async()=>{const rows=state.cache.ownerImportRows,preview=state.cache.ownerImportPreview;if(!rows?.length||!preview?.ok)return;const createMissingHousing=$('#owner-import-create-housing').checked,b=$('#owner-import-confirm');const msg=`Se procesarán ${rows.length} fila(s): ${preview.housingToCreate||0} vivienda(s) nueva(s), ${preview.housingExisting||0} existente(s) y ${preview.uniqueUsers||0} propietario(s). ¿Continuar?`;if(!confirm(msg))return;busy(b);try{const out=await call('applyOwnerImport',{rows,createMissingHousing});toast(`Importación completada: ${out.housingCreated||0} vivienda(s) creada(s), ${out.housingAssigned+out.housingReassigned} vivienda(s) actualizada(s) y ${out.uniqueUsers} propietario(s).${out.welcomeEmailsQueued?` ${out.welcomeEmailsQueued} correo(s) de acceso quedaron en cola.`:''}`);state.cache.ownerImportRows=null;state.cache.ownerImportPreview=null;configurationView('data')}catch(x){err(x);busy(b,false)}};
   host.scrollIntoView({behavior:'smooth'});
 }
+
+async function printSelectedVehicleQrs(rows){
+  const ids=[...document.querySelectorAll('.bulk-vehicle:checked')]
+    .map(x=>String(x.value));
+
+  if(!ids.length){
+    toast('Selecciona al menos un vehículo.',true);
+    return;
+  }
+
+  const selected=(rows||[]).filter(v=>
+    ids.includes(String(v.ID_Vehiculo))
+  );
+
+  const valid=selected.filter(v=>
+    v.Tipo!=='Moto' &&
+    v.Estado==='Activo' &&
+    ['1','2'].includes(String(v.Slot||'')) &&
+    v.QR_Estado==='Activo' &&
+    !!v.QR_Token
+  );
+
+  const omitted=selected.length-valid.length;
+
+  if(!valid.length){
+    toast(
+      'La selección no contiene vehículos con QR activo disponible.',
+      true
+    );
+    return;
+  }
+
+  try{
+    await ensureQr();
+
+    document.getElementById('bulk-qr-print-root')?.remove();
+
+    const root=document.createElement('div');
+    root.id='bulk-qr-print-root';
+    root.className='bulk-qr-print-root';
+
+    const cards=valid.map((v,i)=>`
+      <section class="bulk-qr-print-card">
+        <div class="bulk-qr-print-plate">
+          ${esc(v.MatriculaHabitual||'—')}
+        </div>
+        <div
+          class="bulk-qr-print-code"
+          id="bulk-qr-code-${i}">
+        </div>
+      </section>
+    `);
+
+    const pages=[];
+
+    for(let i=0;i<cards.length;i+=4){
+      pages.push(`
+        <div class="bulk-qr-print-page">
+          ${cards.slice(i,i+4).join('')}
+        </div>
+      `);
+    }
+
+    root.innerHTML=pages.join('');
+    document.body.appendChild(root);
+
+    valid.forEach((v,i)=>{
+      new QRCode(
+        document.getElementById(`bulk-qr-code-${i}`),
+        {
+          text:qrTarget(v.QR_Token),
+          width:512,
+          height:512,
+          correctLevel:QRCode.CorrectLevel.L
+        }
+      );
+    });
+
+    document.body.classList.add('bulk-qr-printing');
+
+    const cleanup=()=>{
+      document.body.classList.remove('bulk-qr-printing');
+      root.remove();
+    };
+
+    window.addEventListener(
+      'afterprint',
+      cleanup,
+      {once:true}
+    );
+
+    await new Promise(resolve=>requestAnimationFrame(resolve));
+    await new Promise(resolve=>requestAnimationFrame(resolve));
+
+    window.print();
+
+    if(omitted){
+      toast('Se omitieron vehículos sin QR activo.',true);
+    }
+  }catch(e){
+    err(e);
+  }
+}
+
 async function manager(kind){
   const c=configs[kind];
   try{
@@ -99,7 +203,7 @@ async function manager(kind){
   }
   return `<th>${esc(columnLabel(x))}</th>`;
 }).join('')}<th>Acciones</th></tr></thead><tbody id="data-body">${rows.map((r,i)=>`<tr data-i="${i}">${c.cols.map(x=>`<td data-label="${esc(columnLabel(x))}">${renderDisplayCell(kind,r,x)}</td>`).join('')}<td data-label="Acciones">${actions(r,i)}</td></tr>`).join('')}</tbody></table>${rows.length?'':'<div class="empty">No hay registros.</div>'}</div>`;
-    $('#main').innerHTML=`<div class="head"><h1>${c.title}</h1><div class="actions">${exportButtonsHtml('export-current')}<button id="new">＋ Nuevo</button></div></div><div id="editor"></div>${kind==='vehicles'?`<div class="card bulk-vehicle-bar" id="bulk-vehicle-bar"><div class="bulk-vehicle-head"><b>Acciones masivas</b><button type="button" class="secondary mobile-bulk-toggle" id="bulk-vehicle-toggle">Mostrar</button></div><div class="actions bulk-vehicle-actions" id="bulk-vehicle-actions"><button class="secondary" id="bulk-suspend">Suspender</button><button class="secondary" id="bulk-revoke">Revocar QR</button><button class="danger" id="bulk-low">Dar de baja</button></div></div>`:''}${renderFilterBar(kind)}${tableHtml}`;
+    $('#main').innerHTML=`<div class="head"><h1>${c.title}</h1><div class="actions">${exportButtonsHtml('export-current')}<button id="new">＋ Nuevo</button></div></div><div id="editor"></div>${kind==='vehicles'?`<div class="card bulk-vehicle-bar" id="bulk-vehicle-bar"><div class="bulk-vehicle-head"><b>Acciones masivas</b><button type="button" class="secondary mobile-bulk-toggle" id="bulk-vehicle-toggle">Mostrar</button></div><div class="actions bulk-vehicle-actions" id="bulk-vehicle-actions"><button class="secondary" id="bulk-print-qr">Imprimir QR</button><button class="secondary" id="bulk-suspend">Suspender</button><button class="secondary" id="bulk-revoke">Revocar QR</button><button class="danger" id="bulk-low">Dar de baja</button></div></div>`:''}${renderFilterBar(kind)}${tableHtml}`;
     $('#new').onclick=()=>editor(kind,null);$('#export-current-xlsx').onclick=()=>exportRowsFromCurrent(kind,rows,'xlsx');$('#export-current-csv').onclick=()=>exportRowsFromCurrent(kind,rows,'csv');
     document.querySelectorAll('.edit').forEach(b=>b.onclick=()=>editor(kind,rows[b.dataset.i]));if(kind==='vehicles')document.querySelectorAll('.vehicle-detail').forEach(b=>b.onclick=()=>vehicleDetailView(rows[b.dataset.i].ID_Vehiculo));
     if(kind==='users'){document.querySelectorAll('.password').forEach(b=>b.onclick=()=>passwordEditor(rows[b.dataset.i]));document.querySelectorAll('.close-sessions').forEach(b=>b.onclick=async()=>{const u=rows[b.dataset.i];if(!confirm(`¿Cerrar todas las sesiones activas de ${u.Nombre||u.Email}?`))return;try{await call('closeUserSessions',{id:u.ID_Usuario});toast('Sesiones cerradas.')}catch(e){err(e)}})}
@@ -110,7 +214,7 @@ async function manager(kind){
       document.querySelectorAll('.qr').forEach(b=>b.onclick=()=>showQr(rows[b.dataset.i]));
       document.querySelectorAll('.periods').forEach(b=>b.onclick=()=>temporaryPeriodsPanel(rows[b.dataset.i],()=>manager('vehicles')));
       document.querySelectorAll('.renew').forEach(b=>b.onclick=async()=>{if(!confirm('El QR anterior dejará de ser válido. ¿Continuar?'))return;try{await call('renewQr',{id:rows[b.dataset.i].ID_Vehiculo});invalidateClientParkingData();toast('QR renovado.');manager(kind)}catch(e){err(e)}});
-      bindRequestLinks();bindIncidentLinks();const all=$('#bulk-all');if(all)all.onchange=()=>document.querySelectorAll('.bulk-vehicle').forEach(x=>x.checked=all.checked);$('#bulk-suspend')&&($('#bulk-suspend').onclick=()=>runBulkVehicleAction('SUSPENDER'));$('#bulk-revoke')&&($('#bulk-revoke').onclick=()=>runBulkVehicleAction('REVOCAR_QR'));$('#bulk-low')&&($('#bulk-low').onclick=()=>runBulkVehicleAction('BAJA'));
+      bindRequestLinks();bindIncidentLinks();const all=$('#bulk-all');if(all)all.onchange=()=>document.querySelectorAll('.bulk-vehicle').forEach(x=>x.checked=all.checked);$('#bulk-print-qr')&&($('#bulk-print-qr').onclick=()=>printSelectedVehicleQrs(rows));$('#bulk-suspend')&&($('#bulk-suspend').onclick=()=>runBulkVehicleAction('SUSPENDER'));$('#bulk-revoke')&&($('#bulk-revoke').onclick=()=>runBulkVehicleAction('REVOCAR_QR'));$('#bulk-low')&&($('#bulk-low').onclick=()=>runBulkVehicleAction('BAJA'));
     }
     if(kind==='users'){
       document.querySelectorAll('.user-sort-th').forEach(th=>{

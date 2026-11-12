@@ -451,6 +451,7 @@ const PARKING_UI_EN_EXACT={
   'QR del vehículo':'Vehicle QR',
   'QR de mi vehículo':'My vehicle QR',
   'Imprimir':'Print',
+  'Imprimir QR':'Print QR',
   'Descargar PNG':'Download PNG',
 
   'Solicitudes abiertas':'Open requests',
@@ -849,6 +850,8 @@ Object.assign(PARKING_UI_EN_EXACT,{
   'Éxito':'Success',
   'Últimos errores':'Recent errors',
   'Selecciona al menos un vehículo.':'Select at least one vehicle.',
+  'La selección no contiene vehículos con QR activo disponible.':'The selection does not contain vehicles with an active QR available.',
+  'Se omitieron vehículos sin QR activo.':'Vehicles without an active QR were skipped.',
   'Colores sugeridos desde el logo.':'Colours suggested from the logo.',
   'Configuración guardada.':'Settings saved.',
   '¿Ejecutar ahora una copia completa de Supabase en Google Drive?':'Run a full Supabase backup to Google Drive now?',

@@ -1704,3 +1704,127 @@ button.vehicle-alert-chip:hover{filter:brightness(.97)}
     max-height: none !important;
   }
 }
+
+
+/* Bulk QR print - 4 cards per A4 */
+.bulk-qr-print-root{
+  display:none;
+}
+
+@media print {
+
+  @page{
+    size:A4 portrait;
+    margin:10mm;
+  }
+
+  body.bulk-qr-printing{
+    margin:0!important;
+    padding:0!important;
+    background:#fff!important;
+  }
+
+  body.bulk-qr-printing > *:not(#bulk-qr-print-root){
+    display:none!important;
+  }
+
+  body.bulk-qr-printing #bulk-qr-print-root,
+  body.bulk-qr-printing #bulk-qr-print-root *{
+    visibility:visible!important;
+  }
+
+  body.bulk-qr-printing #bulk-qr-print-root{
+    display:block!important;
+    position:static!important;
+    width:190mm!important;
+    margin:0!important;
+    padding:0!important;
+    background:#fff!important;
+  }
+
+  .bulk-qr-print-page{
+    display:grid!important;
+    grid-template-columns:90mm 90mm!important;
+    grid-template-rows:105mm 105mm!important;
+    gap:10mm!important;
+    width:190mm!important;
+    min-height:220mm!important;
+    margin:0!important;
+    padding:0!important;
+    break-after:page;
+    page-break-after:always;
+  }
+
+  .bulk-qr-print-page:last-child{
+    break-after:auto;
+    page-break-after:auto;
+  }
+
+  .bulk-qr-print-card{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    width:90mm!important;
+    height:105mm!important;
+    box-sizing:border-box!important;
+    padding:7mm!important;
+    margin:0!important;
+    overflow:hidden!important;
+    background:#fff!important;
+    border:0.8mm solid #0b5f50!important;
+    border-radius:5mm!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+  }
+
+  .bulk-qr-print-plate{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:76mm!important;
+    height:18mm!important;
+    min-height:18mm!important;
+    margin:0 0 5mm!important;
+    box-sizing:border-box!important;
+    border:0.6mm solid #0b5f50!important;
+    border-radius:3mm!important;
+    background:#fff!important;
+    color:#102326!important;
+    font-family:
+      ui-monospace,
+      SFMono-Regular,
+      Menlo,
+      Monaco,
+      Consolas,
+      monospace!important;
+    font-size:10mm!important;
+    line-height:1!important;
+    font-weight:900!important;
+    letter-spacing:.8mm!important;
+    white-space:nowrap!important;
+  }
+
+  .bulk-qr-print-code{
+    display:block!important;
+    width:60mm!important;
+    height:60mm!important;
+    min-width:60mm!important;
+    min-height:60mm!important;
+    margin:0!important;
+    padding:0!important;
+    background:#fff!important;
+    line-height:0!important;
+  }
+
+  .bulk-qr-print-code canvas,
+  .bulk-qr-print-code img{
+    display:block!important;
+    width:60mm!important;
+    height:60mm!important;
+    max-width:none!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:0!important;
+    image-rendering:pixelated;
+  }
+}
