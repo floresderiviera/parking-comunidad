@@ -67,6 +67,7 @@ function openOwnerImporter(){
 
 async function printSelectedVehicleQrs(rows){
   const ids=[...document.querySelectorAll('.bulk-vehicle:checked')]
+    .filter(x=>!x.closest('tr')?.classList.contains('hide'))
     .map(x=>String(x.value));
 
   if(!ids.length){
