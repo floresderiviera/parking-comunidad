@@ -168,6 +168,53 @@ const ensureScanner=()=>loadExternal('scanner',['https://unpkg.com/html5-qrcode@
 function qrTarget(token){const base=WEB_APP_URL||location.href.split('?')[0];return base+'?q='+encodeURIComponent(token)}
 function qrSize(){return Math.max(220,Math.min(280,window.innerWidth-80))}
 
+const qrPngCache=new Map();
+
+async function qrPngDataUrl(token){
+  const target=qrTarget(token);
+
+  if(qrPngCache.has(target)){
+    return qrPngCache.get(target);
+  }
+
+  await ensureQr();
+
+  const host=document.createElement('div');
+  host.style.cssText=
+    'position:fixed;left:-10000px;top:-10000px;' +
+    'width:512px;height:512px;overflow:hidden;';
+
+  document.body.appendChild(host);
+
+  try{
+    new QRCode(host,{
+      text:target,
+      width:512,
+      height:512,
+      correctLevel:QRCode.CorrectLevel.L
+    });
+
+    await new Promise(resolve=>requestAnimationFrame(resolve));
+    await new Promise(resolve=>requestAnimationFrame(resolve));
+
+    const canvas=host.querySelector('canvas');
+    const img=host.querySelector('img');
+
+    const url=canvas
+      ? canvas.toDataURL('image/png')
+      : img?.src;
+
+    if(!url){
+      throw new Error('No se pudo generar la imagen QR.');
+    }
+
+    qrPngCache.set(target,url);
+    return url;
+  }finally{
+    host.remove();
+  }
+}
+
 
 const ensureXlsx=()=>loadExternal('xlsx',[
   'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
