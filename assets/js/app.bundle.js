@@ -2966,13 +2966,17 @@ async function printSelectedVehicleQrs(rows){
     ids.includes(String(v.ID_Vehiculo))
   );
 
-  const valid=selected.filter(v=>
-    v.Tipo!=='Moto' &&
-    v.Estado==='Activo' &&
-    ['1','2'].includes(String(v.Slot||'')) &&
-    v.QR_Estado==='Activo' &&
-    !!v.QR_Token
-  );
+  const valid=selected.filter(v=>{
+    const tipo=String(v.Tipo||'').trim().toLowerCase();
+
+    return (
+      tipo!=='moto' &&
+      v.Estado==='Activo' &&
+      ['1','2'].includes(String(v.Slot||'')) &&
+      v.QR_Estado==='Activo' &&
+      !!String(v.QR_Token||'').trim()
+    );
+  });
 
   const omitted=selected.length-valid.length;
 
