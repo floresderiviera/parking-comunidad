@@ -452,6 +452,8 @@ const PARKING_UI_EN_EXACT={
   'QR de mi vehículo':'My vehicle QR',
   'Imprimir':'Print',
   'Imprimir QR':'Print QR',
+  'Imprimir al 100% y sin encabezados/pies de página':'Print at 100% without headers/footers',
+  '100% · sin encabezados/pies':'100% · no headers/footers',
   'Descargar PNG':'Download PNG',
 
   'Solicitudes abiertas':'Open requests',

@@ -452,6 +452,8 @@ const PARKING_UI_EN_EXACT={
   'QR de mi vehículo':'My vehicle QR',
   'Imprimir':'Print',
   'Imprimir QR':'Print QR',
+  'Imprimir al 100% y sin encabezados/pies de página':'Print at 100% without headers/footers',
+  '100% · sin encabezados/pies':'100% · no headers/footers',
   'Descargar PNG':'Download PNG',
 
   'Solicitudes abiertas':'Open requests',
@@ -3005,7 +3007,7 @@ async function printSelectedVehicleQrs(rows){
 
     const pages=[];
 
-    for(let i=0;i<cards.length;i+=4){
+    for(let i=0;i<cards.length;i+=2){
       pages.push(`
         <div class="bulk-qr-print-page">
           ${cards.slice(i,i+4).join('')}
@@ -3089,7 +3091,7 @@ async function manager(kind){
   }
   return `<th>${esc(columnLabel(x))}</th>`;
 }).join('')}<th>Acciones</th></tr></thead><tbody id="data-body">${rows.map((r,i)=>`<tr data-i="${i}">${c.cols.map(x=>`<td data-label="${esc(columnLabel(x))}">${renderDisplayCell(kind,r,x)}</td>`).join('')}<td data-label="Acciones">${actions(r,i)}</td></tr>`).join('')}</tbody></table>${rows.length?'':'<div class="empty">No hay registros.</div>'}</div>`;
-    $('#main').innerHTML=`<div class="head"><h1>${c.title}</h1><div class="actions">${exportButtonsHtml('export-current')}<button id="new">＋ Nuevo</button></div></div><div id="editor"></div>${kind==='vehicles'?`<div class="card bulk-vehicle-bar" id="bulk-vehicle-bar"><div class="bulk-vehicle-head"><b>Acciones masivas</b><button type="button" class="secondary mobile-bulk-toggle" id="bulk-vehicle-toggle">Mostrar</button></div><div class="actions bulk-vehicle-actions" id="bulk-vehicle-actions"><button class="secondary" id="bulk-print-qr">Imprimir QR</button><button class="secondary" id="bulk-suspend">Suspender</button><button class="secondary" id="bulk-revoke">Revocar QR</button><button class="danger" id="bulk-low">Dar de baja</button></div></div>`:''}${renderFilterBar(kind)}${tableHtml}`;
+    $('#main').innerHTML=`<div class="head"><h1>${c.title}</h1><div class="actions">${exportButtonsHtml('export-current')}<button id="new">＋ Nuevo</button></div></div><div id="editor"></div>${kind==='vehicles'?`<div class="card bulk-vehicle-bar" id="bulk-vehicle-bar"><div class="bulk-vehicle-head"><b>Acciones masivas</b><button type="button" class="secondary mobile-bulk-toggle" id="bulk-vehicle-toggle">Mostrar</button></div><div class="actions bulk-vehicle-actions" id="bulk-vehicle-actions"><button class="secondary" id="bulk-print-qr" title="Imprimir al 100% y sin encabezados/pies de página">Imprimir QR</button><span class="subtle bulk-print-hint">100% · sin encabezados/pies</span><button class="secondary" id="bulk-suspend">Suspender</button><button class="secondary" id="bulk-revoke">Revocar QR</button><button class="danger" id="bulk-low">Dar de baja</button></div></div>`:''}${renderFilterBar(kind)}${tableHtml}`;
     $('#new').onclick=()=>editor(kind,null);$('#export-current-xlsx').onclick=()=>exportRowsFromCurrent(kind,rows,'xlsx');$('#export-current-csv').onclick=()=>exportRowsFromCurrent(kind,rows,'csv');
     document.querySelectorAll('.edit').forEach(b=>b.onclick=()=>editor(kind,rows[b.dataset.i]));if(kind==='vehicles')document.querySelectorAll('.vehicle-detail').forEach(b=>b.onclick=()=>vehicleDetailView(rows[b.dataset.i].ID_Vehiculo));
     if(kind==='users'){document.querySelectorAll('.password').forEach(b=>b.onclick=()=>passwordEditor(rows[b.dataset.i]));document.querySelectorAll('.close-sessions').forEach(b=>b.onclick=async()=>{const u=rows[b.dataset.i];if(!confirm(`¿Cerrar todas las sesiones activas de ${u.Nombre||u.Email}?`))return;try{await call('closeUserSessions',{id:u.ID_Usuario});toast('Sesiones cerradas.')}catch(e){err(e)}})}
