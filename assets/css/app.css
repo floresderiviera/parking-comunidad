@@ -1600,3 +1600,107 @@ button.vehicle-alert-chip:hover{filter:brightness(.97)}
     width:min(190px,100%);
   }
 }
+
+
+/* QR fixed-size print card
+   Physical target: 100 x 120 mm
+   QR target: 70 x 70 mm
+   Print at 100% scale. */
+@media print {
+  body {
+    background: #fff !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .qr-print-layout {
+    visibility: visible !important;
+    display: block !important;
+    position: absolute !important;
+    top: 10mm !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 100mm !important;
+    height: 120mm !important;
+    margin: 0 !important;
+    padding: 8mm !important;
+    box-sizing: border-box !important;
+    background: #fff !important;
+    border: 1.2mm solid #0b5f50 !important;
+    border-radius: 6mm !important;
+    overflow: hidden !important;
+  }
+
+  .qr-print-layout::before {
+    content: attr(data-print-plate);
+    visibility: visible !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 82mm !important;
+    height: 22mm !important;
+    margin: 0 auto 6mm !important;
+    box-sizing: border-box !important;
+    border: 0.8mm solid #0b5f50 !important;
+    border-radius: 4mm !important;
+    background: #fff !important;
+    color: #102326 !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+    font-size: 12mm !important;
+    line-height: 1 !important;
+    font-weight: 900 !important;
+    letter-spacing: 1mm !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+
+  .qr-print-layout > * {
+    visibility: hidden !important;
+  }
+
+  .qr-print-layout #qr,
+  .qr-print-layout #owner-qr-code,
+  .qr-print-layout #qr *,
+  .qr-print-layout #owner-qr-code * {
+    visibility: visible !important;
+  }
+
+  .qr-print-layout #qr,
+  .qr-print-layout #owner-qr-code {
+    position: absolute !important;
+    top: 38mm !important;
+    left: 15mm !important;
+    width: 70mm !important;
+    height: 70mm !important;
+    min-width: 70mm !important;
+    min-height: 70mm !important;
+    max-width: 70mm !important;
+    max-height: 70mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    line-height: 0 !important;
+  }
+
+  .qr-print-layout #qr canvas,
+  .qr-print-layout #owner-qr-code canvas {
+    width: 70mm !important;
+    height: 70mm !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    image-rendering: pixelated;
+  }
+
+  .qr-print-layout #qr img,
+  .qr-print-layout #owner-qr-code img {
+    width: 70mm !important;
+    height: 70mm !important;
+    max-width: none !important;
+    max-height: none !important;
+  }
+}
