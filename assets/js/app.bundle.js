@@ -3010,7 +3010,7 @@ async function printSelectedVehicleQrs(rows){
     for(let i=0;i<cards.length;i+=2){
       pages.push(`
         <div class="bulk-qr-print-page">
-          ${cards.slice(i,i+4).join('')}
+          ${cards.slice(i,i+2).join('')}
         </div>
       `);
     }
