@@ -367,6 +367,7 @@ const PARKING_UI_EN_EXACT={
   'Origen':'Source',
   'Detalle':'Details',
   'Resolución':'Resolution',
+  'RESOLUCIÓN':'RESOLUTION',
   'Seguimiento':'Follow-up',
   'Intentos':'Attempts',
   'Fecha':'Date',
@@ -382,6 +383,7 @@ const PARKING_UI_EN_EXACT={
   'Matrícula nueva':'New plate',
   'Nueva matrícula habitual':'New main plate',
   'Matrícula observada':'Observed plate',
+  'Matrícula QR':'QR plate',
   'Matrícula comprobada':'Checked plate',
   'Matrícula válida actualmente':'Currently valid plate',
   'Vigencia temporal':'Temporary validity',
@@ -403,6 +405,15 @@ const PARKING_UI_EN_EXACT={
   'Registrada por':'Created by',
   'Registrado por:':'Recorded by:',
   'Cerrada por':'Closed by',
+
+  'Datos técnicos':'Technical data',
+  'Hechos registrados':'Recorded facts',
+  'Evidencias iniciales':'Initial evidence',
+  'Fecha y hora':'Date and time',
+  'EXPEDIENTE DE INCIDENCIA':'INCIDENT CASE',
+  'REGISTRO INICIAL':'INITIAL RECORD',
+  'EVOLUCIÓN':'PROGRESS',
+
 
 
   'Slot':'Slot',

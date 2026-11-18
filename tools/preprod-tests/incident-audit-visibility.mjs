@@ -19,8 +19,8 @@ ok(incidents.includes("false\\n      )") || incidents.includes("false\n      )")
 
 ok(admin.includes("const canSeeActors=hasUiRole('ADMIN')"),'UI actor visibility restricted to ADMIN active role');
 ok(admin.includes("canSeeActors&&actor"),'followup actor conditional');
-ok(admin.includes("canSeeActors?`<div><small>Registrada por"),'incident creator conditional');
-ok(admin.includes("canSeeActors?`Cerrada por"),'closer conditional');
+ok(admin.includes("const auditHtml=canSeeActors?"),'incident creator conditional');
+ok(admin.includes("const resolutionHtml=r.Estado==='Cerrada'?") && admin.includes("canSeeActors?`<div><small>Cerrada por"),'closer conditional');
 
 const pdfStart=admin.indexOf("async function generateIncidentPdf");
 const pdfEnd=admin.indexOf("async function incidents(",pdfStart);
@@ -29,7 +29,7 @@ ok(pdfEnd>pdfStart,'PDF generator boundary found');
 const pdf=admin.slice(pdfStart,pdfEnd);
 
 ok(pdf.includes("heading('Hechos registrados'"),'PDF includes facts section');
-ok(pdf.includes("heading('Trazabilidad del expediente'"),'PDF includes traceability');
+ok(pdf.includes("TRAZABILIDAD DEL EXPEDIENTE") && pdf.includes("traceRows"),'PDF includes traceability');
 ok(!pdf.includes('NombreUsuario'), 'PDF excludes internal creator names');
 ok(!pdf.includes('UsuarioCierre'), 'PDF excludes internal closer names');
 ok(!pdf.includes('Norma o criterio'), 'PDF excludes rule placeholder');
