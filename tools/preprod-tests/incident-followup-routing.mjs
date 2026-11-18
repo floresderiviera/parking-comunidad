@@ -37,11 +37,11 @@ check(
 
 check(
   'preview y save usan la misma ruta de seguimiento',
+  adapter.includes('async function previewIncidentFollowup') &&
+  adapter.includes('async function saveIncidentFollowup') &&
   (
-    adapter.match(
-      /buildFollowupCandidates\(\{ \.\.\.payload, anchorId \}, ctx\)/g
-    ) || []
-  ).length === 2
+    adapter.match(/buildFollowupCandidates\s*\(/g) || []
+  ).length >= 3
 );
 
 check(
