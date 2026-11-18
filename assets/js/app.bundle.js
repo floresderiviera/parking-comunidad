@@ -4252,7 +4252,7 @@ async function generateIncidentPdf(row,housingLabel=''){
     y+=h;
   };
 
-  const photoGrid=async(urls,captionPrefix,{height=42}={})=>{
+  const photoGrid=async(urls,captionPrefix,{height=46}={})=>{
     const list=[...new Set((urls||[]).filter(Boolean))];
     if(!list.length)return;
     const gap=7,w=(contentW-gap)/2,cap=5;
@@ -4284,6 +4284,15 @@ async function generateIncidentPdf(row,housingLabel=''){
     }
   };
 
+  const followupBlockHeight=(f,photoCount)=>{
+    const metaH=18;
+    const observation=clean(f?.Observacion||'');
+    const observationLines=observation ? doc.splitTextToSize(observation,contentW) : [];
+    const observationH=observationLines.length*4+4;
+    const photoH=photoCount ? 42+9 : 0;
+    return 11+metaH+observationH+photoH+8;
+  };
+
   const timelineHeader=(number,title,date)=>{
     need(12);
     const cx=left+3;
@@ -4300,33 +4309,84 @@ async function generateIncidentPdf(row,housingLabel=''){
   const resolutionBox=()=>{
     const actor=visibleActor(row.NombreUsuarioCierre||row.UsuarioCierre);
     const comment=clean(row.ComentarioCierre)||'Sin comentario de cierre.';
-    const commentLines=doc.splitTextToSize(comment,contentW-12);
-    const h=28+commentLines.length*4+(actor?9:0);
+    const innerW=contentW-12;
+    const commentLines=doc.splitTextToSize(comment,innerW);
+
+    const topPad=6;
+    const titleH=8;
+    const metaLabelH=5;
+    const metaValueH=6;
+    const actorH=actor?10:0;
+    const commentTop=5;
+    const commentLineH=4.2;
+    const bottomPad=8;
+
+    const h=
+      topPad+
+      titleH+
+      metaLabelH+
+      metaValueH+
+      actorH+
+      commentTop+
+      commentLines.length*commentLineH+
+      bottomPad;
+
     need(h+4);
-    doc.setFillColor(240,248,244);doc.setDrawColor(187,220,204);
+
+    doc.setFillColor(240,248,244);
+    doc.setDrawColor(187,220,204);
     doc.roundedRect(left,y,contentW,h,3,3,'FD');
 
-    doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...green);
-    doc.text('RESOLUCIÓN FINAL',left+6,y+7);
-    pill('CERRADA',pageW-right-6,y+3,green,[255,255,255],'right');
+    let yy=y+topPad;
 
-    doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...muted);
-    doc.text('Acción',left+6,y+15);
-    doc.text('Fecha de cierre',left+96,y+15);
-    doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...dark);
-    doc.text(clean(row.AccionCierre)||'Sin actuación',left+6,y+20);
-    doc.text(shortDateTime(row.FechaCierre),left+96,y+20);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9);
+    doc.setTextColor(...green);
+    doc.text('RESOLUCIÓN FINAL',left+6,yy+1);
 
-    let yy=y+30;
+    pill('CERRADA',pageW-right-6,y+4,green,[255,255,255],'right');
+
+    yy+=titleH;
+
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(7);
+    doc.setTextColor(...muted);
+    doc.text('Acción',left+6,yy);
+    doc.text('Fecha de cierre',left+96,yy);
+
+    yy+=metaLabelH;
+
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9);
+    doc.setTextColor(...dark);
+    doc.text(clean(row.AccionCierre)||'Sin actuación',left+6,yy);
+    doc.text(shortDateTime(row.FechaCierre),left+96,yy);
+
+    yy+=metaValueH;
+
     if(actor){
-      doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...muted);
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(7);
+      doc.setTextColor(...muted);
       doc.text('Resuelta por',left+6,yy);
-      doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(...dark);
-      doc.text(actor,left+6,yy+4);
-      yy+=9;
+
+      yy+=4;
+
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(...dark);
+      doc.text(actor,left+6,yy);
+
+      yy+=6;
     }
-    doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(...dark);
+
+    yy+=commentTop;
+
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...dark);
     doc.text(commentLines,left+6,yy);
+
     y+=h+6;
   };
 
@@ -4380,7 +4440,7 @@ async function generateIncidentPdf(row,housingLabel=''){
   const initial=incidentPhotoUrls(row);
   if(initial.length){
     heading('Evidencias iniciales',`${initial.length} archivo${initial.length===1?'':'s'}`);
-    await photoGrid(initial,'Evidencia inicial',{height:42});
+    await photoGrid(initial,'Evidencia inicial',{height:46});
   }
 
   const followups=Array.isArray(row.Seguimientos)?row.Seguimientos:[];
@@ -4389,16 +4449,33 @@ async function generateIncidentPdf(row,housingLabel=''){
     heading('Cronología de seguimientos',`${followups.length} seguimiento${followups.length===1?'':'s'}`);
 
     for(const f of followups){
-      timelineHeader(f.NumeroIntento||'',`Seguimiento · intento ${f.NumeroIntento||''}`,shortDateTime(f.FechaHora));
+      const fp=incidentPhotoUrls(f);
+      const estimated=followupBlockHeight(f,fp.length);
+
+      if(y+estimated>pageH-bottom)newPage();
+
+      timelineHeader(
+        f.NumeroIntento||'',
+        `Seguimiento · intento ${f.NumeroIntento||''}`,
+        shortDateTime(f.FechaHora)
+      );
+
       fields([
         ['Situación',f.Situacion||''],
         ['Matrícula observada',f.MatriculaObservada||''],
-        ['Matrícula QR',f.MatriculaAutorizada||''],
-        ['', '']
-      ]);
+        ['Matrícula QR',f.MatriculaAutorizada||'']
+      ],{cols:3,gap:6});
+
       paragraph(f.Observacion||'',{size:8.5,space:4});
-      const fp=incidentPhotoUrls(f);
-      if(fp.length)await photoGrid(fp,`Evidencia ${f.NumeroIntento||''}`,{height:38});
+
+      if(fp.length){
+        await photoGrid(
+          fp,
+          `Evidencia ${f.NumeroIntento||''}`,
+          {height:42}
+        );
+      }
+
       if(f!==followups[followups.length-1]){
         doc.setDrawColor(...line);
         doc.line(left+3,y-2,left+3,y+3);
