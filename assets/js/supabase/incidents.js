@@ -119,14 +119,17 @@
     return [...new Set([primary, ...(extra || [])].filter(Boolean))];
   }
 
-  function mapFollowup(row, photoUrl = '', photos = []) {
+  function mapFollowup(row, refs = null, photoUrl = '', photos = []) {
     const allPhotos = evidenceList(photoUrl, photos);
+    const creator = refs?.profiles?.get(row.created_by) || {};
     return {
       ID_Seguimiento: row.id,
       ID_Incidencia: row.incident_id,
       ID_EventoSeguimiento: row.followup_event_id || '',
       NumeroIntento: row.attempt_number,
       FechaHora: row.occurred_at,
+      Usuario: creator.email || '',
+      NombreUsuario: creator.name || creator.email || '',
       MatriculaObservada: row.observed_plate || '',
       MatriculaAutorizada: row.authorized_plate || '',
       Situacion: row.situation || '',
@@ -184,11 +187,11 @@
     return actions;
   }
 
-  function mapIncident(row, refs, followups, photoUrl = '', photos = []) {
+  function mapIncident(row, refs, followups, photoUrl = '', photos = [], includeActors = true) {
     const h = refs.housingById.get(row.dwelling_id) || {};
     const v = refs.vehicleById.get(row.vehicle_id) || {};
-    const creator = refs.profiles.get(row.created_by) || {};
-    const closer = refs.profiles.get(row.closed_by) || {};
+    const creator = includeActors ? (refs.profiles.get(row.created_by) || {}) : {};
+    const closer = includeActors ? (refs.profiles.get(row.closed_by) || {}) : {};
     return {
       ID_Incidencia: row.id,
       ID_Evento: row.event_id || '',
@@ -301,6 +304,7 @@
       followupsByIncident.get(key).push(
         mapFollowup(
           row,
+          refs,
           urls.get(row.photo_url) || '',
           followupPhotos.get(row.id) || []
         )
@@ -312,7 +316,8 @@
       refs,
       followupsByIncident.get(row.id) || [],
       urls.get(row.photo_url) || '',
-      incidentPhotos.get(row.id) || []
+      incidentPhotos.get(row.id) || [],
+      true
     ));
   }
 
@@ -379,7 +384,7 @@
       }
 
       followupsByIncident.get(key).push(
-        mapFollowup(row)
+        mapFollowup(row, null)
       );
     });
 
@@ -387,7 +392,10 @@
       mapIncident(
         row,
         refs,
-        followupsByIncident.get(row.id) || []
+        followupsByIncident.get(row.id) || [],
+        '',
+        [],
+        false
       )
     );
   }

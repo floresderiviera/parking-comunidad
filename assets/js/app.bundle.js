@@ -400,6 +400,10 @@ const PARKING_UI_EN_EXACT={
   'Observaciones':'Notes',
   'Comentario':'Comment',
   'Comentario de cierre':'Closing comment',
+  'Registrada por':'Created by',
+  'Registrado por:':'Recorded by:',
+  'Cerrada por':'Closed by',
+
 
   'Slot':'Slot',
   'Slots':'Slots',
@@ -4164,38 +4168,40 @@ async function generateIncidentPdf(row,housingLabel=''){
 
   const doc=new lib.jsPDF({unit:'mm',format:'a4',orientation:'portrait'});
   const pageW=210,pageH=297,left=16,right=16,contentW=178,bottom=17;
-  const green=[31,103,84],dark=[25,38,48],muted=[100,116,139],line=[226,232,240],soft=[246,248,250];
+  const green=[31,103,84],dark=[25,38,48],muted=[100,116,139],line=[226,232,240],soft=[246,248,250],softGreen=[240,248,244];
+  const shortId=String(row.ID_Incidencia||'INCIDENCIA').slice(0,8).toUpperCase();
+  const officialName=String(appDisplayName()||'Parking Comunidad').replace(/^Urbanizacion\b/i,'Urbanización');
+  const clean=v=>String(v??'').trim();
+  const formatOrigin=v=>{
+    const x=clean(v);
+    if(x.toUpperCase()==='MATRICULA')return 'Matrícula';
+    if(x.toUpperCase()==='QR')return 'QR';
+    return x||'Manual';
+  };
   let y=16;
 
-  const clean=v=>String(v??'').trim();
-  const samePlate=(a,b)=>normalizePlateClient(a||'')&&normalizePlateClient(a||'')===normalizePlateClient(b||'');
-  const shortId=String(row.ID_Incidencia||'INCIDENCIA').slice(0,8).toUpperCase();
-  const visibleActor=v=>{
-    const x=clean(v);
-    return x&&x!=='—' ? x : '';
+  const newPage=(title='')=>{
+    doc.addPage();y=16;
+    if(title){
+      doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...green);
+      doc.text(`INC-${shortId} · ${clean(row.MatriculaObservada||row.MatriculaInfraccion||'')}`,left,10);
+      doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...muted);
+      doc.text(title,pageW-right,10,{align:'right'});
+      doc.setDrawColor(...line);doc.line(left,13,pageW-right,13);
+      y=21;
+    }
   };
-  const newPage=()=>{doc.addPage();y=16};
-  const need=h=>{if(y+h>pageH-bottom)newPage()};
-
-  const pill=(text,x,py,fill,textColor=[255,255,255],align='left')=>{
-    doc.setFont('helvetica','bold');doc.setFontSize(8);
-    const w=Math.max(24,doc.getTextWidth(text)+8);
-    const bx=align==='right'?x-w:x;
-    doc.setFillColor(...fill);doc.roundedRect(bx,py,w,7,3.5,3.5,'F');
-    doc.setTextColor(...textColor);doc.text(text,bx+w/2,py+4.7,{align:'center'});
-    return w;
-  };
+  const need=h=>{if(y+h>pageH-bottom)newPage('Continuación del expediente')};
 
   const heading=(title,subtitle='')=>{
-    need(subtitle?14:10);
+    need(13);
     doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(...dark);
     doc.text(String(title).toUpperCase(),left,y);
     if(subtitle){
       doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(...muted);
       doc.text(subtitle,pageW-right,y,{align:'right'});
     }
-    y+=3;
-    doc.setDrawColor(...line);doc.line(left,y,pageW-right,y);y+=6;
+    y+=3;doc.setDrawColor(...line);doc.line(left,y,pageW-right,y);y+=6;
   };
 
   const metricCards=items=>{
@@ -4208,8 +4214,7 @@ async function generateIncidentPdf(row,housingLabel=''){
       doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...muted);
       doc.text(String(item[0]),x+3,y+5);
       doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(...dark);
-      const val=doc.splitTextToSize(String(item[1]||''),w-6);
-      doc.text(val.slice(0,2),x+3,y+11);
+      doc.text(doc.splitTextToSize(String(item[1]||''),w-6).slice(0,2),x+3,y+11);
     });
     y+=h+6;
   };
@@ -4218,17 +4223,12 @@ async function generateIncidentPdf(row,housingLabel=''){
     const colW=(contentW-gap*(cols-1))/cols;
     for(let i=0;i<pairs.length;i+=cols){
       const group=pairs.slice(i,i+cols);
-      const visible=group.some(p=>clean(p?.[1]));
-      if(!visible)continue;
-
+      if(!group.some(p=>clean(p?.[1])))continue;
       const heights=group.map(p=>{
         if(!p||!clean(p[1]))return 0;
-        const lines=doc.splitTextToSize(clean(p[1]),colW-2);
-        return 6+Math.max(1,lines.length)*4;
+        return 6+Math.max(1,doc.splitTextToSize(clean(p[1]),colW-2).length)*4;
       });
-      const rowH=Math.max(12,...heights);
-      need(rowH);
-
+      const rowH=Math.max(12,...heights);need(rowH);
       group.forEach((p,j)=>{
         if(!p||!clean(p[1]))return;
         const x=left+j*(colW+gap);
@@ -4241,42 +4241,34 @@ async function generateIncidentPdf(row,housingLabel=''){
     }
   };
 
-  const paragraph=(text,{size=9,color=dark,space=5,maxWidth=contentW}={})=>{
-    const value=clean(text);
-    if(!value)return;
+  const paragraph=(text,{size=9,space=5,maxWidth=contentW}={})=>{
+    const value=clean(text);if(!value)return;
     const lines=doc.splitTextToSize(value,maxWidth);
-    const h=lines.length*4+space;
-    need(h);
-    doc.setFont('helvetica','normal');doc.setFontSize(size);doc.setTextColor(...color);
-    doc.text(lines,left,y);
-    y+=h;
+    need(lines.length*4+space);
+    doc.setFont('helvetica','normal');doc.setFontSize(size);doc.setTextColor(...dark);
+    doc.text(lines,left,y);y+=lines.length*4+space;
   };
 
-  const photoGrid=async(urls,captionPrefix,{height=46}={})=>{
+  const photoGrid=async(urls,captionPrefix,{height=50}={})=>{
     const list=[...new Set((urls||[]).filter(Boolean))];
     if(!list.length)return;
     const gap=7,w=(contentW-gap)/2,cap=5;
     for(let i=0;i<list.length;i+=2){
-      const pair=list.slice(i,i+2);
-      const rowH=height+cap+4;
+      const pair=list.slice(i,i+2),rowH=height+cap+4;
       need(rowH);
       const loaded=await Promise.all(pair.map(incidentPdfImage));
       loaded.forEach((data,j)=>{
         const x=left+j*(w+gap);
         doc.setFillColor(250,251,252);doc.setDrawColor(...line);
         doc.roundedRect(x,y,w,height,2,2,'FD');
-
         if(data){
           try{
             const prop=doc.getImageProperties(data);
-            const iw=prop.width,ih=prop.height;
-            const scale=Math.min((w-2)/iw,(height-2)/ih);
-            const rw=iw*scale,rh=ih*scale;
-            const ix=x+(w-rw)/2,iy=y+(height-rh)/2;
-            doc.addImage(data,prop.fileType||'JPEG',ix,iy,rw,rh,undefined,'FAST');
+            const scale=Math.min((w-2)/prop.width,(height-2)/prop.height);
+            const rw=prop.width*scale,rh=prop.height*scale;
+            doc.addImage(data,prop.fileType||'JPEG',x+(w-rw)/2,y+(height-rh)/2,rw,rh,undefined,'FAST');
           }catch(_){}
         }
-
         doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(...muted);
         doc.text(`${captionPrefix} ${i+j+1}`,x,y+height+4);
       });
@@ -4284,122 +4276,59 @@ async function generateIncidentPdf(row,housingLabel=''){
     }
   };
 
-  const followupBlockHeight=(f,photoCount)=>{
-    const metaH=18;
-    const observation=clean(f?.Observacion||'');
-    const observationLines=observation ? doc.splitTextToSize(observation,contentW) : [];
-    const observationH=observationLines.length*4+4;
-    const photoH=photoCount ? 42+9 : 0;
-    return 11+metaH+observationH+photoH+8;
+  const auditLine=(label,date)=>{
+    doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(...dark);
+    doc.text(label,left+4,y);
+    doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...muted);
+    doc.text(shortDateTime(date),pageW-right-4,y,{align:'right'});
+    y+=6;
   };
 
-  const timelineHeader=(number,title,date)=>{
-    need(12);
-    const cx=left+3;
-    doc.setFillColor(...green);doc.circle(cx,y+2,3,'F');
-    doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(255,255,255);
-    doc.text(String(number),cx,y+3,{align:'center'});
-    doc.setFontSize(10);doc.setTextColor(...dark);
-    doc.text(title,left+10,y+3);
-    doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(...muted);
-    doc.text(date||'',pageW-right,y+3,{align:'right'});
-    y+=9;
+  const followupBlockHeight=(f,photoCount)=>{
+    const obs=clean(f?.Observacion||'');
+    const obsH=(obs?doc.splitTextToSize(obs,contentW).length:0)*4+5;
+    return 12+18+obsH+(photoCount?55:0)+7;
   };
 
   const resolutionBox=()=>{
-    const actor=visibleActor(row.NombreUsuarioCierre||row.UsuarioCierre);
     const comment=clean(row.ComentarioCierre)||'Sin comentario de cierre.';
-    const innerW=contentW-12;
-    const commentLines=doc.splitTextToSize(comment,innerW);
-
-    const topPad=6;
-    const titleH=8;
-    const metaLabelH=5;
-    const metaValueH=6;
-    const actorH=actor?10:0;
-    const commentTop=5;
-    const commentLineH=4.2;
-    const bottomPad=8;
-
-    const h=
-      topPad+
-      titleH+
-      metaLabelH+
-      metaValueH+
-      actorH+
-      commentTop+
-      commentLines.length*commentLineH+
-      bottomPad;
-
+    const lines=doc.splitTextToSize(comment,contentW-12);
+    const h=34+lines.length*4.2;
     need(h+4);
-
-    doc.setFillColor(240,248,244);
-    doc.setDrawColor(187,220,204);
+    doc.setFillColor(...softGreen);doc.setDrawColor(187,220,204);
     doc.roundedRect(left,y,contentW,h,3,3,'FD');
-
-    let yy=y+topPad;
-
-    doc.setFont('helvetica','bold');
-    doc.setFontSize(9);
-    doc.setTextColor(...green);
-    doc.text('RESOLUCIÓN FINAL',left+6,yy+1);
-
-    pill('CERRADA',pageW-right-6,y+4,green,[255,255,255],'right');
-
-    yy+=titleH;
-
-    doc.setFont('helvetica','normal');
-    doc.setFontSize(7);
-    doc.setTextColor(...muted);
-    doc.text('Acción',left+6,yy);
-    doc.text('Fecha de cierre',left+96,yy);
-
-    yy+=metaLabelH;
-
-    doc.setFont('helvetica','bold');
-    doc.setFontSize(9);
-    doc.setTextColor(...dark);
-    doc.text(clean(row.AccionCierre)||'Sin actuación',left+6,yy);
-    doc.text(shortDateTime(row.FechaCierre),left+96,yy);
-
-    yy+=metaValueH;
-
-    if(actor){
-      doc.setFont('helvetica','normal');
-      doc.setFontSize(7);
-      doc.setTextColor(...muted);
-      doc.text('Resuelta por',left+6,yy);
-
-      yy+=4;
-
-      doc.setFont('helvetica','bold');
-      doc.setFontSize(8.5);
-      doc.setTextColor(...dark);
-      doc.text(actor,left+6,yy);
-
-      yy+=6;
+    let yy=y+7;
+    doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.setTextColor(...green);
+    doc.text('RESOLUCIÓN',left+6,yy);
+    if(row.Estado==='Cerrada'){
+      doc.setFillColor(...green);doc.roundedRect(pageW-right-32,y+4,26,7,3.5,3.5,'F');
+      doc.setTextColor(255,255,255);doc.setFontSize(8);
+      doc.text('CERRADA',pageW-right-19,y+8.7,{align:'center'});
     }
-
-    yy+=commentTop;
-
-    doc.setFont('helvetica','normal');
-    doc.setFontSize(8.5);
-    doc.setTextColor(...dark);
-    doc.text(commentLines,left+6,yy);
-
+    yy+=9;
+    doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...muted);
+    doc.text('Acción realizada',left+6,yy);
+    doc.text('Fecha y hora',left+100,yy);
+    yy+=5;
+    doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...dark);
+    doc.text(clean(row.AccionCierre)||'Sin actuación',left+6,yy);
+    doc.text(shortDateTime(row.FechaCierre),left+100,yy);
+    yy+=8;
+    doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(...dark);
+    doc.text(lines,left+6,yy);
     y+=h+6;
   };
 
-  doc.setFillColor(...green);doc.rect(0,0,pageW,27,'F');
+  doc.setFillColor(...green);doc.rect(0,0,pageW,29,'F');
   doc.setFont('helvetica','bold');doc.setFontSize(16);doc.setTextColor(255,255,255);
   doc.text('INFORME DE INCIDENCIA',left,11);
   doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(228,244,238);
-  doc.text(appDisplayName(),left,17);
-  doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(255,255,255);
+  doc.text(officialName,left,18);
+  doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(255,255,255);
   doc.text(`INC-${shortId}`,pageW-right,11,{align:'right'});
   doc.setFont('helvetica','normal');doc.setFontSize(7.5);
-  doc.text(row.Estado==='Cerrada'?'INFORME FINAL':'INFORME PROVISIONAL',pageW-right,17,{align:'right'});
-  y=34;
+  doc.text(row.Estado==='Cerrada'?'INFORME FINAL':'INFORME PROVISIONAL',pageW-right,18,{align:'right'});
+  y=36;
 
   metricCards([
     ['Matrícula',row.MatriculaObservada||row.MatriculaInfraccion||'—'],
@@ -4410,100 +4339,79 @@ async function generateIncidentPdf(row,housingLabel=''){
 
   heading('Datos del expediente');
   fields([
-    ['Fecha de apertura',shortDateTime(row.FechaHora)],
+    ['Fecha y hora de apertura',shortDateTime(row.FechaHora)],
     ['Vivienda',housingLabel||''],
     ['Tipo',row.Tipo||''],
     ['Situación',row.Situacion||''],
     ['Causa',row.Causa||''],
-    ['Origen',row.OrigenControl||'Manual'],
+    ['Origen',formatOrigin(row.OrigenControl)],
     ['Matrícula habitual',row.MatriculaHabitualOrigen||row.MatriculaHabitualVehiculo||''],
     ['Tipo de vehículo',row.TipoVehiculoOrigen||row.TipoVehiculo||''],
     ['Estado al crear',row.EstadoVehiculoOrigen||''],
     ['Slot origen',row.SlotOrigen||'']
   ]);
 
-  const creator=visibleActor(row.NombreUsuario||row.Usuario);
-  if(creator)fields([['Registrada por',creator]],{cols:1});
-
+  heading('Hechos registrados',shortDateTime(row.FechaHora));
   paragraph(row.Descripcion||'Sin descripción.',{size:9,space:6});
-
-  const related=row.MatriculaRelacionada||row.MatriculaAutorizada||'';
-  const observed=row.MatriculaObservada||row.MatriculaInfraccion||row.MatriculaHabitualOrigen||'';
-  if(related&&!samePlate(related,observed)){
-    heading('Vehículo / QR relacionado');
-    fields([
-      ['Matrícula relacionada',related],
-      ['QR al crear',row.QR_EstadoOrigen||'']
-    ]);
-  }
 
   const initial=incidentPhotoUrls(row);
   if(initial.length){
     heading('Evidencias iniciales',`${initial.length} archivo${initial.length===1?'':'s'}`);
-    await photoGrid(initial,'Evidencia inicial',{height:46});
+    await photoGrid(initial,'Evidencia',{height:54});
   }
 
   const followups=Array.isArray(row.Seguimientos)?row.Seguimientos:[];
   if(followups.length){
-    if(y>225)newPage();
-    heading('Cronología de seguimientos',`${followups.length} seguimiento${followups.length===1?'':'s'}`);
+    newPage('Cronología del expediente');
+    heading('Seguimientos',`${followups.length} seguimiento${followups.length===1?'':'s'}`);
 
     for(const f of followups){
       const fp=incidentPhotoUrls(f);
       const estimated=followupBlockHeight(f,fp.length);
+      if(y+estimated>pageH-bottom)newPage('Cronología del expediente');
 
-      if(y+estimated>pageH-bottom)newPage();
-
-      timelineHeader(
-        f.NumeroIntento||'',
-        `Seguimiento · intento ${f.NumeroIntento||''}`,
-        shortDateTime(f.FechaHora)
-      );
-
+      auditLine(`Seguimiento · intento ${f.NumeroIntento||''}`,f.FechaHora);
       fields([
         ['Situación',f.Situacion||''],
         ['Matrícula observada',f.MatriculaObservada||''],
         ['Matrícula QR',f.MatriculaAutorizada||'']
       ],{cols:3,gap:6});
-
       paragraph(f.Observacion||'',{size:8.5,space:4});
 
       if(fp.length){
-        await photoGrid(
-          fp,
-          `Evidencia ${f.NumeroIntento||''}`,
-          {height:42}
-        );
+        await photoGrid(fp,`Intento ${f.NumeroIntento||''} · Evidencia`,{height:46});
       }
-
-      if(f!==followups[followups.length-1]){
-        doc.setDrawColor(...line);
-        doc.line(left+3,y-2,left+3,y+3);
-        y+=4;
-      }
+      y+=3;
     }
+  }else{
+    newPage('Resolución del expediente');
   }
 
   if(row.Estado==='Cerrada'){
     resolutionBox();
   }else{
-    need(18);
+    need(20);
     doc.setFillColor(255,248,235);doc.setDrawColor(245,215,160);
-    doc.roundedRect(left,y,contentW,16,3,3,'FD');
+    doc.roundedRect(left,y,contentW,17,3,3,'FD');
     doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(180,83,9);
     doc.text('INCIDENCIA ABIERTA',left+6,y+6);
     doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...dark);
-    doc.text('Pendiente de resolución.',left+6,y+11);
-    y+=21;
+    doc.text('Pendiente de resolución.',left+6,y+12);
+    y+=23;
   }
+
+  heading('Trazabilidad del expediente');
+  need(8*(followups.length+2)+4);
+  auditLine('Incidencia registrada',row.FechaHora);
+  followups.forEach(f=>auditLine(`Seguimiento · intento ${f.NumeroIntento||''}`,f.FechaHora));
+  if(row.Estado==='Cerrada'&&row.FechaCierre)auditLine('Resolución',row.FechaCierre);
 
   const total=doc.getNumberOfPages();
   const generated=new Date().toLocaleString('es-ES');
   for(let p=1;p<=total;p++){
-    doc.setPage(p);
-    doc.setDrawColor(...line);doc.line(left,pageH-12,pageW-right,pageH-12);
+    doc.setPage(p);doc.setDrawColor(...line);doc.line(left,pageH-12,pageW-right,pageH-12);
     doc.setFont('helvetica','normal');doc.setFontSize(6.7);doc.setTextColor(...muted);
-    doc.text(`Parking Comunidad · INC-${shortId} · ${generated}`,left,pageH-7);
+    doc.text(`${officialName} · INC-${shortId} · ${generated}`,left,pageH-7);
     doc.text(`Página ${p} de ${total}`,pageW-right,pageH-7,{align:'right'});
   }
 
@@ -4539,6 +4447,7 @@ async function incidents(openId=''){
       return rows.filter(r=>(!type||r.Tipo===type)&&(!status||r.Estado===status)&&(!origin||(r.OrigenControl||'Manual')===origin)&&(!priority||r.Prioridad===priority)&&(!repeatOnly||Number(r.Intentos||1)>1)&&periodMatches(r.FechaHora,period,from,to)&&[...Object.values(r),recordHousingLabel(r,housingMap[r.ID_Vivienda])].join(' ').toLowerCase().includes(q)).sort((a,b)=>{const c=String(val(a,sortKey)).localeCompare(String(val(b,sortKey)),'es',{numeric:true,sensitivity:'base'});return sortDir==='asc'?c:-c});
     };
     const detail=r=>{
+      const canSeeActors=hasUiRole('ADMIN');
       const h=housingMap[r.ID_Vivienda],host=$('#incident-detail'),linked=!!r.ID_Vehiculo,isMoto=(r.TipoVehiculo||r.TipoVehiculoOrigen)==='Moto',actions=r.AccionesDisponibles||['Sin actuación','Aviso al propietario','Otra'];
       const qrLinked=incidentIsQrLinkedCase(r),relatedCases=incidentRelatedCasesClient(r,rows),relatedPlates=incidentRelatedPlatesClient(r,relatedCases,incidentPlate);
       const observedPlate=r.MatriculaHabitualVehiculo||r.MatriculaHabitualOrigen||r.MatriculaObservada||'vehículo observado',qrOwnerPlate=r.MatriculaRelacionada||r.MatriculaAutorizada||'vehículo propietario del QR';
@@ -4550,8 +4459,8 @@ async function incidents(openId=''){
       const topActions=`<div class="actions">${hasUiRole('ADMIN')?`<button class="secondary" id="inc-detail-pdf">Generar PDF</button>`:''}${hasUiRole('ADMIN')&&r.Estado==='Abierta'?`<button id="inc-detail-close-case">Resolver incidencia</button>`:''}<button class="secondary" id="inc-detail-close">Cerrar detalle</button></div>`;
       const relationHtml=qrLinked&&relatedPlates.length?`<div class="message"><b>Vehículos relacionados (${relatedPlates.length}):</b><div>${relatedPlates.map(x=>`<span class="subtle"><b>${esc(x)}</b></span>`).join(' · ')}</div></div>`:(!qrLinked&&r.MatriculaRelacionada?`<div class="message"><b>Relacionado con:</b> ${esc(r.MatriculaRelacionada)}${r.ID_Evento?` · Evento ${esc(r.ID_Evento)}`:''}</div>`:'');
       const linkedHtml=relatedCases.length?`<div class="message"><b>${qrLinked?'Incidencias vinculadas por uso de QR':'Incidencias vinculadas'}:</b><div class="actions">${relatedCases.map(x=>`<button type="button" class="secondary inc-linked" data-id="${esc(x.ID_Incidencia)}">${esc(linkedLabel(x))}</button>`).join('')}</div></div>`:'';
-      const followupsHtml=(r.Seguimientos||[]).length?`<div class="incident-timeline"><h4>Seguimiento</h4>${(r.Seguimientos||[]).map(x=>{const eventCount=eventFollowupCount(x),related=eventFollowupRelated(x);return `<div class="incident-followup"><div><b>Intento ${esc(x.NumeroIntento||'')}</b> · ${esc(shortDateTime(x.FechaHora))}</div>${x.Situacion?`<div class="subtle"><b>Situación:</b> ${esc(x.Situacion)}</div>`:''}${x.MatriculaObservada?`<div class="subtle"><b>Matrícula observada:</b> ${esc(x.MatriculaObservada)}</div>`:''}${x.MatriculaAutorizada?`<div class="subtle"><b>Matrícula asociada al QR:</b> ${esc(x.MatriculaAutorizada)}</div>`:''}${eventCount>1?`<div class="subtle"><b>Evento vinculado:</b> ${esc(eventCount)} incidencias en este intento</div>`:''}${related.length?`<div class="subtle"><b>Relacionadas en este intento:</b> ${esc(related.join(' · '))}</div>`:''}<div>${esc(x.Observacion||'')}</div>${incidentEvidenceLinks(x,'Evidencia seguimiento')}</div>`}).join('')}</div>`:'';
-      host.innerHTML=`<section class="card detail-panel"><div class="head"><div><h3>${esc(r.Tipo)} · ${esc(incidentPlate(r))}</h3><span class="status ${r.Estado==='Cerrada'?'':'bad'}">${esc(r.Estado||'Abierta')}</span></div>${topActions}</div><div class="details"><div><small>Fecha</small>${esc(shortDateTime(r.FechaHora))}</div><div><small>Vivienda</small>${esc(recordHousingLabel(r,h))}</div><div><small>Registrada por</small>${esc(r.NombreUsuario||r.Usuario||'—')}</div><div><small>Origen</small>${esc(r.OrigenControl||'Manual')}</div><div><small>Prioridad</small><span class="incident-priority ${String(r.Prioridad||'Normal').toLowerCase()}">${esc(r.Prioridad||'Normal')}</span></div><div><small>Intentos</small>${esc(r.Intentos||1)}</div>${r.UltimoSeguimiento?`<div><small>Último seguimiento</small>${esc(shortDateTime(r.UltimoSeguimiento))}</div>`:''}${r.Situacion?`<div><small>Situación</small>${esc(r.Situacion)}</div>`:''}${r.Causa?`<div><small>Causa</small>${esc(r.Causa)}</div>`:''}${r.Tipo==='Vehículo inmovilizado / posible abandono'?`<div><small>ITV vencida</small>${esc(r.ITV_Vencida||'No verificado')}</div><div><small>Fuga / pérdida</small>${esc(r.FugaLiquidos||'No')}</div>`:''}${r.EstadoOrigen?`<div><small>Situación detectada</small>${esc(r.EstadoOrigen)}</div>`:''}${linked?`<div><small>Vehículo vinculado</small>${esc(r.MatriculaHabitualVehiculo||r.MatriculaHabitualOrigen||r.MatriculaAutorizada||'Sí')}</div><div><small>Tipo vehículo</small>${esc(isMoto?'Moto':r.TipoVehiculo||r.TipoVehiculoOrigen||'Vehículo')}</div><div><small>Estado actual</small>${esc(r.EstadoVehiculo||'—')}</div><div><small>Estado al crear</small>${esc(r.EstadoVehiculoOrigen||'—')}</div><div><small>QR actual</small>${esc(isMoto?'No aplica':r.EstadoQR||'—')}</div><div><small>QR al crear</small>${esc(isMoto?'No aplica':r.QREstadoOrigen||'—')}</div><div><small>Slot origen</small>${esc(isMoto?'No aplica':r.SlotOrigen||'—')}</div>`:''}</div>${r.MatriculaAutorizada&&['QR no corresponde con matrícula','Uso indebido','Acceso no autorizado'].includes(r.Tipo)&&r.OrigenControl==='QR'?`<p><b>Matrícula asociada al QR:</b> ${esc(r.MatriculaAutorizada)}</p>`:''}<p>${esc(r.Descripcion||'')}</p>${relationHtml}${linkedHtml}<div class="incident-main-evidence">${incidentEvidenceLinks(r,'Evidencia inicial')}</div><div id="incident-close-editor"></div>${followupsHtml}${r.Estado==='Cerrada'?`<div class="message"><b>Acción de cierre:</b> ${esc(r.AccionCierre||'Sin actuación')}<br><b>Comentario:</b> ${esc(r.ComentarioCierre||'—')}<br><span class="subtle">Cerrada por ${esc(r.NombreUsuarioCierre||r.UsuarioCierre||'—')} · ${esc(shortDateTime(r.FechaCierre))}</span></div>`:''}</section>`;
+      const followupsHtml=(r.Seguimientos||[]).length?`<div class="incident-timeline"><h4>Seguimiento</h4>${(r.Seguimientos||[]).map(x=>{const eventCount=eventFollowupCount(x),related=eventFollowupRelated(x),actor=x.NombreUsuario||x.Usuario||'';return `<div class="incident-followup"><div><b>Intento ${esc(x.NumeroIntento||'')}</b> · ${esc(shortDateTime(x.FechaHora))}</div>${canSeeActors&&actor?`<div class="subtle"><b>Registrado por:</b> ${esc(actor)}</div>`:''}${x.Situacion?`<div class="subtle"><b>Situación:</b> ${esc(x.Situacion)}</div>`:''}${x.MatriculaObservada?`<div class="subtle"><b>Matrícula observada:</b> ${esc(x.MatriculaObservada)}</div>`:''}${x.MatriculaAutorizada?`<div class="subtle"><b>Matrícula asociada al QR:</b> ${esc(x.MatriculaAutorizada)}</div>`:''}${eventCount>1?`<div class="subtle"><b>Evento vinculado:</b> ${esc(eventCount)} incidencias en este intento</div>`:''}${related.length?`<div class="subtle"><b>Relacionadas en este intento:</b> ${esc(related.join(' · '))}</div>`:''}<div>${esc(x.Observacion||'')}</div>${incidentEvidenceLinks(x,'Evidencia seguimiento')}</div>`}).join('')}</div>`:'';
+      host.innerHTML=`<section class="card detail-panel"><div class="head"><div><h3>${esc(r.Tipo)} · ${esc(incidentPlate(r))}</h3><span class="status ${r.Estado==='Cerrada'?'':'bad'}">${esc(r.Estado||'Abierta')}</span></div>${topActions}</div><div class="details"><div><small>Fecha</small>${esc(shortDateTime(r.FechaHora))}</div><div><small>Vivienda</small>${esc(recordHousingLabel(r,h))}</div>${canSeeActors?`<div><small>Registrada por</small>${esc(r.NombreUsuario||r.Usuario||'Usuario técnico / ROOT')}</div>`:''}<div><small>Origen</small>${esc(r.OrigenControl||'Manual')}</div><div><small>Prioridad</small><span class="incident-priority ${String(r.Prioridad||'Normal').toLowerCase()}">${esc(r.Prioridad||'Normal')}</span></div><div><small>Intentos</small>${esc(r.Intentos||1)}</div>${r.UltimoSeguimiento?`<div><small>Último seguimiento</small>${esc(shortDateTime(r.UltimoSeguimiento))}</div>`:''}${r.Situacion?`<div><small>Situación</small>${esc(r.Situacion)}</div>`:''}${r.Causa?`<div><small>Causa</small>${esc(r.Causa)}</div>`:''}${r.Tipo==='Vehículo inmovilizado / posible abandono'?`<div><small>ITV vencida</small>${esc(r.ITV_Vencida||'No verificado')}</div><div><small>Fuga / pérdida</small>${esc(r.FugaLiquidos||'No')}</div>`:''}${r.EstadoOrigen?`<div><small>Situación detectada</small>${esc(r.EstadoOrigen)}</div>`:''}${linked?`<div><small>Vehículo vinculado</small>${esc(r.MatriculaHabitualVehiculo||r.MatriculaHabitualOrigen||r.MatriculaAutorizada||'Sí')}</div><div><small>Tipo vehículo</small>${esc(isMoto?'Moto':r.TipoVehiculo||r.TipoVehiculoOrigen||'Vehículo')}</div><div><small>Estado actual</small>${esc(r.EstadoVehiculo||'—')}</div><div><small>Estado al crear</small>${esc(r.EstadoVehiculoOrigen||'—')}</div><div><small>QR actual</small>${esc(isMoto?'No aplica':r.EstadoQR||'—')}</div><div><small>QR al crear</small>${esc(isMoto?'No aplica':r.QREstadoOrigen||'—')}</div><div><small>Slot origen</small>${esc(isMoto?'No aplica':r.SlotOrigen||'—')}</div>`:''}</div>${r.MatriculaAutorizada&&['QR no corresponde con matrícula','Uso indebido','Acceso no autorizado'].includes(r.Tipo)&&r.OrigenControl==='QR'?`<p><b>Matrícula asociada al QR:</b> ${esc(r.MatriculaAutorizada)}</p>`:''}<p>${esc(r.Descripcion||'')}</p>${relationHtml}${linkedHtml}<div class="incident-main-evidence">${incidentEvidenceLinks(r,'Evidencia inicial')}</div><div id="incident-close-editor"></div>${followupsHtml}${r.Estado==='Cerrada'?`<div class="message"><b>Acción de cierre:</b> ${esc(r.AccionCierre||'Sin actuación')}<br><b>Comentario:</b> ${esc(r.ComentarioCierre||'—')}<br><span class="subtle">${canSeeActors?`Cerrada por ${esc(r.NombreUsuarioCierre||r.UsuarioCierre||'Usuario técnico / ROOT')} · `:''}${esc(shortDateTime(r.FechaCierre))}</span></div>`:''}</section>`;
       $('#inc-detail-close').onclick=()=>host.innerHTML='';const pdfBtn=$('#inc-detail-pdf');if(pdfBtn)pdfBtn.onclick=async()=>{busy(pdfBtn);try{await generateIncidentPdf(r,recordHousingLabel(r,h));toast('PDF generado.')}catch(e){toast(e.message||'No se pudo generar el PDF.',true)}finally{busy(pdfBtn,false)}};document.querySelectorAll('.inc-linked').forEach(b=>b.onclick=()=>detail(rows.find(x=>x.ID_Incidencia===b.dataset.id)));
       const close=$('#inc-detail-close-case');
       if(close)close.onclick=()=>{

@@ -400,6 +400,10 @@ const PARKING_UI_EN_EXACT={
   'Observaciones':'Notes',
   'Comentario':'Comment',
   'Comentario de cierre':'Closing comment',
+  'Registrada por':'Created by',
+  'Registrado por:':'Recorded by:',
+  'Cerrada por':'Closed by',
+
 
   'Slot':'Slot',
   'Slots':'Slots',
