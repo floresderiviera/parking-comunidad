@@ -281,6 +281,10 @@ Object.assign(PARKING_I18N.en,{
 
 
 const PARKING_UI_EN_EXACT={
+  'Puedes adjuntar un máximo de 5 fotografías.': 'You can attach a maximum of 5 photos.',
+  'Cada foto original debe pesar como máximo 12 MB.': 'Each original photo must be no larger than 12 MB.',
+  'Las fotografías quedarán asociadas a este seguimiento.': 'The photos will be attached to this follow-up.',
+  'Debes adjuntar al menos una fotografía al seguimiento.': 'You must attach at least one photo to the follow-up.',
   'Inicio':'Home',
   'Resumen':'Overview',
   'Resumen del parking':'Parking overview',

@@ -281,6 +281,10 @@ Object.assign(PARKING_I18N.en,{
 
 
 const PARKING_UI_EN_EXACT={
+  'Puedes adjuntar un máximo de 5 fotografías.': 'You can attach a maximum of 5 photos.',
+  'Cada foto original debe pesar como máximo 12 MB.': 'Each original photo must be no larger than 12 MB.',
+  'Las fotografías quedarán asociadas a este seguimiento.': 'The photos will be attached to this follow-up.',
+  'Debes adjuntar al menos una fotografía al seguimiento.': 'You must attach at least one photo to the follow-up.',
   'Inicio':'Home',
   'Resumen':'Overview',
   'Resumen del parking':'Parking overview',
@@ -4003,12 +4007,12 @@ function controlFollowupForm(r,incident){
   const host=$('#control-body'),v=r.vehicle||{},linked=incident.linkedOpenIncidents||[],plate=incident.MatriculaObservada||r.query||r.currentPlate||v.MatriculaHabitual||'';
   const linkedInfo=linked.length>1?`<div class="message wide"><b>Evento vinculado · ${esc(linked.length)} incidencias abiertas</b><br><span class="subtle">Al registrar el seguimiento se reevaluará el evento completo. Si la matrícula observada corresponde a otro vehículo, las incidencias existentes recibirán seguimiento y las patas nuevas se crearán como incidencias nuevas.</span><ul>${linked.map(x=>`<li>${esc(x.ID_Incidencia)} · ${esc(x.Tipo)}${x.Situacion?` · ${esc(x.Situacion)}`:''}${x.MatriculaInfraccion?` · ${esc(x.MatriculaInfraccion)}`:''}</li>`).join('')}</ul></div>`:'';
   document.body.classList.add('incident-entry-mode');
-  host.innerHTML=`<form class="card form incident-create-form" id="control-followup-form"><h2 class="wide">Registrar seguimiento</h2><div class="message wide"><b>${esc(incident.Tipo)}</b>${incident.Situacion?` · ${esc(incident.Situacion)}`:''}<br><span class="subtle">Incidencia ${esc(incident.ID_Incidencia)} · intento actual ${esc(incident.Intentos||1)}</span></div>${linkedInfo}<div class="field"><label>Matrícula observada</label><input name="MatriculaObservada" value="${esc(plate)}" required></div><div class="field wide"><label>Observación *</label><textarea name="Observacion" required placeholder="Describe lo observado en este nuevo intento..."></textarea></div><div class="field"><label>Foto / evidencia *</label><input id="follow-photo" type="file" accept="image/*" capture="environment" required></div><input type="hidden" name="Foto"><div class="wide actions"><button type="submit">REGISTRAR SEGUIMIENTO</button><button type="button" class="secondary" id="cancel-followup">Cancelar</button></div></form>`;
+  host.innerHTML=`<form class="card form incident-create-form" id="control-followup-form"><h2 class="wide">Registrar seguimiento</h2><div class="message wide"><b>${esc(incident.Tipo)}</b>${incident.Situacion?` · ${esc(incident.Situacion)}`:''}<br><span class="subtle">Incidencia ${esc(incident.ID_Incidencia)} · intento actual ${esc(incident.Intentos||1)}</span></div>${linkedInfo}<div class="field"><label>Matrícula observada</label><input name="MatriculaObservada" value="${esc(plate)}" required></div><div class="field wide"><label>Observación *</label><textarea name="Observacion" required placeholder="Describe lo observado en este nuevo intento..."></textarea></div><div class="field wide"><label>Fotos / evidencias * <span class="muted">(máx. 5)</span></label><input id="follow-photo" type="file" accept="image/*" capture="environment" multiple required><span class="subtle">Las fotografías quedarán asociadas a este seguimiento.</span><div id="follow-photo-status" class="subtle"></div></div><input type="hidden" name="Foto"><input type="hidden" name="FotosJson"><div class="wide actions"><button type="submit">REGISTRAR SEGUIMIENTO</button><button type="button" class="secondary" id="cancel-followup">Cancelar</button></div></form>`;
   $('#cancel-followup').onclick=()=>{document.body.classList.remove('incident-entry-mode');resultCard(r)};
-  $('#follow-photo').onchange=async e=>{const file=e.target.files[0];if(!file)return;if(file.size>12*1024*1024){toast('La foto original no puede superar 12 MB.',true);e.target.value='';return}const submit=$('#control-followup-form button[type=submit]');busy(submit);try{const dataUrl=await optimizedImageData(file),out=await call('uploadPhoto',{dataUrl});$('#control-followup-form [name=Foto]').value=out.url;toast('Foto subida.')}catch(x){e.target.value='';$('#control-followup-form [name=Foto]').value='';err(x)}finally{busy(submit,false)}};
+  $('#follow-photo').onchange=async e=>{const files=[...(e.target.files||[])];const status=$('#follow-photo-status');if(!files.length)return;if(files.length>5){toast('Puedes adjuntar un máximo de 5 fotografías.',true);e.target.value='';return}if(files.some(file=>file.size>12*1024*1024)){toast('Cada foto original debe pesar como máximo 12 MB.',true);e.target.value='';return}const submit=$('#control-followup-form button[type=submit]');busy(submit);status.textContent=`Subiendo 0/${files.length}…`;try{const urls=[];for(let i=0;i<files.length;i++){const dataUrl=await optimizedImageData(files[i]);const out=await call('uploadPhoto',{dataUrl});urls.push(out.url);status.textContent=`Subiendo ${i+1}/${files.length}…`}$('#control-followup-form [name=Foto]').value=urls[0]||'';$('#control-followup-form [name=FotosJson]').value=JSON.stringify(urls);status.textContent=`${urls.length} foto${urls.length===1?'':'s'} lista${urls.length===1?'':'s'} para registrar.`;toast(`${urls.length} foto${urls.length===1?'':'s'} subida${urls.length===1?'':'s'}.`)}catch(x){e.target.value='';$('#control-followup-form [name=Foto]').value='';$('#control-followup-form [name=FotosJson]').value='';status.textContent='';err(x)}finally{busy(submit,false)}};
   $('#control-followup-form').onsubmit=async e=>{
-    e.preventDefault();const b=e.submitter,data=Object.fromEntries(new FormData(e.target));if(!data.Foto){toast('La fotografía del seguimiento es obligatoria.',true);return}
-    const payload={anchorId:incident.ID_Incidencia,autoEvent:true,Observacion:data.Observacion,Foto:data.Foto,MatriculaObservada:data.MatriculaObservada,OrigenControl:incident.OrigenControl||r.source||'MATRICULA',EstadoOrigen:incident.EstadoOrigen||r.status||''};
+    e.preventDefault();const b=e.submitter,data=Object.fromEntries(new FormData(e.target));try{data.Fotos=JSON.parse(data.FotosJson||'[]')}catch(_){data.Fotos=[]}if(!data.Fotos.length){toast('Debes adjuntar al menos una fotografía al seguimiento.',true);return}data.Foto=data.Fotos[0];
+    const payload={anchorId:incident.ID_Incidencia,autoEvent:true,Observacion:data.Observacion,Foto:data.Foto,Fotos:data.Fotos,MatriculaObservada:data.MatriculaObservada,OrigenControl:incident.OrigenControl||r.source||'MATRICULA',EstadoOrigen:incident.EstadoOrigen||r.status||''};
     busy(b);try{
       const plan=await call('previewIncidentFollowup',payload);
       if(!plan.canSave){toast(plan.summary?.skippedToday?'Las incidencias vinculadas ya fueron registradas o seguidas hoy.':'No hay incidencias abiertas disponibles para seguimiento.',true);busy(b,false);return}
@@ -4124,6 +4128,185 @@ function incidentRelatedPlatesClient(row,relatedCases,plateOf){
   return [...new Set(values.map(normalizePlateClient).filter(x=>x&&x!==own))];
 }
 
+function incidentPhotoUrls(row){
+  return [...new Set([
+    ...(Array.isArray(row?.Fotos) ? row.Fotos : []),
+    row?.Foto
+  ].filter(Boolean))];
+}
+function incidentEvidenceLinks(row,label='Evidencia'){
+  const photos=incidentPhotoUrls(row);
+  if(!photos.length)return '';
+  return `<div class="actions incident-evidence-links">${photos.map((url,i)=>`<a class="btn secondary" href="${esc(url)}" target="_blank" rel="noopener">${esc(label)} ${i+1}</a>`).join('')}</div>`;
+}
+async function incidentPdfImage(url){
+  try{
+    const res=await fetch(url,{cache:'no-store'});
+    if(!res.ok)throw new Error('image');
+    const blob=await res.blob();
+    return await new Promise((ok,no)=>{
+      const r=new FileReader();
+      r.onload=()=>ok(r.result);
+      r.onerror=no;
+      r.readAsDataURL(blob);
+    });
+  }catch(_){return ''}
+}
+async function generateIncidentPdf(row,housingLabel=''){
+  const lib=await loadExternal(
+    'jspdf',
+    [
+      'https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js'
+    ],
+    'jspdf'
+  );
+  const doc=new lib.jsPDF({unit:'mm',format:'a4',orientation:'portrait'});
+  const pageW=210,pageH=297,left=16,right=16,contentW=178,bottom=18;
+  let y=16;
+  const newPage=()=>{doc.addPage();y=18};
+  const need=h=>{if(y+h>pageH-bottom)newPage()};
+  const section=title=>{
+    need(12);y+=2;
+    doc.setFillColor(241,245,249);
+    doc.roundedRect(left,y-5,contentW,8,1.5,1.5,'F');
+    doc.setTextColor(30,41,59);
+    doc.setFont('helvetica','bold');doc.setFontSize(10);
+    doc.text(String(title).toUpperCase(),left+3,y);
+    doc.setTextColor(15,23,42);y+=8;
+  };
+  const grid=pairs=>{
+    const colW=86;
+    for(let i=0;i<pairs.length;i+=2){
+      const group=pairs.slice(i,i+2);
+      const heights=group.map(p=>doc.splitTextToSize(String(p[1]||'—'),colW).length*4+6);
+      const rowH=Math.max(13,...heights);need(rowH);
+      group.forEach((p,j)=>{
+        const x=left+j*92;
+        doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(100,116,139);
+        doc.text(String(p[0]),x,y);
+        doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.setTextColor(15,23,42);
+        doc.text(doc.splitTextToSize(String(p[1]||'—'),colW),x,y+4);
+      });
+      y+=rowH;
+    }
+  };
+  const paragraph=text=>{
+    const lines=doc.splitTextToSize(String(text||'—'),contentW);
+    need(lines.length*4.2+4);
+    doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor(30,41,59);
+    doc.text(lines,left,y);y+=lines.length*4.2+4;
+  };
+  const photos=async(urls,caption)=>{
+    const list=[...new Set((urls||[]).filter(Boolean))];
+    if(!list.length)return;
+    const w=86;
+    for(let i=0;i<list.length;i+=2){
+      const pair=list.slice(i,i+2);
+      const loaded=await Promise.all(pair.map(incidentPdfImage));
+      const items=loaded.map(data=>{
+        if(!data)return {data:'',h:25};
+        try{
+          const prop=doc.getImageProperties(data);
+          return {data,h:Math.min(60,(w-2)*prop.height/prop.width)};
+        }catch(_){return {data:'',h:25}}
+      });
+      const h=Math.max(25,...items.map(x=>x.h));
+      need(h+11);
+      items.forEach((item,j)=>{
+        const x=left+j*92;
+        doc.setDrawColor(203,213,225);
+        doc.roundedRect(x,y,w,h,1.5,1.5,'S');
+        if(item.data){
+          const prop=doc.getImageProperties(item.data);
+          const ih=item.h,iy=y+(h-ih)/2;
+          doc.addImage(item.data,prop.fileType||'JPEG',x+1,iy+1,w-2,Math.max(1,ih-2),undefined,'FAST');
+        }else{
+          doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(100,116,139);
+          doc.text('Imagen no disponible',x+4,y+10);
+        }
+        doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(71,85,105);
+        doc.text(`${caption} ${i+j+1}`,x,y+h+4);
+      });
+      y+=h+10;
+    }
+  };
+
+  doc.setTextColor(15,23,42);doc.setFont('helvetica','bold');doc.setFontSize(18);
+  doc.text('INFORME DE INCIDENCIA',left,y);
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(71,85,105);
+  doc.text(appDisplayName(),left,y+6);
+  doc.setFont('helvetica','bold');
+  if(row.Estado==='Cerrada')doc.setTextColor(22,101,52);else doc.setTextColor(180,83,9);
+  doc.text(row.Estado==='Cerrada'?'INFORME FINAL':'INFORME PROVISIONAL - INCIDENCIA ABIERTA',pageW-right,y+6,{align:'right'});
+  y+=16;
+
+  grid([
+    ['Incidencia',row.ID_Incidencia||'—'],['Fecha',shortDateTime(row.FechaHora)],
+    ['Estado',row.Estado||'Abierta'],['Prioridad',row.Prioridad||'Normal'],
+    ['Origen',row.OrigenControl||'Manual'],['Intentos',row.Intentos||1]
+  ]);
+
+  section('Vehículo y vivienda');
+  grid([
+    ['Matrícula observada',row.MatriculaObservada||row.MatriculaInfraccion||'—'],['Vivienda',housingLabel||'—'],
+    ['Matrícula habitual',row.MatriculaHabitualOrigen||row.MatriculaHabitualVehiculo||'—'],['Tipo vehículo',row.TipoVehiculoOrigen||row.TipoVehiculo||'—'],
+    ['Estado al crear',row.EstadoVehiculoOrigen||'—'],['Slot origen',row.SlotOrigen||'—']
+  ]);
+
+  section('Detalle de la incidencia');
+  grid([
+    ['Tipo',row.Tipo||'—'],['Situación',row.Situacion||'—'],
+    ['Causa',row.Causa||'—'],['Registrada por',row.NombreUsuario||row.Usuario||'—']
+  ]);
+  paragraph(row.Descripcion||'Sin descripción.');
+
+  if(row.MatriculaRelacionada||row.MatriculaAutorizada){
+    section('Vehículo / QR relacionado');
+    grid([
+      ['Matrícula relacionada',row.MatriculaRelacionada||row.MatriculaAutorizada||'—'],
+      ['QR al crear',row.QR_EstadoOrigen||'—']
+    ]);
+  }
+
+  const initial=incidentPhotoUrls(row);
+  if(initial.length){section('Evidencias iniciales');await photos(initial,'Evidencia inicial')}
+
+  for(const f of (row.Seguimientos||[])){
+    section(`Seguimiento - intento ${f.NumeroIntento||''}`);
+    grid([
+      ['Fecha',shortDateTime(f.FechaHora)],['Matrícula observada',f.MatriculaObservada||'—'],
+      ['Situación',f.Situacion||'—'],['Matrícula QR',f.MatriculaAutorizada||'—']
+    ]);
+    paragraph(f.Observacion||'Sin observación.');
+    const fp=incidentPhotoUrls(f);
+    if(fp.length)await photos(fp,`Evidencia seguimiento ${f.NumeroIntento||''}`);
+  }
+
+  section('Resolución');
+  if(row.Estado==='Cerrada'){
+    grid([
+      ['Acción',row.AccionCierre||'Sin actuación'],['Fecha de cierre',shortDateTime(row.FechaCierre)],
+      ['Resuelta por',row.NombreUsuarioCierre||row.UsuarioCierre||'—'],['Estado','Cerrada']
+    ]);
+    paragraph(row.ComentarioCierre||'Sin comentario de cierre.');
+  }else{
+    paragraph('Incidencia pendiente de resolución.');
+  }
+
+  const total=doc.getNumberOfPages();
+  for(let p=1;p<=total;p++){
+    doc.setPage(p);doc.setDrawColor(226,232,240);doc.line(left,pageH-12,pageW-right,pageH-12);
+    doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(100,116,139);
+    doc.text(`Documento generado desde Parking Comunidad - ${new Date().toLocaleString('es-ES')}`,left,pageH-7);
+    doc.text(`Página ${p} de ${total}`,pageW-right,pageH-7,{align:'right'});
+  }
+
+  const plate=normalizePlateClient(row.MatriculaObservada||row.MatriculaInfraccion||row.MatriculaHabitualOrigen||'SIN_MATRICULA');
+  const id=String(row.ID_Incidencia||'INCIDENCIA').slice(0,8).toUpperCase();
+  doc.save(`Informe_Incidencia_${plate}_${id}.pdf`);
+}
+
 async function incidents(openId=''){
   try{
     const focusId=openId||state.cache.incidentFocus||'';delete state.cache.incidentFocus;const navPreset=state.cache.incidentPreset||null;delete state.cache.incidentPreset;
@@ -4161,12 +4344,12 @@ async function incidents(openId=''){
       const eventParticipants=event=>{const participants=event?rows.filter(row=>row.ID_Evento===event||(row.Seguimientos||[]).some(s=>s.ID_EventoSeguimiento===event)):[];return qrLinked?participants.filter(incidentIsQrLinkedCase):participants};
       const eventFollowupCount=x=>eventParticipants(x.ID_EventoSeguimiento||'').length||1;
       const eventFollowupRelated=x=>eventParticipants(x.ID_EventoSeguimiento||'').filter(row=>row.ID_Incidencia!==r.ID_Incidencia).map(linkedLabel);
-      const topActions=`<div class="actions">${hasUiRole('ADMIN')&&r.Estado==='Abierta'?`<button id="inc-detail-close-case">Resolver incidencia</button>`:''}<button class="secondary" id="inc-detail-close">Cerrar detalle</button></div>`;
+      const topActions=`<div class="actions">${hasUiRole('ADMIN')?`<button class="secondary" id="inc-detail-pdf">Generar PDF</button>`:''}${hasUiRole('ADMIN')&&r.Estado==='Abierta'?`<button id="inc-detail-close-case">Resolver incidencia</button>`:''}<button class="secondary" id="inc-detail-close">Cerrar detalle</button></div>`;
       const relationHtml=qrLinked&&relatedPlates.length?`<div class="message"><b>Vehículos relacionados (${relatedPlates.length}):</b><div>${relatedPlates.map(x=>`<span class="subtle"><b>${esc(x)}</b></span>`).join(' · ')}</div></div>`:(!qrLinked&&r.MatriculaRelacionada?`<div class="message"><b>Relacionado con:</b> ${esc(r.MatriculaRelacionada)}${r.ID_Evento?` · Evento ${esc(r.ID_Evento)}`:''}</div>`:'');
       const linkedHtml=relatedCases.length?`<div class="message"><b>${qrLinked?'Incidencias vinculadas por uso de QR':'Incidencias vinculadas'}:</b><div class="actions">${relatedCases.map(x=>`<button type="button" class="secondary inc-linked" data-id="${esc(x.ID_Incidencia)}">${esc(linkedLabel(x))}</button>`).join('')}</div></div>`:'';
-      const followupsHtml=(r.Seguimientos||[]).length?`<div class="incident-timeline"><h4>Seguimiento</h4>${(r.Seguimientos||[]).map(x=>{const eventCount=eventFollowupCount(x),related=eventFollowupRelated(x);return `<div class="incident-followup"><div><b>Intento ${esc(x.NumeroIntento||'')}</b> · ${esc(shortDateTime(x.FechaHora))}</div>${x.Situacion?`<div class="subtle"><b>Situación:</b> ${esc(x.Situacion)}</div>`:''}${x.MatriculaObservada?`<div class="subtle"><b>Matrícula observada:</b> ${esc(x.MatriculaObservada)}</div>`:''}${x.MatriculaAutorizada?`<div class="subtle"><b>Matrícula asociada al QR:</b> ${esc(x.MatriculaAutorizada)}</div>`:''}${eventCount>1?`<div class="subtle"><b>Evento vinculado:</b> ${esc(eventCount)} incidencias en este intento</div>`:''}${related.length?`<div class="subtle"><b>Relacionadas en este intento:</b> ${esc(related.join(' · '))}</div>`:''}<div>${esc(x.Observacion||'')}</div>${x.Foto?`<a href="${esc(x.Foto)}" target="_blank" rel="noopener">Ver evidencia</a>`:''}</div>`}).join('')}</div>`:'';
-      host.innerHTML=`<section class="card detail-panel"><div class="head"><div><h3>${esc(r.Tipo)} · ${esc(incidentPlate(r))}</h3><span class="status ${r.Estado==='Cerrada'?'':'bad'}">${esc(r.Estado||'Abierta')}</span></div>${topActions}</div><div class="details"><div><small>Fecha</small>${esc(shortDateTime(r.FechaHora))}</div><div><small>Vivienda</small>${esc(recordHousingLabel(r,h))}</div><div><small>Registrada por</small>${esc(r.NombreUsuario||r.Usuario||'—')}</div><div><small>Origen</small>${esc(r.OrigenControl||'Manual')}</div><div><small>Prioridad</small><span class="incident-priority ${String(r.Prioridad||'Normal').toLowerCase()}">${esc(r.Prioridad||'Normal')}</span></div><div><small>Intentos</small>${esc(r.Intentos||1)}</div>${r.UltimoSeguimiento?`<div><small>Último seguimiento</small>${esc(shortDateTime(r.UltimoSeguimiento))}</div>`:''}${r.Situacion?`<div><small>Situación</small>${esc(r.Situacion)}</div>`:''}${r.Causa?`<div><small>Causa</small>${esc(r.Causa)}</div>`:''}${r.Tipo==='Vehículo inmovilizado / posible abandono'?`<div><small>ITV vencida</small>${esc(r.ITV_Vencida||'No verificado')}</div><div><small>Fuga / pérdida</small>${esc(r.FugaLiquidos||'No')}</div>`:''}${r.EstadoOrigen?`<div><small>Situación detectada</small>${esc(r.EstadoOrigen)}</div>`:''}${linked?`<div><small>Vehículo vinculado</small>${esc(r.MatriculaHabitualVehiculo||r.MatriculaHabitualOrigen||r.MatriculaAutorizada||'Sí')}</div><div><small>Tipo vehículo</small>${esc(isMoto?'Moto':r.TipoVehiculo||r.TipoVehiculoOrigen||'Vehículo')}</div><div><small>Estado actual</small>${esc(r.EstadoVehiculo||'—')}</div><div><small>Estado al crear</small>${esc(r.EstadoVehiculoOrigen||'—')}</div><div><small>QR actual</small>${esc(isMoto?'No aplica':r.EstadoQR||'—')}</div><div><small>QR al crear</small>${esc(isMoto?'No aplica':r.QREstadoOrigen||'—')}</div><div><small>Slot origen</small>${esc(isMoto?'No aplica':r.SlotOrigen||'—')}</div>`:''}</div>${r.MatriculaAutorizada&&['QR no corresponde con matrícula','Uso indebido','Acceso no autorizado'].includes(r.Tipo)&&r.OrigenControl==='QR'?`<p><b>Matrícula asociada al QR:</b> ${esc(r.MatriculaAutorizada)}</p>`:''}<p>${esc(r.Descripcion||'')}</p>${relationHtml}${linkedHtml}<div class="actions incident-main-evidence">${r.Foto?`<a class="btn secondary" href="${esc(r.Foto)}" target="_blank" rel="noopener">Ver foto principal</a>`:''}</div><div id="incident-close-editor"></div>${followupsHtml}${r.Estado==='Cerrada'?`<div class="message"><b>Acción de cierre:</b> ${esc(r.AccionCierre||'Sin actuación')}<br><b>Comentario:</b> ${esc(r.ComentarioCierre||'—')}<br><span class="subtle">Cerrada por ${esc(r.NombreUsuarioCierre||r.UsuarioCierre||'—')} · ${esc(shortDateTime(r.FechaCierre))}</span></div>`:''}</section>`;
-      $('#inc-detail-close').onclick=()=>host.innerHTML='';document.querySelectorAll('.inc-linked').forEach(b=>b.onclick=()=>detail(rows.find(x=>x.ID_Incidencia===b.dataset.id)));
+      const followupsHtml=(r.Seguimientos||[]).length?`<div class="incident-timeline"><h4>Seguimiento</h4>${(r.Seguimientos||[]).map(x=>{const eventCount=eventFollowupCount(x),related=eventFollowupRelated(x);return `<div class="incident-followup"><div><b>Intento ${esc(x.NumeroIntento||'')}</b> · ${esc(shortDateTime(x.FechaHora))}</div>${x.Situacion?`<div class="subtle"><b>Situación:</b> ${esc(x.Situacion)}</div>`:''}${x.MatriculaObservada?`<div class="subtle"><b>Matrícula observada:</b> ${esc(x.MatriculaObservada)}</div>`:''}${x.MatriculaAutorizada?`<div class="subtle"><b>Matrícula asociada al QR:</b> ${esc(x.MatriculaAutorizada)}</div>`:''}${eventCount>1?`<div class="subtle"><b>Evento vinculado:</b> ${esc(eventCount)} incidencias en este intento</div>`:''}${related.length?`<div class="subtle"><b>Relacionadas en este intento:</b> ${esc(related.join(' · '))}</div>`:''}<div>${esc(x.Observacion||'')}</div>${incidentEvidenceLinks(x,'Evidencia seguimiento')}</div>`}).join('')}</div>`:'';
+      host.innerHTML=`<section class="card detail-panel"><div class="head"><div><h3>${esc(r.Tipo)} · ${esc(incidentPlate(r))}</h3><span class="status ${r.Estado==='Cerrada'?'':'bad'}">${esc(r.Estado||'Abierta')}</span></div>${topActions}</div><div class="details"><div><small>Fecha</small>${esc(shortDateTime(r.FechaHora))}</div><div><small>Vivienda</small>${esc(recordHousingLabel(r,h))}</div><div><small>Registrada por</small>${esc(r.NombreUsuario||r.Usuario||'—')}</div><div><small>Origen</small>${esc(r.OrigenControl||'Manual')}</div><div><small>Prioridad</small><span class="incident-priority ${String(r.Prioridad||'Normal').toLowerCase()}">${esc(r.Prioridad||'Normal')}</span></div><div><small>Intentos</small>${esc(r.Intentos||1)}</div>${r.UltimoSeguimiento?`<div><small>Último seguimiento</small>${esc(shortDateTime(r.UltimoSeguimiento))}</div>`:''}${r.Situacion?`<div><small>Situación</small>${esc(r.Situacion)}</div>`:''}${r.Causa?`<div><small>Causa</small>${esc(r.Causa)}</div>`:''}${r.Tipo==='Vehículo inmovilizado / posible abandono'?`<div><small>ITV vencida</small>${esc(r.ITV_Vencida||'No verificado')}</div><div><small>Fuga / pérdida</small>${esc(r.FugaLiquidos||'No')}</div>`:''}${r.EstadoOrigen?`<div><small>Situación detectada</small>${esc(r.EstadoOrigen)}</div>`:''}${linked?`<div><small>Vehículo vinculado</small>${esc(r.MatriculaHabitualVehiculo||r.MatriculaHabitualOrigen||r.MatriculaAutorizada||'Sí')}</div><div><small>Tipo vehículo</small>${esc(isMoto?'Moto':r.TipoVehiculo||r.TipoVehiculoOrigen||'Vehículo')}</div><div><small>Estado actual</small>${esc(r.EstadoVehiculo||'—')}</div><div><small>Estado al crear</small>${esc(r.EstadoVehiculoOrigen||'—')}</div><div><small>QR actual</small>${esc(isMoto?'No aplica':r.EstadoQR||'—')}</div><div><small>QR al crear</small>${esc(isMoto?'No aplica':r.QREstadoOrigen||'—')}</div><div><small>Slot origen</small>${esc(isMoto?'No aplica':r.SlotOrigen||'—')}</div>`:''}</div>${r.MatriculaAutorizada&&['QR no corresponde con matrícula','Uso indebido','Acceso no autorizado'].includes(r.Tipo)&&r.OrigenControl==='QR'?`<p><b>Matrícula asociada al QR:</b> ${esc(r.MatriculaAutorizada)}</p>`:''}<p>${esc(r.Descripcion||'')}</p>${relationHtml}${linkedHtml}<div class="incident-main-evidence">${incidentEvidenceLinks(r,'Evidencia inicial')}</div><div id="incident-close-editor"></div>${followupsHtml}${r.Estado==='Cerrada'?`<div class="message"><b>Acción de cierre:</b> ${esc(r.AccionCierre||'Sin actuación')}<br><b>Comentario:</b> ${esc(r.ComentarioCierre||'—')}<br><span class="subtle">Cerrada por ${esc(r.NombreUsuarioCierre||r.UsuarioCierre||'—')} · ${esc(shortDateTime(r.FechaCierre))}</span></div>`:''}</section>`;
+      $('#inc-detail-close').onclick=()=>host.innerHTML='';const pdfBtn=$('#inc-detail-pdf');if(pdfBtn)pdfBtn.onclick=async()=>{busy(pdfBtn);try{await generateIncidentPdf(r,recordHousingLabel(r,h));toast('PDF generado.')}catch(e){toast(e.message||'No se pudo generar el PDF.',true)}finally{busy(pdfBtn,false)}};document.querySelectorAll('.inc-linked').forEach(b=>b.onclick=()=>detail(rows.find(x=>x.ID_Incidencia===b.dataset.id)));
       const close=$('#inc-detail-close-case');
       if(close)close.onclick=()=>{
         $('#incident-close-editor').innerHTML=`<form class="form" id="incident-close-form" style="margin-top:1rem"><div class="field"><label>Acción realizada</label><select name="AccionCierre" id="incident-close-action" required><option value="">Selecciona una acción</option>${actions.map(x=>`<option value="${esc(x)}">${esc(actionLabel(x))}</option>`).join('')}</select></div><div class="field wide"><label>Comentario de cierre</label><textarea name="ComentarioCierre" required placeholder="Qué se hizo, contacto con propietario, observaciones..."></textarea></div><div class="message wide" id="incident-action-help"></div><div class="wide actions"><button>CONFIRMAR Y CERRAR</button><button type="button" class="secondary" id="cancel-close-inc">Cancelar</button></div></form>`;
@@ -4240,13 +4423,13 @@ function incidentScenarioHelp(type){const map={'Matrícula no registrada':'La ma
 function normalizePlateClient(v){return String(v||'').replace(/[\s-]/g,'').toUpperCase()}
 function incidentForm(prefill=state.scanResult){
   const p=prefill||{},v=p.vehicle||{},origin=p.source||'Manual',status=p.status||(origin==='Manual'?'Registro manual':''),host=state.view==='control'?$('#control-body'):$('#incident-editor'),allowedTypes=incidentTypesForContext(Object.assign({},p,{source:origin,status:status})),fixedType=origin==='QR'?'':incidentTypeFromStatus(status),suggested=fixedType||allowedTypes[0]||'Otro',basePlate=p.query||p.currentPlate||v.MatriculaHabitual||'',authorizedPlate=origin==='QR'?(v.MatriculaHabitual||p.currentPlate||''):'';
-  host.innerHTML=`<form class="card form incident-create-form" id="incident-form"><h2 class="wide">Registrar incidencia</h2><div class="field"><label>Matrícula observada</label><input name="MatriculaObservada" id="incident-observed-plate" value="${esc(basePlate)}" required></div><div class="field"><label>Situación detectada por Control</label><input value="${esc(status||'Registro manual')}" disabled></div><div class="field"><label>Tipo</label>${fixedType?`<input value="${esc(fixedType)}" disabled><input type="hidden" name="Tipo" id="incident-create-type" value="${esc(fixedType)}">`:`<select name="Tipo" id="incident-create-type">${allowedTypes.map(x=>`<option ${x===suggested?'selected':''}>${esc(x)}</option>`).join('')}</select>`}</div><div class="field hide" id="incident-authorized-field"><label>Matrícula asociada al QR</label><input name="MatriculaAutorizada" id="incident-authorized-plate" value="${esc(authorizedPlate)}" ${origin==='QR'?'readonly':''}></div><div class="field hide" id="incident-situation-field"><label>Situación</label><select name="Situacion" id="incident-situation"></select></div><div class="field hide" id="incident-itv-field"><label>ITV vencida</label><select name="ITV_Vencida"><option>No verificado</option><option>Sí</option><option>No</option></select></div><div class="field hide" id="incident-leak-field"><label>Fuga / pérdida de líquidos</label><select name="FugaLiquidos"><option>No</option><option>Sí</option></select></div><div class="message wide" id="incident-scenario-help"></div><div class="field wide"><label>Observación *</label><textarea name="Descripcion" required placeholder="Describe lo observado..."></textarea></div><div class="field"><label>Foto / evidencia *</label><input id="photo" type="file" accept="image/*" capture="environment" required><span class="subtle">Obligatoria tanto para una nueva incidencia como para un seguimiento.</span></div><input type="hidden" name="Foto"><input type="hidden" name="EstadoOrigen" value="${esc(status)}"><input type="hidden" name="OrigenControl" value="${esc(origin)}"><div class="wide actions"><button type="submit">REGISTRAR INCIDENCIA</button><button type="button" class="secondary" id="cancel-inc">Cancelar</button></div></form>`;
+  host.innerHTML=`<form class="card form incident-create-form" id="incident-form"><h2 class="wide">Registrar incidencia</h2><div class="field"><label>Matrícula observada</label><input name="MatriculaObservada" id="incident-observed-plate" value="${esc(basePlate)}" required></div><div class="field"><label>Situación detectada por Control</label><input value="${esc(status||'Registro manual')}" disabled></div><div class="field"><label>Tipo</label>${fixedType?`<input value="${esc(fixedType)}" disabled><input type="hidden" name="Tipo" id="incident-create-type" value="${esc(fixedType)}">`:`<select name="Tipo" id="incident-create-type">${allowedTypes.map(x=>`<option ${x===suggested?'selected':''}>${esc(x)}</option>`).join('')}</select>`}</div><div class="field hide" id="incident-authorized-field"><label>Matrícula asociada al QR</label><input name="MatriculaAutorizada" id="incident-authorized-plate" value="${esc(authorizedPlate)}" ${origin==='QR'?'readonly':''}></div><div class="field hide" id="incident-situation-field"><label>Situación</label><select name="Situacion" id="incident-situation"></select></div><div class="field hide" id="incident-itv-field"><label>ITV vencida</label><select name="ITV_Vencida"><option>No verificado</option><option>Sí</option><option>No</option></select></div><div class="field hide" id="incident-leak-field"><label>Fuga / pérdida de líquidos</label><select name="FugaLiquidos"><option>No</option><option>Sí</option></select></div><div class="message wide" id="incident-scenario-help"></div><div class="field wide"><label>Observación *</label><textarea name="Descripcion" required placeholder="Describe lo observado..."></textarea></div><div class="field wide"><label>Fotos / evidencias * <span class="muted">(máx. 5)</span></label><input id="photo" type="file" accept="image/*" capture="environment" multiple required><span class="subtle">Selecciona entre 1 y 5 fotografías. Se guardarán vinculadas a esta incidencia.</span><div id="incident-photo-status" class="subtle"></div></div><input type="hidden" name="Foto"><input type="hidden" name="FotosJson"><input type="hidden" name="EstadoOrigen" value="${esc(status)}"><input type="hidden" name="OrigenControl" value="${esc(origin)}"><div class="wide actions"><button type="submit">REGISTRAR INCIDENCIA</button><button type="button" class="secondary" id="cancel-inc">Cancelar</button></div></form>`;
   const typeSel=$('#incident-create-type'),authorized=$('#incident-authorized-field'),authorizedInput=$('#incident-authorized-plate'),observed=$('#incident-observed-plate'),situationBox=$('#incident-situation-field'),situationSel=$('#incident-situation'),itv=$('#incident-itv-field'),leak=$('#incident-leak-field'),help=$('#incident-scenario-help');
   const refresh=()=>{const t=typeSel.value,opts=incidentSituationOptionsClient(t),defaultSituation=t==='Acceso no autorizado'?incidentSituationFromStatus(status):'',qrPair=origin==='QR'&&['QR no corresponde con matrícula','Uso indebido'].includes(t);authorized.classList.toggle('hide',!qrPair);if(qrPair&&normalizePlateClient(observed.value)===normalizePlateClient(authorizedInput.value))observed.value='';if(origin==='QR'&&!qrPair&&!observed.value)observed.value=basePlate;situationBox.classList.toggle('hide',!opts.length);situationSel.innerHTML=opts.map(x=>`<option ${x===defaultSituation?'selected':''}>${esc(x)}</option>`).join('');itv.classList.toggle('hide',t!=='Vehículo inmovilizado / posible abandono');leak.classList.toggle('hide',t!=='Vehículo inmovilizado / posible abandono');help.textContent=incidentScenarioHelp(t)};
   if(typeSel.tagName==='SELECT')typeSel.onchange=refresh;refresh();
   $('#cancel-inc').onclick=()=>state.view==='control'?control():incidents();
-  $('#photo').onchange=async e=>{const file=e.target.files[0];if(!file)return;if(file.size>12*1024*1024){toast('La foto original no puede superar 12 MB.',true);e.target.value='';return}const submit=$('#incident-form button[type=submit]');busy(submit);toast('Optimizando fotografía…');try{const dataUrl=await optimizedImageData(file);const out=await call('uploadPhoto',{dataUrl});$('#incident-form [name=Foto]').value=out.url;toast('Foto subida.')}catch(x){e.target.value='';$('#incident-form [name=Foto]').value='';err(x)}finally{busy(submit,false)}};
-  $('#incident-form').onsubmit=async e=>{e.preventDefault();const b=e.submitter;busy(b);const data=Object.fromEntries(new FormData(e.target));if(!data.Foto){toast('Debes adjuntar una fotografía antes de registrar la incidencia.',true);busy(b,false);return}if(origin==='QR'&&['QR no corresponde con matrícula','Uso indebido'].includes(data.Tipo)){if(!normalizePlateClient(data.MatriculaObservada)){toast('Indica la matrícula realmente observada.',true);busy(b,false);return}if(normalizePlateClient(data.MatriculaObservada)===normalizePlateClient(data.MatriculaAutorizada)){toast('La matrícula observada debe ser distinta de la asociada al QR.',true);busy(b,false);return}}Object.assign(data,{ID_Vivienda:v.ID_Vivienda||'',ID_Vehiculo:v.ID_Vehiculo||''});try{const out=await call('saveIncident',data);if(out.mode==='BLOCKED'){toast(out.message||'Ya existe una incidencia equivalente hoy.',true);busy(b,false);return}if(out.mode==='FOLLOWUP_REQUIRED'){const refs=(out.existing||[]).map(x=>`${x.ID_Incidencia} · ${x.Tipo}${x.Situacion?' · '+x.Situacion:''}`).join('\n');if(!confirm(`Ya existe una incidencia abierta equivalente:\n\n${refs}\n\n¿Registrar el intento de hoy como seguimiento?`)){busy(b,false);return}await call('saveIncidentFollowup',Object.assign({},data,{ids:out.existingIds,Observacion:data.Descripcion}));toast('Seguimiento diario registrado.');state.scanResult=null;state.view==='control'?control():incidents(out.existingIds[0]);return}const count=(out.IDs||[]).length;const linked=(out.created||[]).map(x=>x.Tipo+(x.Situacion?` · ${x.Situacion}`:'')).join(' / ');toast(count>1?`${count} incidencias vinculadas registradas${linked?`: ${linked}`:''}.`:`Incidencia ${out.ID_Incidencia} registrada.`);state.scanResult=null;state.view==='control'?control():incidents(out.ID_Incidencia)}catch(x){toast(x.message,true);busy(b,false)}};
+  $('#photo').onchange=async e=>{const files=[...(e.target.files||[])];const status=$('#incident-photo-status');if(!files.length)return;if(files.length>5){toast('Puedes adjuntar un máximo de 5 fotografías.',true);e.target.value='';return}if(files.some(file=>file.size>12*1024*1024)){toast('Cada foto original debe pesar como máximo 12 MB.',true);e.target.value='';return}const submit=$('#incident-form button[type=submit]');busy(submit);status.textContent=`Subiendo 0/${files.length}…`;try{const urls=[];for(let i=0;i<files.length;i++){const dataUrl=await optimizedImageData(files[i]);const out=await call('uploadPhoto',{dataUrl});urls.push(out.url);status.textContent=`Subiendo ${i+1}/${files.length}…`}$('#incident-form [name=Foto]').value=urls[0]||'';$('#incident-form [name=FotosJson]').value=JSON.stringify(urls);status.textContent=`${urls.length} foto${urls.length===1?'':'s'} lista${urls.length===1?'':'s'} para registrar.`;toast(`${urls.length} foto${urls.length===1?'':'s'} subida${urls.length===1?'':'s'}.`)}catch(x){e.target.value='';$('#incident-form [name=Foto]').value='';$('#incident-form [name=FotosJson]').value='';status.textContent='';err(x)}finally{busy(submit,false)}};
+  $('#incident-form').onsubmit=async e=>{e.preventDefault();const b=e.submitter;busy(b);const data=Object.fromEntries(new FormData(e.target));try{data.Fotos=JSON.parse(data.FotosJson||'[]')}catch(_){data.Fotos=[]}delete data.FotosJson;if(!data.Fotos.length){toast('Debes adjuntar al menos una fotografía antes de registrar la incidencia.',true);busy(b,false);return}data.Foto=data.Fotos[0];if(origin==='QR'&&['QR no corresponde con matrícula','Uso indebido'].includes(data.Tipo)){if(!normalizePlateClient(data.MatriculaObservada)){toast('Indica la matrícula realmente observada.',true);busy(b,false);return}if(normalizePlateClient(data.MatriculaObservada)===normalizePlateClient(data.MatriculaAutorizada)){toast('La matrícula observada debe ser distinta de la asociada al QR.',true);busy(b,false);return}}Object.assign(data,{ID_Vivienda:v.ID_Vivienda||'',ID_Vehiculo:v.ID_Vehiculo||''});try{const out=await call('saveIncident',data);if(out.mode==='BLOCKED'){toast(out.message||'Ya existe una incidencia equivalente hoy.',true);busy(b,false);return}if(out.mode==='FOLLOWUP_REQUIRED'){const refs=(out.existing||[]).map(x=>`${x.ID_Incidencia} · ${x.Tipo}${x.Situacion?' · '+x.Situacion:''}`).join('\n');if(!confirm(`Ya existe una incidencia abierta equivalente:\n\n${refs}\n\n¿Registrar el intento de hoy como seguimiento?`)){busy(b,false);return}await call('saveIncidentFollowup',Object.assign({},data,{ids:out.existingIds,Observacion:data.Descripcion}));toast('Seguimiento diario registrado.');state.scanResult=null;state.view==='control'?control():incidents(out.existingIds[0]);return}const count=(out.IDs||[]).length;const linked=(out.created||[]).map(x=>x.Tipo+(x.Situacion?` · ${x.Situacion}`:'')).join(' / ');toast(count>1?`${count} incidencias vinculadas registradas${linked?`: ${linked}`:''}.`:`Incidencia ${out.ID_Incidencia} registrada.`);state.scanResult=null;state.view==='control'?control():incidents(out.ID_Incidencia)}catch(x){toast(x.message,true);busy(b,false)}};
   host.scrollIntoView({behavior:'smooth'});
 }
 function fileData(file){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(file)})}

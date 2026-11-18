@@ -115,7 +115,12 @@
       return null;
     };
 
-  function mapFollowup(row, photoUrl = '') {
+  function evidenceList(primary, extra = []) {
+    return [...new Set([primary, ...(extra || [])].filter(Boolean))];
+  }
+
+  function mapFollowup(row, photoUrl = '', photos = []) {
+    const allPhotos = evidenceList(photoUrl, photos);
     return {
       ID_Seguimiento: row.id,
       ID_Incidencia: row.incident_id,
@@ -126,7 +131,8 @@
       MatriculaAutorizada: row.authorized_plate || '',
       Situacion: row.situation || '',
       Observacion: row.observation || '',
-      Foto: photoUrl
+      Foto: allPhotos[0] || '',
+      Fotos: allPhotos
     };
   }
 
@@ -178,7 +184,7 @@
     return actions;
   }
 
-  function mapIncident(row, refs, followups, photoUrl = '') {
+  function mapIncident(row, refs, followups, photoUrl = '', photos = []) {
     const h = refs.housingById.get(row.dwelling_id) || {};
     const v = refs.vehicleById.get(row.vehicle_id) || {};
     const creator = refs.profiles.get(row.created_by) || {};
@@ -211,7 +217,8 @@
       SlotOrigen: row.origin_slot || '',
       Tipo: row.type,
       Descripcion: row.description || '',
-      Foto: photoUrl,
+      Foto: evidenceList(photoUrl, photos)[0] || '',
+      Fotos: evidenceList(photoUrl, photos),
       Estado: row.state,
       OrigenControl: row.control_origin || 'Manual',
       EstadoOrigen: row.origin_state || '',
@@ -233,14 +240,54 @@
   }
 
   async function listIncidents() {
-    const [rows, followupRows, refs] = await Promise.all([
+    const [rows, followupRows, refs, fileRows] = await Promise.all([
       unwrap(await sb.from('incidents').select('*').order('occurred_at', { ascending: false })) || [],
       unwrap(await sb.from('incident_followups').select('*').order('occurred_at')) || [],
-      joinedReferenceData()
+      joinedReferenceData(),
+      unwrap(
+        await sb
+          .from('file_objects')
+          .select('incident_id,followup_id,object_path,created_at')
+          .order('created_at')
+      ) || []
     ]);
-    const paths = [...rows.map((r) => r.photo_url), ...followupRows.map((r) => r.photo_url)].filter(Boolean);
-    const urlPairs = await Promise.all(paths.map(async (path) => [path, await evidenceUrl(path)]));
+
+    const storagePath = (row) =>
+      row?.object_path ? `storage:${row.object_path}` : '';
+
+    const paths = [
+      ...rows.map((r) => r.photo_url),
+      ...followupRows.map((r) => r.photo_url),
+      ...fileRows.map(storagePath)
+    ].filter(Boolean);
+
+    const uniquePaths = [...new Set(paths)];
+    const urlPairs = await Promise.all(
+      uniquePaths.map(async (path) => [path, await evidenceUrl(path)])
+    );
     const urls = new Map(urlPairs);
+    const incidentPhotos = new Map();
+    const followupPhotos = new Map();
+
+    fileRows.forEach((row) => {
+      const url = urls.get(storagePath(row)) || '';
+      if (!url) return;
+
+      if (row.incident_id) {
+        if (!incidentPhotos.has(row.incident_id)) {
+          incidentPhotos.set(row.incident_id, []);
+        }
+        incidentPhotos.get(row.incident_id).push(url);
+      }
+
+      if (row.followup_id) {
+        if (!followupPhotos.has(row.followup_id)) {
+          followupPhotos.set(row.followup_id, []);
+        }
+        followupPhotos.get(row.followup_id).push(url);
+      }
+    });
+
     const followupsByIncident = new Map();
 
     followupRows.forEach((row) => {
@@ -254,7 +301,8 @@
       followupsByIncident.get(key).push(
         mapFollowup(
           row,
-          urls.get(row.photo_url) || ''
+          urls.get(row.photo_url) || '',
+          followupPhotos.get(row.id) || []
         )
       );
     });
@@ -263,10 +311,10 @@
       row,
       refs,
       followupsByIncident.get(row.id) || [],
-      urls.get(row.photo_url) || ''
+      urls.get(row.photo_url) || '',
+      incidentPhotos.get(row.id) || []
     ));
   }
-
 
   async function listControlOpenIncidents(vehicle, plate) {
     const normalizedPlate = normalizePlate(plate || '');
@@ -653,29 +701,77 @@
 
   async function saveIncident(payload) {
     const boot = await appBootstrap();
-    if (!String(payload.Descripcion || '').trim()) throw new Error('Completa la observación / descripción.');
-    if (!String(payload.Foto || '').trim()) throw new Error('Debes adjuntar una fotografía antes de registrar la incidencia.');
+
+    if (!String(payload.Descripcion || '').trim()) {
+      throw new Error('Completa la observación / descripción.');
+    }
+
+    const photos = [...new Set(
+      (Array.isArray(payload.Fotos) ? payload.Fotos : [payload.Foto])
+        .filter(Boolean)
+    )].slice(0, 5);
+
+    if (!photos.length) {
+      throw new Error(
+        'Debes adjuntar al menos una fotografía antes de registrar la incidencia.'
+      );
+    }
+
+    const normalizedPayload = {
+      ...payload,
+      Foto: photos[0],
+      Fotos: photos
+    };
+
     const ctx = await incidentContext();
-    const candidates = buildIncidentCandidates(payload, ctx);
-    const result = unwrap(await sb.rpc('save_parking_incident_candidates', { p_community_id: boot.communityId, p_candidates: candidates }));
+    const candidates = buildIncidentCandidates(normalizedPayload, ctx);
+    const result = unwrap(
+      await sb.rpc('save_parking_incident_candidates', {
+        p_community_id: boot.communityId,
+        p_candidates: candidates
+      })
+    );
+
     const createdRows = result.created || [];
-    for (const row of createdRows) await registerEvidence(payload.Foto, row.id, null);
+
+    for (const row of createdRows) {
+      for (const photo of photos) {
+        await registerEvidence(photo, row.id, null);
+      }
+    }
+
     invalidate();
+
     if (result.mode === 'CREATED') {
       return {
         mode: 'CREATED',
         ID_Incidencia: createdRows[0]?.id || '',
         IDs: createdRows.map((row) => row.id),
         ID_Evento: createdRows[0]?.event_id || '',
-        created: createdRows.map((row) => ({ ID_Incidencia: row.id, Tipo: row.type, Situacion: row.situation || '', ID_Vehiculo: row.vehicle_id || '' })),
-        reused: result.reused || [], message: result.message || ''
+        created: createdRows.map((row) => ({
+          ID_Incidencia: row.id,
+          Tipo: row.type,
+          Situacion: row.situation || '',
+          ID_Vehiculo: row.vehicle_id || ''
+        })),
+        reused: result.reused || [],
+        message: result.message || ''
       };
     }
+
     const existing = result.existing || [];
+
     return {
       mode: result.mode,
       existingIds: existing.map((row) => row.id),
-      existing: existing.map((row) => ({ ID_Incidencia: row.id, Tipo: row.type, Situacion: row.situation || '', FechaHora: row.occurred_at, Intentos: row.attempts || 1, Prioridad: row.priority || 'Normal' })),
+      existing: existing.map((row) => ({
+        ID_Incidencia: row.id,
+        Tipo: row.type,
+        Situacion: row.situation || '',
+        FechaHora: row.occurred_at,
+        Intentos: row.attempts || 1,
+        Prioridad: row.priority || 'Normal'
+      })),
       blockedIds: (result.blocked || []).map((row) => row.id),
       message: result.message || ''
     };
@@ -692,19 +788,70 @@
 
   async function saveIncidentFollowup(payload) {
     const ctx = await incidentContext();
-    const anchorId = payload.anchorId || (Array.isArray(payload.ids) ? payload.ids[0] : '') || payload.id;
-    if (!anchorId) throw new Error('No se indicó la incidencia a seguir.');
-    const candidates = await buildFollowupCandidates({ ...payload, anchorId }, ctx);
-    const out = unwrap(await sb.rpc('save_parking_incident_followup', {
-      p_anchor_id: anchorId,
-      p_candidates: candidates,
-      p_observation: String(payload.Observacion || payload.Descripcion || '').trim(),
-      p_photo_url: payload.Foto || ''
-    }));
-    for (const followupId of (out.followupIds || [])) await registerEvidence(payload.Foto, null, followupId);
-    for (const row of (out.created || [])) await registerEvidence(payload.Foto, row.id, null);
+    const anchorId =
+      payload.anchorId ||
+      (Array.isArray(payload.ids) ? payload.ids[0] : '') ||
+      payload.id;
+
+    if (!anchorId) {
+      throw new Error('No se indicó la incidencia a seguir.');
+    }
+
+    const photos = [...new Set(
+      (Array.isArray(payload.Fotos) ? payload.Fotos : [payload.Foto])
+        .filter(Boolean)
+    )].slice(0, 5);
+
+    if (!photos.length) {
+      throw new Error('Debes adjuntar al menos una fotografía al seguimiento.');
+    }
+
+    const candidates = await buildFollowupCandidates(
+      {
+        ...payload,
+        Foto: photos[0],
+        Fotos: photos,
+        anchorId
+      },
+      ctx
+    );
+
+    const out = unwrap(
+      await sb.rpc('save_parking_incident_followup', {
+        p_anchor_id: anchorId,
+        p_candidates: candidates,
+        p_observation: String(
+          payload.Observacion || payload.Descripcion || ''
+        ).trim(),
+        p_photo_url: photos[0]
+      })
+    );
+
+    for (const followupId of (out.followupIds || [])) {
+      for (const photo of photos) {
+        await registerEvidence(photo, null, followupId);
+      }
+    }
+
+    for (const row of (out.created || [])) {
+      for (const photo of photos) {
+        await registerEvidence(photo, row.id, null);
+      }
+    }
+
     invalidate();
-    return { updated: out.updated || [], created: (out.created || []).map((row) => ({ ID_Incidencia: row.id, Tipo: row.type, Situacion: row.situation || '', ID_Vehiculo: row.vehicle_id || '' })), skipped: out.skipped || [], plan: publicFollowupPlan(out.plan || {}) };
+
+    return {
+      updated: out.updated || [],
+      created: (out.created || []).map((row) => ({
+        ID_Incidencia: row.id,
+        Tipo: row.type,
+        Situacion: row.situation || '',
+        ID_Vehiculo: row.vehicle_id || ''
+      })),
+      skipped: out.skipped || [],
+      plan: publicFollowupPlan(out.plan || {})
+    };
   }
 
     return {
