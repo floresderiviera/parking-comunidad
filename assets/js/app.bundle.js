@@ -4161,152 +4161,272 @@ async function generateIncidentPdf(row,housingLabel=''){
     ],
     'jspdf'
   );
+
   const doc=new lib.jsPDF({unit:'mm',format:'a4',orientation:'portrait'});
-  const pageW=210,pageH=297,left=16,right=16,contentW=178,bottom=18;
+  const pageW=210,pageH=297,left=16,right=16,contentW=178,bottom=17;
+  const green=[31,103,84],dark=[25,38,48],muted=[100,116,139],line=[226,232,240],soft=[246,248,250];
   let y=16;
-  const newPage=()=>{doc.addPage();y=18};
-  const need=h=>{if(y+h>pageH-bottom)newPage()};
-  const section=title=>{
-    need(12);y+=2;
-    doc.setFillColor(241,245,249);
-    doc.roundedRect(left,y-5,contentW,8,1.5,1.5,'F');
-    doc.setTextColor(30,41,59);
-    doc.setFont('helvetica','bold');doc.setFontSize(10);
-    doc.text(String(title).toUpperCase(),left+3,y);
-    doc.setTextColor(15,23,42);y+=8;
+
+  const clean=v=>String(v??'').trim();
+  const samePlate=(a,b)=>normalizePlateClient(a||'')&&normalizePlateClient(a||'')===normalizePlateClient(b||'');
+  const shortId=String(row.ID_Incidencia||'INCIDENCIA').slice(0,8).toUpperCase();
+  const visibleActor=v=>{
+    const x=clean(v);
+    return x&&x!=='—' ? x : '';
   };
-  const grid=pairs=>{
-    const colW=86;
-    for(let i=0;i<pairs.length;i+=2){
-      const group=pairs.slice(i,i+2);
-      const heights=group.map(p=>doc.splitTextToSize(String(p[1]||'—'),colW).length*4+6);
-      const rowH=Math.max(13,...heights);need(rowH);
+  const newPage=()=>{doc.addPage();y=16};
+  const need=h=>{if(y+h>pageH-bottom)newPage()};
+
+  const pill=(text,x,py,fill,textColor=[255,255,255],align='left')=>{
+    doc.setFont('helvetica','bold');doc.setFontSize(8);
+    const w=Math.max(24,doc.getTextWidth(text)+8);
+    const bx=align==='right'?x-w:x;
+    doc.setFillColor(...fill);doc.roundedRect(bx,py,w,7,3.5,3.5,'F');
+    doc.setTextColor(...textColor);doc.text(text,bx+w/2,py+4.7,{align:'center'});
+    return w;
+  };
+
+  const heading=(title,subtitle='')=>{
+    need(subtitle?14:10);
+    doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(...dark);
+    doc.text(String(title).toUpperCase(),left,y);
+    if(subtitle){
+      doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(...muted);
+      doc.text(subtitle,pageW-right,y,{align:'right'});
+    }
+    y+=3;
+    doc.setDrawColor(...line);doc.line(left,y,pageW-right,y);y+=6;
+  };
+
+  const metricCards=items=>{
+    const gap=4,w=(contentW-gap*3)/4,h=18;
+    need(h+5);
+    items.slice(0,4).forEach((item,i)=>{
+      const x=left+i*(w+gap);
+      doc.setFillColor(...soft);doc.setDrawColor(...line);
+      doc.roundedRect(x,y,w,h,2,2,'FD');
+      doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...muted);
+      doc.text(String(item[0]),x+3,y+5);
+      doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(...dark);
+      const val=doc.splitTextToSize(String(item[1]||''),w-6);
+      doc.text(val.slice(0,2),x+3,y+11);
+    });
+    y+=h+6;
+  };
+
+  const fields=(pairs,{cols=2,gap=8}={})=>{
+    const colW=(contentW-gap*(cols-1))/cols;
+    for(let i=0;i<pairs.length;i+=cols){
+      const group=pairs.slice(i,i+cols).filter(p=>clean(p?.[1]));
+      if(!group.length)continue;
+      const heights=group.map(p=>{
+        const lines=doc.splitTextToSize(clean(p[1]),colW-2);
+        return 5+Math.max(1,lines.length)*4;
+      });
+      const rowH=Math.max(11,...heights);
+      need(rowH);
       group.forEach((p,j)=>{
-        const x=left+j*92;
-        doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(100,116,139);
+        const x=left+j*(colW+gap);
+        doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...muted);
         doc.text(String(p[0]),x,y);
-        doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.setTextColor(15,23,42);
-        doc.text(doc.splitTextToSize(String(p[1]||'—'),colW),x,y+4);
+        doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...dark);
+        doc.text(doc.splitTextToSize(clean(p[1]),colW-2),x,y+4);
       });
       y+=rowH;
     }
   };
-  const paragraph=text=>{
-    const lines=doc.splitTextToSize(String(text||'—'),contentW);
-    need(lines.length*4.2+4);
-    doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor(30,41,59);
-    doc.text(lines,left,y);y+=lines.length*4.2+4;
+
+  const paragraph=(text,{size=9,color=dark,space=5,maxWidth=contentW}={})=>{
+    const value=clean(text);
+    if(!value)return;
+    const lines=doc.splitTextToSize(value,maxWidth);
+    const h=lines.length*4+space;
+    need(h);
+    doc.setFont('helvetica','normal');doc.setFontSize(size);doc.setTextColor(...color);
+    doc.text(lines,left,y);
+    y+=h;
   };
-  const photos=async(urls,caption)=>{
+
+  const photoGrid=async(urls,captionPrefix,{height=35}={})=>{
     const list=[...new Set((urls||[]).filter(Boolean))];
     if(!list.length)return;
-    const w=86;
+    const gap=7,w=(contentW-gap)/2,cap=5;
     for(let i=0;i<list.length;i+=2){
       const pair=list.slice(i,i+2);
+      const rowH=height+cap+4;
+      need(rowH);
       const loaded=await Promise.all(pair.map(incidentPdfImage));
-      const items=loaded.map(data=>{
-        if(!data)return {data:'',h:25};
-        try{
-          const prop=doc.getImageProperties(data);
-          return {data,h:Math.min(60,(w-2)*prop.height/prop.width)};
-        }catch(_){return {data:'',h:25}}
-      });
-      const h=Math.max(25,...items.map(x=>x.h));
-      need(h+11);
-      items.forEach((item,j)=>{
-        const x=left+j*92;
-        doc.setDrawColor(203,213,225);
-        doc.roundedRect(x,y,w,h,1.5,1.5,'S');
-        if(item.data){
-          const prop=doc.getImageProperties(item.data);
-          const ih=item.h,iy=y+(h-ih)/2;
-          doc.addImage(item.data,prop.fileType||'JPEG',x+1,iy+1,w-2,Math.max(1,ih-2),undefined,'FAST');
-        }else{
-          doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(100,116,139);
-          doc.text('Imagen no disponible',x+4,y+10);
+      loaded.forEach((data,j)=>{
+        const x=left+j*(w+gap);
+        doc.setFillColor(250,251,252);doc.setDrawColor(...line);
+        doc.roundedRect(x,y,w,height,2,2,'FD');
+
+        if(data){
+          try{
+            const prop=doc.getImageProperties(data);
+            const iw=prop.width,ih=prop.height;
+            const scale=Math.min((w-2)/iw,(height-2)/ih);
+            const rw=iw*scale,rh=ih*scale;
+            const ix=x+(w-rw)/2,iy=y+(height-rh)/2;
+            doc.addImage(data,prop.fileType||'JPEG',ix,iy,rw,rh,undefined,'FAST');
+          }catch(_){}
         }
-        doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(71,85,105);
-        doc.text(`${caption} ${i+j+1}`,x,y+h+4);
+
+        doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(...muted);
+        doc.text(`${captionPrefix} ${i+j+1}`,x,y+height+4);
       });
-      y+=h+10;
+      y+=rowH;
     }
   };
 
-  doc.setTextColor(15,23,42);doc.setFont('helvetica','bold');doc.setFontSize(18);
-  doc.text('INFORME DE INCIDENCIA',left,y);
-  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(71,85,105);
-  doc.text(appDisplayName(),left,y+6);
-  doc.setFont('helvetica','bold');
-  if(row.Estado==='Cerrada')doc.setTextColor(22,101,52);else doc.setTextColor(180,83,9);
-  doc.text(row.Estado==='Cerrada'?'INFORME FINAL':'INFORME PROVISIONAL - INCIDENCIA ABIERTA',pageW-right,y+6,{align:'right'});
-  y+=16;
+  const timelineHeader=(number,title,date)=>{
+    need(12);
+    const cx=left+3;
+    doc.setFillColor(...green);doc.circle(cx,y+2,3,'F');
+    doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(255,255,255);
+    doc.text(String(number),cx,y+3,{align:'center'});
+    doc.setFontSize(10);doc.setTextColor(...dark);
+    doc.text(title,left+10,y+3);
+    doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(...muted);
+    doc.text(date||'',pageW-right,y+3,{align:'right'});
+    y+=9;
+  };
 
-  grid([
-    ['Incidencia',row.ID_Incidencia||'—'],['Fecha',shortDateTime(row.FechaHora)],
-    ['Estado',row.Estado||'Abierta'],['Prioridad',row.Prioridad||'Normal'],
-    ['Origen',row.OrigenControl||'Manual'],['Intentos',row.Intentos||1]
+  const resolutionBox=()=>{
+    const actor=visibleActor(row.NombreUsuarioCierre||row.UsuarioCierre);
+    const comment=clean(row.ComentarioCierre)||'Sin comentario de cierre.';
+    const commentLines=doc.splitTextToSize(comment,contentW-12);
+    const h=22+commentLines.length*4+(actor?9:0);
+    need(h+4);
+    doc.setFillColor(240,248,244);doc.setDrawColor(187,220,204);
+    doc.roundedRect(left,y,contentW,h,3,3,'FD');
+
+    doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...green);
+    doc.text('RESOLUCIÓN FINAL',left+6,y+7);
+    pill('CERRADA',pageW-right-6,y+3,green,[255,255,255],'right');
+
+    doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...muted);
+    doc.text('Acción',left+6,y+14);
+    doc.text('Fecha de cierre',left+95,y+14);
+    doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...dark);
+    doc.text(clean(row.AccionCierre)||'Sin actuación',left+6,y+19);
+    doc.text(shortDateTime(row.FechaCierre),left+95,y+19);
+
+    let yy=y+27;
+    if(actor){
+      doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...muted);
+      doc.text('Resuelta por',left+6,yy);
+      doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(...dark);
+      doc.text(actor,left+6,yy+4);
+      yy+=9;
+    }
+    doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(...dark);
+    doc.text(commentLines,left+6,yy);
+    y+=h+6;
+  };
+
+  doc.setFillColor(...green);doc.rect(0,0,pageW,27,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(16);doc.setTextColor(255,255,255);
+  doc.text('INFORME DE INCIDENCIA',left,11);
+  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(228,244,238);
+  doc.text(appDisplayName(),left,17);
+  doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(255,255,255);
+  doc.text(`INC-${shortId}`,pageW-right,11,{align:'right'});
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+  doc.text(row.Estado==='Cerrada'?'INFORME FINAL':'INFORME PROVISIONAL',pageW-right,17,{align:'right'});
+  y=34;
+
+  metricCards([
+    ['Matrícula',row.MatriculaObservada||row.MatriculaInfraccion||'—'],
+    ['Estado',row.Estado||'Abierta'],
+    ['Prioridad',row.Prioridad||'Normal'],
+    ['Intentos',row.Intentos||1]
   ]);
 
-  section('Vehículo y vivienda');
-  grid([
-    ['Matrícula observada',row.MatriculaObservada||row.MatriculaInfraccion||'—'],['Vivienda',housingLabel||'—'],
-    ['Matrícula habitual',row.MatriculaHabitualOrigen||row.MatriculaHabitualVehiculo||'—'],['Tipo vehículo',row.TipoVehiculoOrigen||row.TipoVehiculo||'—'],
-    ['Estado al crear',row.EstadoVehiculoOrigen||'—'],['Slot origen',row.SlotOrigen||'—']
+  heading('Datos del expediente');
+  fields([
+    ['Fecha de apertura',shortDateTime(row.FechaHora)],
+    ['Vivienda',housingLabel||''],
+    ['Tipo',row.Tipo||''],
+    ['Situación',row.Situacion||''],
+    ['Causa',row.Causa||''],
+    ['Origen',row.OrigenControl||'Manual'],
+    ['Matrícula habitual',row.MatriculaHabitualOrigen||row.MatriculaHabitualVehiculo||''],
+    ['Tipo de vehículo',row.TipoVehiculoOrigen||row.TipoVehiculo||''],
+    ['Estado al crear',row.EstadoVehiculoOrigen||''],
+    ['Slot origen',row.SlotOrigen||'']
   ]);
 
-  section('Detalle de la incidencia');
-  grid([
-    ['Tipo',row.Tipo||'—'],['Situación',row.Situacion||'—'],
-    ['Causa',row.Causa||'—'],['Registrada por',row.NombreUsuario||row.Usuario||'—']
-  ]);
-  paragraph(row.Descripcion||'Sin descripción.');
+  const creator=visibleActor(row.NombreUsuario||row.Usuario);
+  if(creator)fields([['Registrada por',creator]],{cols:1});
 
-  if(row.MatriculaRelacionada||row.MatriculaAutorizada){
-    section('Vehículo / QR relacionado');
-    grid([
-      ['Matrícula relacionada',row.MatriculaRelacionada||row.MatriculaAutorizada||'—'],
-      ['QR al crear',row.QR_EstadoOrigen||'—']
+  paragraph(row.Descripcion||'Sin descripción.',{size:9,space:6});
+
+  const related=row.MatriculaRelacionada||row.MatriculaAutorizada||'';
+  const observed=row.MatriculaObservada||row.MatriculaInfraccion||row.MatriculaHabitualOrigen||'';
+  if(related&&!samePlate(related,observed)){
+    heading('Vehículo / QR relacionado');
+    fields([
+      ['Matrícula relacionada',related],
+      ['QR al crear',row.QR_EstadoOrigen||'']
     ]);
   }
 
   const initial=incidentPhotoUrls(row);
-  if(initial.length){section('Evidencias iniciales');await photos(initial,'Evidencia inicial')}
-
-  for(const f of (row.Seguimientos||[])){
-    section(`Seguimiento - intento ${f.NumeroIntento||''}`);
-    grid([
-      ['Fecha',shortDateTime(f.FechaHora)],['Matrícula observada',f.MatriculaObservada||'—'],
-      ['Situación',f.Situacion||'—'],['Matrícula QR',f.MatriculaAutorizada||'—']
-    ]);
-    paragraph(f.Observacion||'Sin observación.');
-    const fp=incidentPhotoUrls(f);
-    if(fp.length)await photos(fp,`Evidencia seguimiento ${f.NumeroIntento||''}`);
+  if(initial.length){
+    heading('Evidencias iniciales',`${initial.length} archivo${initial.length===1?'':'s'}`);
+    await photoGrid(initial,'Evidencia inicial',{height:34});
   }
 
-  section('Resolución');
+  const followups=Array.isArray(row.Seguimientos)?row.Seguimientos:[];
+  if(followups.length){
+    if(y>225)newPage();
+    heading('Cronología de seguimientos',`${followups.length} seguimiento${followups.length===1?'':'s'}`);
+
+    for(const f of followups){
+      timelineHeader(f.NumeroIntento||'',`Seguimiento · intento ${f.NumeroIntento||''}`,shortDateTime(f.FechaHora));
+      fields([
+        ['Situación',f.Situacion||''],
+        ['Matrícula observada',f.MatriculaObservada||''],
+        ['Matrícula QR',f.MatriculaAutorizada||'']
+      ]);
+      paragraph(f.Observacion||'',{size:8.5,space:4});
+      const fp=incidentPhotoUrls(f);
+      if(fp.length)await photoGrid(fp,`Evidencia ${f.NumeroIntento||''}`,{height:29});
+      if(f!==followups[followups.length-1]){
+        doc.setDrawColor(...line);
+        doc.line(left+3,y-2,left+3,y+3);
+        y+=4;
+      }
+    }
+  }
+
   if(row.Estado==='Cerrada'){
-    grid([
-      ['Acción',row.AccionCierre||'Sin actuación'],['Fecha de cierre',shortDateTime(row.FechaCierre)],
-      ['Resuelta por',row.NombreUsuarioCierre||row.UsuarioCierre||'—'],['Estado','Cerrada']
-    ]);
-    paragraph(row.ComentarioCierre||'Sin comentario de cierre.');
+    resolutionBox();
   }else{
-    paragraph('Incidencia pendiente de resolución.');
+    need(18);
+    doc.setFillColor(255,248,235);doc.setDrawColor(245,215,160);
+    doc.roundedRect(left,y,contentW,16,3,3,'FD');
+    doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(180,83,9);
+    doc.text('INCIDENCIA ABIERTA',left+6,y+6);
+    doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...dark);
+    doc.text('Pendiente de resolución.',left+6,y+11);
+    y+=21;
   }
 
   const total=doc.getNumberOfPages();
+  const generated=new Date().toLocaleString('es-ES');
   for(let p=1;p<=total;p++){
-    doc.setPage(p);doc.setDrawColor(226,232,240);doc.line(left,pageH-12,pageW-right,pageH-12);
-    doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(100,116,139);
-    doc.text(`Documento generado desde Parking Comunidad - ${new Date().toLocaleString('es-ES')}`,left,pageH-7);
+    doc.setPage(p);
+    doc.setDrawColor(...line);doc.line(left,pageH-12,pageW-right,pageH-12);
+    doc.setFont('helvetica','normal');doc.setFontSize(6.7);doc.setTextColor(...muted);
+    doc.text(`Parking Comunidad · INC-${shortId} · ${generated}`,left,pageH-7);
     doc.text(`Página ${p} de ${total}`,pageW-right,pageH-7,{align:'right'});
   }
 
   const plate=normalizePlateClient(row.MatriculaObservada||row.MatriculaInfraccion||row.MatriculaHabitualOrigen||'SIN_MATRICULA');
-  const id=String(row.ID_Incidencia||'INCIDENCIA').slice(0,8).toUpperCase();
-  doc.save(`Informe_Incidencia_${plate}_${id}.pdf`);
+  doc.save(`Informe_Incidencia_${plate}_${shortId}.pdf`);
 }
-
 async function incidents(openId=''){
   try{
     const focusId=openId||state.cache.incidentFocus||'';delete state.cache.incidentFocus;const navPreset=state.cache.incidentPreset||null;delete state.cache.incidentPreset;
