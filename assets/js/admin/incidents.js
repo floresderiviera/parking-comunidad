@@ -109,20 +109,25 @@ async function generateIncidentPdf(row,housingLabel=''){
   const fields=(pairs,{cols=2,gap=8}={})=>{
     const colW=(contentW-gap*(cols-1))/cols;
     for(let i=0;i<pairs.length;i+=cols){
-      const group=pairs.slice(i,i+cols).filter(p=>clean(p?.[1]));
-      if(!group.length)continue;
+      const group=pairs.slice(i,i+cols);
+      const visible=group.some(p=>clean(p?.[1]));
+      if(!visible)continue;
+
       const heights=group.map(p=>{
+        if(!p||!clean(p[1]))return 0;
         const lines=doc.splitTextToSize(clean(p[1]),colW-2);
-        return 5+Math.max(1,lines.length)*4;
+        return 6+Math.max(1,lines.length)*4;
       });
-      const rowH=Math.max(11,...heights);
+      const rowH=Math.max(12,...heights);
       need(rowH);
+
       group.forEach((p,j)=>{
+        if(!p||!clean(p[1]))return;
         const x=left+j*(colW+gap);
         doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...muted);
         doc.text(String(p[0]),x,y);
         doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...dark);
-        doc.text(doc.splitTextToSize(clean(p[1]),colW-2),x,y+4);
+        doc.text(doc.splitTextToSize(clean(p[1]),colW-2),x,y+4.5);
       });
       y+=rowH;
     }
@@ -139,7 +144,7 @@ async function generateIncidentPdf(row,housingLabel=''){
     y+=h;
   };
 
-  const photoGrid=async(urls,captionPrefix,{height=35}={})=>{
+  const photoGrid=async(urls,captionPrefix,{height=42}={})=>{
     const list=[...new Set((urls||[]).filter(Boolean))];
     if(!list.length)return;
     const gap=7,w=(contentW-gap)/2,cap=5;
@@ -188,7 +193,7 @@ async function generateIncidentPdf(row,housingLabel=''){
     const actor=visibleActor(row.NombreUsuarioCierre||row.UsuarioCierre);
     const comment=clean(row.ComentarioCierre)||'Sin comentario de cierre.';
     const commentLines=doc.splitTextToSize(comment,contentW-12);
-    const h=22+commentLines.length*4+(actor?9:0);
+    const h=28+commentLines.length*4+(actor?9:0);
     need(h+4);
     doc.setFillColor(240,248,244);doc.setDrawColor(187,220,204);
     doc.roundedRect(left,y,contentW,h,3,3,'FD');
@@ -198,13 +203,13 @@ async function generateIncidentPdf(row,housingLabel=''){
     pill('CERRADA',pageW-right-6,y+3,green,[255,255,255],'right');
 
     doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...muted);
-    doc.text('Acción',left+6,y+14);
-    doc.text('Fecha de cierre',left+95,y+14);
+    doc.text('Acción',left+6,y+15);
+    doc.text('Fecha de cierre',left+96,y+15);
     doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...dark);
-    doc.text(clean(row.AccionCierre)||'Sin actuación',left+6,y+19);
-    doc.text(shortDateTime(row.FechaCierre),left+95,y+19);
+    doc.text(clean(row.AccionCierre)||'Sin actuación',left+6,y+20);
+    doc.text(shortDateTime(row.FechaCierre),left+96,y+20);
 
-    let yy=y+27;
+    let yy=y+30;
     if(actor){
       doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...muted);
       doc.text('Resuelta por',left+6,yy);
@@ -267,7 +272,7 @@ async function generateIncidentPdf(row,housingLabel=''){
   const initial=incidentPhotoUrls(row);
   if(initial.length){
     heading('Evidencias iniciales',`${initial.length} archivo${initial.length===1?'':'s'}`);
-    await photoGrid(initial,'Evidencia inicial',{height:34});
+    await photoGrid(initial,'Evidencia inicial',{height:42});
   }
 
   const followups=Array.isArray(row.Seguimientos)?row.Seguimientos:[];
@@ -280,11 +285,12 @@ async function generateIncidentPdf(row,housingLabel=''){
       fields([
         ['Situación',f.Situacion||''],
         ['Matrícula observada',f.MatriculaObservada||''],
-        ['Matrícula QR',f.MatriculaAutorizada||'']
+        ['Matrícula QR',f.MatriculaAutorizada||''],
+        ['', '']
       ]);
       paragraph(f.Observacion||'',{size:8.5,space:4});
       const fp=incidentPhotoUrls(f);
-      if(fp.length)await photoGrid(fp,`Evidencia ${f.NumeroIntento||''}`,{height:29});
+      if(fp.length)await photoGrid(fp,`Evidencia ${f.NumeroIntento||''}`,{height:38});
       if(f!==followups[followups.length-1]){
         doc.setDrawColor(...line);
         doc.line(left+3,y-2,left+3,y+3);
