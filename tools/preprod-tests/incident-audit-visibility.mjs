@@ -19,6 +19,8 @@ ok(incidents.includes("false\\n      )") || incidents.includes("false\n      )")
 
 ok(admin.includes("const canSeeActors=hasUiRole('ADMIN')"),'UI actor visibility restricted to ADMIN active role');
 ok(admin.includes("canSeeActors&&actor"),'followup actor conditional');
+ok(admin.includes("actor=x.NombreUsuario||x.Usuario||'Usuario técnico / ROOT'"),'ROOT null followup actor fallback');
+ok(admin.includes("incident-identification-grid") && admin.includes("Método de identificación"),'ADMIN identification method visible');
 ok(admin.includes("const auditHtml=canSeeActors?"),'incident creator conditional');
 ok(admin.includes("const resolutionHtml=r.Estado==='Cerrada'?") && admin.includes("canSeeActors?`<div><small>Cerrada por"),'closer conditional');
 

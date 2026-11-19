@@ -383,6 +383,7 @@ const PARKING_UI_EN_EXACT={
   'Matrícula nueva':'New plate',
   'Nueva matrícula habitual':'New main plate',
   'Matrícula observada':'Observed plate',
+  'Método de identificación':'Identification method',
   'Matrícula QR':'QR plate',
   'Matrícula comprobada':'Checked plate',
   'Matrícula válida actualmente':'Currently valid plate',
@@ -404,6 +405,7 @@ const PARKING_UI_EN_EXACT={
   'Comentario de cierre':'Closing comment',
   'Registrada por':'Created by',
   'Registrado por:':'Recorded by:',
+  'Registrado por':'Recorded by',
   'Cerrada por':'Closed by',
 
   'Datos técnicos':'Technical data',
@@ -4429,19 +4431,20 @@ async function generateIncidentPdf(row,housingLabel=''){
     ...followups.map(f=>[`Seguimiento · intento ${f.NumeroIntento||''}`,f.FechaHora]),
     ...(row.Estado==='Cerrada'&&row.FechaCierre?[['Resolución',row.FechaCierre]]:[])
   ];
-  const traceHeight=12+traceRows.length*5.2+4;
+  const traceRowH=4.1;
+  const traceHeight=8+traceRows.length*traceRowH+2;
   if(y+traceHeight>pageH-bottom)newPage('Trazabilidad del expediente');
-  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(...dark);
+  doc.setFont('helvetica','bold');doc.setFontSize(8.6);doc.setTextColor(...dark);
   doc.text('TRAZABILIDAD DEL EXPEDIENTE',left,y);
-  y+=3;doc.setDrawColor(...line);doc.line(left,y,pageW-right,y);y+=6;
+  y+=2.5;doc.setDrawColor(...line);doc.line(left,y,pageW-right,y);y+=4.2;
   traceRows.forEach(([label,date])=>{
-    doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...dark);
+    doc.setFont('helvetica','normal');doc.setFontSize(7.4);doc.setTextColor(...dark);
     doc.text(label,left+2,y);
     doc.setTextColor(...muted);
     doc.text(shortDateTime(date),pageW-right-2,y,{align:'right'});
-    y+=5.2;
+    y+=traceRowH;
   });
-  y+=2;
+  y+=1.5;
 
   const total=doc.getNumberOfPages();
   const generated=new Date().toLocaleString('es-ES');
@@ -4496,22 +4499,30 @@ async function incidents(openId=''){
       const topActions=`<div class="actions">${hasUiRole('ADMIN')?`<button class="secondary" id="inc-detail-pdf">Generar PDF</button>`:''}${hasUiRole('ADMIN')&&r.Estado==='Abierta'?`<button id="inc-detail-close-case">Resolver incidencia</button>`:''}<button class="secondary" id="inc-detail-close">Cerrar detalle</button></div>`;
       const relationHtml=qrLinked&&relatedPlates.length?`<div class="message"><b>Vehículos relacionados (${relatedPlates.length}):</b><div>${relatedPlates.map(x=>`<span class="subtle"><b>${esc(x)}</b></span>`).join(' · ')}</div></div>`:(!qrLinked&&r.MatriculaRelacionada?`<div class="message"><b>Relacionado con:</b> ${esc(r.MatriculaRelacionada)}${r.ID_Evento?` · Evento ${esc(r.ID_Evento)}`:''}</div>`:'');
       const linkedHtml=relatedCases.length?`<div class="message"><b>${qrLinked?'Incidencias vinculadas por uso de QR':'Incidencias vinculadas'}:</b><div class="actions">${relatedCases.map(x=>`<button type="button" class="secondary inc-linked" data-id="${esc(x.ID_Incidencia)}">${esc(linkedLabel(x))}</button>`).join('')}</div></div>`:'';
+      const meaningful=v=>{const x=String(v??'').trim();return x&&!['—','-','No aplica'].includes(x)};
+      const identificationMethod=r.OrigenControl==='QR'?'QR':(r.Tipo==='QR no presentado'?'Matrícula · QR no presentado':'Matrícula');
+      const observedIncidentPlate=r.MatriculaObservada||r.MatriculaInfraccion||r.MatriculaHabitualOrigen||r.MatriculaHabitualVehiculo||'';
+      const qrAssociatedPlate=r.OrigenControl==='QR'?(r.MatriculaAutorizada||r.MatriculaRelacionada||''):'';
       const technicalItems=[
+        ['Método de identificación',identificationMethod],
+        ['Matrícula observada',observedIncidentPlate],
+        ['Matrícula asociada al QR',qrAssociatedPlate],
         ['Causa',r.Causa||''],
-        ['Situación detectada',r.EstadoOrigen||''],
-        ['Vehículo vinculado',linked?(r.MatriculaHabitualVehiculo||r.MatriculaHabitualOrigen||r.MatriculaAutorizada||'Sí'):''],
+        ['Situación detectada',r.EstadoOrigen||r.Situacion||''],
+        ['Vehículo vinculado',linked?(r.MatriculaHabitualVehiculo||r.MatriculaHabitualOrigen||r.MatriculaAutorizada||''):''],
         ['Tipo vehículo',linked?(isMoto?'Moto':r.TipoVehiculo||r.TipoVehiculoOrigen||'Vehículo'):''],
-        ['Estado actual',linked?r.EstadoVehiculo||'—':''],
-        ['Estado al crear',linked?r.EstadoVehiculoOrigen||'—':''],
-        ['QR actual',linked?(isMoto?'No aplica':r.EstadoQR||'—'):''],
-        ['QR al crear',linked?(isMoto?'No aplica':r.QREstadoOrigen||'—'):''],
-        ['Slot origen',linked?(isMoto?'No aplica':r.SlotOrigen||'—'):'']
-      ].filter(([,v])=>String(v||'').trim());
+        ['Estado actual',linked?r.EstadoVehiculo||'':''],
+        ['Estado al crear',linked?r.EstadoVehiculoOrigen||'':''],
+        ['Slot origen',linked&&!isMoto?r.SlotOrigen||'':''],
+        ['Slot actual',linked&&!isMoto?(r.Slot||r.SlotActual||''):''],
+        ['QR al crear',linked&&!isMoto?r.QREstadoOrigen||'':''],
+        ['QR actual',linked&&!isMoto?r.EstadoQR||'':'']
+      ].filter(([,v])=>meaningful(v));
       if(r.Tipo==='Vehículo inmovilizado / posible abandono'){
         technicalItems.push(['ITV vencida',r.ITV_Vencida||'No verificado'],['Fuga / pérdida',r.FugaLiquidos||'No']);
       }
       const technicalHtml=technicalItems.length?`<details class="incident-technical"><summary>Datos técnicos <span>${technicalItems.length}</span></summary><div class="incident-technical-grid">${technicalItems.map(([k,v])=>`<div><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('')}</div></details>`:'';
-      const followupsHtml=(r.Seguimientos||[]).length?`<section class="incident-detail-section incident-timeline"><div class="incident-section-title"><div><span class="eyebrow">EVOLUCIÓN</span><h4>Seguimientos</h4></div><span class="count">${esc((r.Seguimientos||[]).length)}</span></div>${(r.Seguimientos||[]).map(x=>{const eventCount=eventFollowupCount(x),related=eventFollowupRelated(x),actor=x.NombreUsuario||x.Usuario||'';return `<article class="incident-followup"><div class="incident-followup-head"><div><b>Intento ${esc(x.NumeroIntento||'')}</b><span>${esc(shortDateTime(x.FechaHora))}</span></div>${canSeeActors&&actor?`<span class="incident-actor">Registrado por ${esc(actor)}</span>`:''}</div><div class="incident-followup-meta">${x.Situacion?`<div><small>Situación</small><b>${esc(x.Situacion)}</b></div>`:''}${x.MatriculaObservada?`<div><small>Matrícula observada</small><b>${esc(x.MatriculaObservada)}</b></div>`:''}${x.MatriculaAutorizada?`<div><small>Matrícula QR</small><b>${esc(x.MatriculaAutorizada)}</b></div>`:''}</div>${eventCount>1?`<div class="subtle"><b>Evento vinculado:</b> ${esc(eventCount)} incidencias en este intento</div>`:''}${related.length?`<div class="subtle"><b>Relacionadas:</b> ${esc(related.join(' · '))}</div>`:''}${x.Observacion?`<div class="incident-narrative">${esc(x.Observacion)}</div>`:''}${incidentEvidenceLinks(x,'Evidencia seguimiento')}</article>`}).join('')}</section>`:'';
+      const followupsHtml=(r.Seguimientos||[]).length?`<section class="incident-detail-section incident-timeline"><div class="incident-section-title"><div><span class="eyebrow">EVOLUCIÓN</span><h4>Seguimientos</h4></div><span class="count">${esc((r.Seguimientos||[]).length)}</span></div>${(r.Seguimientos||[]).map(x=>{const eventCount=eventFollowupCount(x),related=eventFollowupRelated(x),actor=x.NombreUsuario||x.Usuario||'Usuario técnico / ROOT';return `<article class="incident-followup"><div class="incident-followup-head"><div><b>Intento ${esc(x.NumeroIntento||'')}</b><span>${esc(shortDateTime(x.FechaHora))}</span></div>${canSeeActors?`<span class="incident-actor">Registrado por ${esc(actor)}</span>`:''}</div><div class="incident-followup-meta">${x.Situacion?`<div><small>Situación</small><b>${esc(x.Situacion)}</b></div>`:''}${x.MatriculaObservada?`<div><small>Matrícula observada</small><b>${esc(x.MatriculaObservada)}</b></div>`:''}${x.MatriculaAutorizada?`<div><small>Matrícula QR</small><b>${esc(x.MatriculaAutorizada)}</b></div>`:''}</div>${eventCount>1?`<div class="subtle"><b>Evento vinculado:</b> ${esc(eventCount)} incidencias en este intento</div>`:''}${related.length?`<div class="subtle"><b>Relacionadas:</b> ${esc(related.join(' · '))}</div>`:''}${x.Observacion?`<div class="incident-narrative">${esc(x.Observacion)}</div>`:''}${incidentEvidenceLinks(x,'Evidencia seguimiento')}</article>`}).join('')}</section>`:'';
       const auditHtml=canSeeActors?`<div class="incident-audit-line"><span><b>Registrada por:</b> ${esc(r.NombreUsuario||r.Usuario||'Usuario técnico / ROOT')}</span><span>${esc(shortDateTime(r.FechaHora))}</span></div>`:'';
       const resolutionHtml=r.Estado==='Cerrada'?`<section class="incident-resolution"><div class="incident-resolution-head"><div><span class="eyebrow">RESOLUCIÓN</span><h4>${esc(r.AccionCierre||'Sin actuación')}</h4></div><span class="status">Cerrada</span></div><div class="incident-resolution-meta"><div><small>Fecha y hora</small><b>${esc(shortDateTime(r.FechaCierre))}</b></div>${canSeeActors?`<div><small>Cerrada por</small><b>${esc(r.NombreUsuarioCierre||r.UsuarioCierre||'Usuario técnico / ROOT')}</b></div>`:''}</div>${r.ComentarioCierre?`<div class="incident-narrative">${esc(r.ComentarioCierre)}</div>`:''}</section>`:'';
       host.innerHTML=`<section class="card detail-panel incident-detail-v2">
@@ -4532,6 +4543,11 @@ async function incidents(openId=''){
           <div><small>Vivienda</small><b>${esc(recordHousingLabel(r,h))}</b></div>
           <div><small>Situación</small><b>${esc(r.Situacion||'—')}</b></div>
           <div><small>Origen</small><b>${esc(r.OrigenControl||'Manual')}</b></div>
+        </div>
+        <div class="incident-identification-grid">
+          <div><small>Método de identificación</small><b>${esc(identificationMethod)}</b></div>
+          <div><small>Matrícula observada</small><b>${esc(observedIncidentPlate||'—')}</b></div>
+          ${qrAssociatedPlate?`<div><small>Matrícula asociada al QR</small><b>${esc(qrAssociatedPlate)}</b></div>`:''}
         </div>
         ${auditHtml}
         ${technicalHtml}

@@ -1948,6 +1948,8 @@ button.vehicle-alert-chip:hover{filter:brightness(.97)}
 .incident-detail-header h3{margin:.2rem 0 .45rem;font-size:1.28rem}
 .incident-header-status{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;color:var(--muted);font-size:.82rem}
 .incident-primary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.65rem;margin:1rem 0}
+.incident-identification-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem;margin:-.2rem 0 1rem;padding:.8rem;border:1px solid #cfe5dd;background:#f1f9f6;border-radius:12px}
+.incident-identification-grid>div{min-width:0}.incident-identification-grid small{display:block;color:var(--muted);font-size:.73rem;margin-bottom:.22rem}.incident-identification-grid b{display:block;line-height:1.28;overflow-wrap:anywhere;color:#164f45}
 .incident-primary-grid>div{padding:.8rem .85rem;background:#f7faf9;border:1px solid #e7eeee;border-radius:12px;min-width:0}
 .incident-primary-grid small,.incident-followup-meta small,.incident-resolution-meta small,.incident-technical-grid small{display:block;color:var(--muted);font-size:.73rem;margin-bottom:.22rem}
 .incident-primary-grid b,.incident-followup-meta b,.incident-resolution-meta b,.incident-technical-grid b{display:block;line-height:1.28;overflow-wrap:anywhere}
@@ -1982,12 +1984,13 @@ button.vehicle-alert-chip:hover{filter:brightness(.97)}
 .incident-resolution .incident-narrative{background:#fff;max-width:900px}
 @media(max-width:900px){
   .incident-primary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .incident-identification-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .incident-technical-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .incident-followup-meta{grid-template-columns:1fr 1fr}
 }
 @media(max-width:620px){
   .incident-detail-header{flex-direction:column}
-  .incident-primary-grid,.incident-technical-grid,.incident-followup-meta,.incident-resolution-meta{grid-template-columns:1fr}
+  .incident-primary-grid,.incident-identification-grid,.incident-technical-grid,.incident-followup-meta,.incident-resolution-meta{grid-template-columns:1fr}
   .incident-followup-head{flex-direction:column;gap:.25rem}
   .incident-narrative{max-width:none}
 }

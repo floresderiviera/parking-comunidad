@@ -383,6 +383,7 @@ const PARKING_UI_EN_EXACT={
   'Matrícula nueva':'New plate',
   'Nueva matrícula habitual':'New main plate',
   'Matrícula observada':'Observed plate',
+  'Método de identificación':'Identification method',
   'Matrícula QR':'QR plate',
   'Matrícula comprobada':'Checked plate',
   'Matrícula válida actualmente':'Currently valid plate',
@@ -404,6 +405,7 @@ const PARKING_UI_EN_EXACT={
   'Comentario de cierre':'Closing comment',
   'Registrada por':'Created by',
   'Registrado por:':'Recorded by:',
+  'Registrado por':'Recorded by',
   'Cerrada por':'Closed by',
 
   'Datos técnicos':'Technical data',
