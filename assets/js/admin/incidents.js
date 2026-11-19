@@ -141,11 +141,12 @@ async function generateIncidentPdf(row,housingLabel=''){
   const narrativeLineH=4.3;
   const narrativeBox=(text,{size=8.8,space=5}={})=>{
     const value=clean(text);if(!value)return;
+    doc.setFont('helvetica','normal');doc.setFontSize(size);
     const lines=doc.splitTextToSize(value,contentW-2*narrativeInset);
-    const h=lines.length*narrativeLineH+6; // respiración vertical
+    const h=lines.length*narrativeLineH+3.5
     need(h+space);
     doc.setFont('helvetica','normal');doc.setFontSize(size);doc.setTextColor(...dark);
-    doc.text(lines,left+narrativeInset,y+4);
+    doc.text(lines,left+narrativeInset,y+3.3);
     y+=h+space;
   };
 
@@ -186,15 +187,17 @@ async function generateIncidentPdf(row,housingLabel=''){
 
   const followupBlockHeight=(f,photoCount)=>{
     const obs=clean(f?.Observacion||'');
-    const obsH=(obs?doc.splitTextToSize(obs,contentW-2*narrativeInset).length*narrativeLineH+6:0)+5;
+    doc.setFont('helvetica','normal');doc.setFontSize(8.4);
+    const obsH=(obs?doc.splitTextToSize(obs,contentW-2*narrativeInset).length*narrativeLineH+3.5:0)+4;
     return 12+18+obsH+(photoCount?55:0)+7;
   };
 
   const resolutionBox=()=>{
     const comment=clean(row.ComentarioCierre)||'Sin comentario de cierre.';
+    doc.setFont('helvetica','normal');doc.setFontSize(8.5);
     const lines=doc.splitTextToSize(comment,contentW-2*narrativeInset);
-    const h=28+lines.length*narrativeLineH;
-    need(h+3);
+    const h=25+lines.length*narrativeLineH;
+    need(h+2);
     let yy=y+4;
     doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.setTextColor(...green);
     doc.text('RESOLUCIÓN',left,yy);
@@ -214,7 +217,7 @@ async function generateIncidentPdf(row,housingLabel=''){
     yy+=7;
     doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(...dark);
     doc.text(lines,left+narrativeInset,yy+2);
-    y+=h+3;
+    y+=h+2;
   };
 
   doc.setFillColor(...green);doc.rect(0,0,pageW,29,'F');
@@ -279,7 +282,7 @@ async function generateIncidentPdf(row,housingLabel=''){
       if(fp.length){
         await photoGrid(fp,`Intento ${f.NumeroIntento||''} · Evidencia`,{height:46});
       }
-      y+=3;
+      y+=1.5;
     }
   }else{
     newPage('Resolución del expediente');
