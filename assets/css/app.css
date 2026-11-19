@@ -1964,7 +1964,7 @@ button.vehicle-alert-chip:hover{filter:brightness(.97)}
 .incident-section-title h4,.incident-resolution h4{margin:.12rem 0 0;font-size:1rem}
 .incident-section-title.compact{margin-top:.85rem;margin-bottom:.35rem}
 .incident-section-title.compact h4{font-size:.88rem}
-.incident-narrative{max-width:880px;padding:0;background:transparent;border:0;border-radius:0;line-height:1.5;overflow-wrap:anywhere;white-space:normal}
+.incident-narrative{max-width:880px;padding:.55rem .85rem;background:transparent;border:0;border-radius:0;line-height:1.55;overflow-wrap:anywhere;white-space:normal}
 .incident-evidence-section{margin-top:.65rem}
 .incident-evidence-links{margin-top:.35rem}
 .incident-evidence-links .btn{font-size:.78rem;padding:.55rem .75rem}
@@ -1981,7 +1981,7 @@ button.vehicle-alert-chip:hover{filter:brightness(.97)}
 .incident-resolution-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
 .incident-resolution-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem;margin:.75rem 0}
 .incident-resolution-meta>div{padding:0;background:transparent;border-radius:0}
-.incident-resolution .incident-narrative{background:transparent;max-width:900px}
+.incident-resolution .incident-narrative{background:transparent;max-width:900px;padding:.55rem .85rem}
 @media(max-width:900px){
   .incident-primary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .incident-identification-grid{grid-template-columns:repeat(2,minmax(0,1fr))}

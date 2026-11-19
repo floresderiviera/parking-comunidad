@@ -137,14 +137,15 @@ async function generateIncidentPdf(row,housingLabel=''){
     doc.text(lines,left,y);y+=lines.length*4+space;
   };
 
+  const narrativeInset=7; // mm: sangría a ambos lados, sin recuadro
+  const narrativeLineH=4.3;
   const narrativeBox=(text,{size=8.8,space=5}={})=>{
     const value=clean(text);if(!value)return;
-    const lines=doc.splitTextToSize(value,contentW-4);
-    const lineH=4.3;
-    const h=lines.length*lineH+3;
+    const lines=doc.splitTextToSize(value,contentW-2*narrativeInset);
+    const h=lines.length*narrativeLineH+6; // respiración vertical
     need(h+space);
     doc.setFont('helvetica','normal');doc.setFontSize(size);doc.setTextColor(...dark);
-    doc.text(lines,left+2,y+3.3);
+    doc.text(lines,left+narrativeInset,y+4);
     y+=h+space;
   };
 
@@ -185,14 +186,14 @@ async function generateIncidentPdf(row,housingLabel=''){
 
   const followupBlockHeight=(f,photoCount)=>{
     const obs=clean(f?.Observacion||'');
-    const obsH=(obs?doc.splitTextToSize(obs,contentW-4).length*4.3+3:0)+5;
+    const obsH=(obs?doc.splitTextToSize(obs,contentW-2*narrativeInset).length*narrativeLineH+6:0)+5;
     return 12+18+obsH+(photoCount?55:0)+7;
   };
 
   const resolutionBox=()=>{
     const comment=clean(row.ComentarioCierre)||'Sin comentario de cierre.';
-    const lines=doc.splitTextToSize(comment,contentW-4);
-    const h=25+lines.length*4.3;
+    const lines=doc.splitTextToSize(comment,contentW-2*narrativeInset);
+    const h=28+lines.length*narrativeLineH;
     need(h+3);
     let yy=y+4;
     doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.setTextColor(...green);
@@ -212,7 +213,7 @@ async function generateIncidentPdf(row,housingLabel=''){
     doc.text(shortDateTime(row.FechaCierre),left+100,yy);
     yy+=7;
     doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(...dark);
-    doc.text(lines,left+2,yy);
+    doc.text(lines,left+narrativeInset,yy+2);
     y+=h+3;
   };
 
