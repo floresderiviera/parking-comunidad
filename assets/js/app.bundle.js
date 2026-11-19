@@ -4262,16 +4262,14 @@ async function generateIncidentPdf(row,housingLabel=''){
     doc.text(lines,left,y);y+=lines.length*4+space;
   };
 
-  const narrativeBox=(text,{size=8.8,textWidth=158,pad=5,space=5,fill=soft}={})=>{
+  const narrativeBox=(text,{size=8.8,space=5}={})=>{
     const value=clean(text);if(!value)return;
-    const lines=doc.splitTextToSize(value,textWidth);
+    const lines=doc.splitTextToSize(value,contentW-4);
     const lineH=4.3;
-    const h=pad*2+lines.length*lineH;
+    const h=lines.length*lineH+3;
     need(h+space);
-    doc.setFillColor(...fill);doc.setDrawColor(...line);
-    doc.roundedRect(left,y,contentW,h,2.5,2.5,'FD');
     doc.setFont('helvetica','normal');doc.setFontSize(size);doc.setTextColor(...dark);
-    doc.text(lines,left+pad,y+pad+3.1);
+    doc.text(lines,left+2,y+3.3);
     y+=h+space;
   };
 
@@ -4312,37 +4310,35 @@ async function generateIncidentPdf(row,housingLabel=''){
 
   const followupBlockHeight=(f,photoCount)=>{
     const obs=clean(f?.Observacion||'');
-    const obsH=(obs?doc.splitTextToSize(obs,158).length:0)*4.3+15;
+    const obsH=(obs?doc.splitTextToSize(obs,contentW-4).length*4.3+3:0)+5;
     return 12+18+obsH+(photoCount?55:0)+7;
   };
 
   const resolutionBox=()=>{
     const comment=clean(row.ComentarioCierre)||'Sin comentario de cierre.';
-    const lines=doc.splitTextToSize(comment,150);
-    const h=36+lines.length*4.3;
-    need(h+4);
-    doc.setFillColor(...softGreen);doc.setDrawColor(187,220,204);
-    doc.roundedRect(left,y,contentW,h,3,3,'FD');
-    let yy=y+7;
+    const lines=doc.splitTextToSize(comment,contentW-4);
+    const h=25+lines.length*4.3;
+    need(h+3);
+    let yy=y+4;
     doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.setTextColor(...green);
-    doc.text('RESOLUCIÓN',left+6,yy);
+    doc.text('RESOLUCIÓN',left,yy);
     if(row.Estado==='Cerrada'){
-      doc.setFillColor(...green);doc.roundedRect(pageW-right-32,y+4,26,7,3.5,3.5,'F');
+      doc.setFillColor(...green);doc.roundedRect(pageW-right-32,y+1,26,7,3.5,3.5,'F');
       doc.setTextColor(255,255,255);doc.setFontSize(8);
-      doc.text('CERRADA',pageW-right-19,y+8.7,{align:'center'});
+      doc.text('CERRADA',pageW-right-19,y+5.7,{align:'center'});
     }
-    yy+=9;
+    yy+=7;
     doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...muted);
-    doc.text('Acción realizada',left+6,yy);
+    doc.text('Acción realizada',left,yy);
     doc.text('Fecha y hora',left+100,yy);
-    yy+=5;
+    yy+=4.5;
     doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...dark);
-    doc.text(clean(row.AccionCierre)||'Sin actuación',left+6,yy);
+    doc.text(clean(row.AccionCierre)||'Sin actuación',left,yy);
     doc.text(shortDateTime(row.FechaCierre),left+100,yy);
-    yy+=8;
+    yy+=7;
     doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(...dark);
-    doc.text(lines,left+6,yy);
-    y+=h+6;
+    doc.text(lines,left+2,yy);
+    y+=h+3;
   };
 
   doc.setFillColor(...green);doc.rect(0,0,pageW,29,'F');
