@@ -281,6 +281,12 @@ Object.assign(PARKING_I18N.en,{
 
 
 const PARKING_UI_EN_EXACT={
+  'Viviendas con vehículos': 'Properties with vehicles',
+  'Al menos uno activo': 'At least one active vehicle',
+  'Viviendas sin vehículos': 'Properties without vehicles',
+  'Sin vehículos activos': 'No active vehicles',
+  'Cobertura de vehículos': 'Vehicle coverage',
+  'Sobre viviendas activas': 'Of active properties',
   'Puedes adjuntar un máximo de 5 fotografías.': 'You can attach a maximum of 5 photos.',
   'Cada foto original debe pesar como máximo 12 MB.': 'Each original photo must be no larger than 12 MB.',
   'Las fotografías quedarán asociadas a este seguimiento.': 'The photos will be attached to this follow-up.',
@@ -291,6 +297,9 @@ const PARKING_UI_EN_EXACT={
   'Estado general':'General status',
   'Estado operativo, pendientes y elementos que requieren atención.':'Operational status, pending items and elements requiring attention.',
   'Viviendas activas':'Active properties',
+  'Viviendas y vehículos':'Properties and vehicles',
+  'Vehículos activos':'Active vehicles',
+  'Sin viviendas para este filtro.':'No properties match this filter.',
   'Vehículos con slot activos':'Active vehicles with slots',
   'Motos activas':'Active motorcycles',
   'Control por matrícula':'Plate-based access control',

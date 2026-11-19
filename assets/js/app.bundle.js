@@ -281,6 +281,12 @@ Object.assign(PARKING_I18N.en,{
 
 
 const PARKING_UI_EN_EXACT={
+  'Viviendas con vehículos': 'Properties with vehicles',
+  'Al menos uno activo': 'At least one active vehicle',
+  'Viviendas sin vehículos': 'Properties without vehicles',
+  'Sin vehículos activos': 'No active vehicles',
+  'Cobertura de vehículos': 'Vehicle coverage',
+  'Sobre viviendas activas': 'Of active properties',
   'Puedes adjuntar un máximo de 5 fotografías.': 'You can attach a maximum of 5 photos.',
   'Cada foto original debe pesar como máximo 12 MB.': 'Each original photo must be no larger than 12 MB.',
   'Las fotografías quedarán asociadas a este seguimiento.': 'The photos will be attached to this follow-up.',
@@ -291,6 +297,9 @@ const PARKING_UI_EN_EXACT={
   'Estado general':'General status',
   'Estado operativo, pendientes y elementos que requieren atención.':'Operational status, pending items and elements requiring attention.',
   'Viviendas activas':'Active properties',
+  'Viviendas y vehículos':'Properties and vehicles',
+  'Vehículos activos':'Active vehicles',
+  'Sin viviendas para este filtro.':'No properties match this filter.',
   'Vehículos con slot activos':'Active vehicles with slots',
   'Motos activas':'Active motorcycles',
   'Control por matrícula':'Plate-based access control',
@@ -3028,6 +3037,9 @@ async function dashboard(){
     $('#main').innerHTML=`<section class="hero"><h1>Resumen del parking</h1><p>Estado operativo, pendientes y elementos que requieren atención.</p></section>
       <section class="summary-section"><div class="head"><h2>Estado general</h2></div><div class="summary-grid">
         ${card(d.activeHousing,'Viviendas activas',`${d.totalHousing} registradas`,'housing')}
+        ${card(d.housingWithVehicles??0,'Viviendas con vehículos','Al menos uno activo','coverage-with')}
+        ${card(d.housingWithoutVehicles??0,'Viviendas sin vehículos','Sin vehículos activos','coverage-without')}
+        ${card(`${d.housingVehicleCoveragePct??0}%`,'Cobertura de vehículos','Sobre viviendas activas','coverage-all')}
         ${card(d.activeSlotVehicles,'Vehículos con slot activos','','vehicles-active-slot')}
         ${card(d.activeMotorcycles,'Motos activas','Control por matrícula','vehicles-motorcycles')}
         ${card(d.suspendedVehicles,'Suspendidos','','vehicles-suspended',d.suspendedVehicles>0)}
@@ -3035,6 +3047,7 @@ async function dashboard(){
         ${card(d.lowVehicles,'De baja','','vehicles-low')}
         <article class="summary-card"><b>${esc(d.occupiedSlots)}</b><span>Slots ocupados</span><small>${esc(d.availableSlots)} libres de ${esc(d.slotCapacity)}</small><div class="slot-meter"><span style="width:${Math.max(0,Math.min(100,pct))}%"></span></div></article>
       </div></section>
+      <section class="summary-section" id="coverage-detail" hidden><div class="head"><h2>Viviendas y vehículos</h2><button type="button" class="secondary" id="coverage-detail-close">Cerrar</button></div><div id="coverage-detail-content"></div></section>
       <section class="summary-section"><div class="head"><h2>Pendientes</h2></div><div class="summary-grid">
         ${card(d.pendingRequests,'Solicitudes abiertas','Requieren revisión','requests',d.pendingRequests>0)}
         ${card(d.openIncidents,'Incidencias abiertas','Pendientes de resolución','incidents',d.openIncidents>0)}
@@ -3049,7 +3062,24 @@ async function dashboard(){
         ${card(d.newVehicles30,'Altas de vehículos',trendText(d.trends?.vehicles),'vehicles')}
       </div></section>
       <section class="summary-section"><div class="head"><h2>Requiere atención</h2></div><div class="attention-list">${attention}</div></section>`;
-    document.querySelectorAll('[data-summary-action]').forEach(el=>el.onclick=()=>openSummaryAction(el.dataset.summaryAction));
+    const coverageSection=$('#coverage-detail'),coverageContent=$('#coverage-detail-content');
+    const renderCoverage=(filter)=>{
+      const all=Array.isArray(d.housingVehicleCoverage)?d.housingVehicleCoverage:[];
+      const rows=all.filter(h=>filter==='all'||(filter==='with'?h.activeVehicleCount>0:h.activeVehicleCount===0));
+      const heading=filter==='with'?'Viviendas con vehículos':filter==='without'?'Viviendas sin vehículos':'Todas las viviendas activas';
+      coverageContent.innerHTML=`<p class="subtle">${esc(heading)} · ${esc(rows.length)} de ${esc(all.length)}</p><div class="tablebox"><table class="table"><thead><tr><th>Bloque</th><th>Planta</th><th>Apartamento</th><th>Responsable</th><th>Vehículos activos</th></tr></thead><tbody>${rows.map(h=>`<tr><td>${esc(h.Bloque||'')}</td><td>${esc(h.Planta||'')}</td><td>${esc(h.Apartamento||'')}</td><td>${esc(h.Responsable||'—')}</td><td>${esc(h.activeVehicleCount)}</td></tr>`).join('')||'<tr><td colspan="5">Sin viviendas para este filtro.</td></tr>'}</tbody></table></div>`;
+      coverageSection.hidden=false;
+      state.cache.coverageFilter=filter;
+      coverageSection.scrollIntoView({block:'start',behavior:'smooth'});
+    };
+    const coverageActions={'coverage-with':'with','coverage-without':'without','coverage-all':'all'};
+    document.querySelectorAll('[data-summary-action]').forEach(el=>el.onclick=()=>{
+      const action=el.dataset.summaryAction;
+      if(coverageActions[action]){renderCoverage(coverageActions[action]);return;}
+      openSummaryAction(action);
+    });
+    $('#coverage-detail-close').onclick=()=>{coverageSection.hidden=true;delete state.cache.coverageFilter;};
+    if(state.cache.coverageFilter)renderCoverage(state.cache.coverageFilter);
     document.querySelectorAll('.summary-attention').forEach(b=>b.onclick=()=>openSummaryAttention((d.attention||[])[Number(b.dataset.i)]));
   }catch(e){err(e)}
 }

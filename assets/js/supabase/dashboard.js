@@ -59,6 +59,32 @@
       const activeVehicles =
         vehicles.filter((v) => v.Estado === 'Activo');
 
+      // Cobertura por vivienda: contar IDs distintos, incluidas motos;
+      // las matriculas temporales no generan nuevos vehiculos.
+      const activeVehiclesPerHousing = new Map();
+      activeVehicles.forEach((vehicle) => {
+        if (!activeHousingIds.has(vehicle.ID_Vivienda)) return;
+        activeVehiclesPerHousing.set(
+          vehicle.ID_Vivienda,
+          (activeVehiclesPerHousing.get(vehicle.ID_Vivienda) || 0) + 1
+        );
+      });
+      const housingVehicleCoverage = activeHousingRows.map((housing) => ({
+        ID_Vivienda: housing.ID_Vivienda,
+        Bloque: housing.Bloque,
+        Planta: housing.Planta,
+        Apartamento: housing.Apartamento,
+        Responsable: housing.Responsable || '',
+        activeVehicleCount: activeVehiclesPerHousing.get(housing.ID_Vivienda) || 0
+      }));
+      const housingWithVehicles = housingVehicleCoverage.filter(
+        (housing) => housing.activeVehicleCount > 0
+      ).length;
+      const housingWithoutVehicles = activeHousingRows.length - housingWithVehicles;
+      const housingVehicleCoveragePct = activeHousingRows.length
+        ? Math.round((housingWithVehicles / activeHousingRows.length) * 100)
+        : 0;
+
       const activeCars =
         activeVehicles.filter((v) => v.Tipo !== 'Moto');
 
@@ -398,6 +424,10 @@
       return {
         activeHousing: activeHousingRows.length,
         totalHousing: housing.length,
+        housingWithVehicles,
+        housingWithoutVehicles,
+        housingVehicleCoveragePct,
+        housingVehicleCoverage,
         activeVehicles: activeVehicles.length,
         activeSlotVehicles: activeSlotVehicles.length,
         activeMotorcycles,
