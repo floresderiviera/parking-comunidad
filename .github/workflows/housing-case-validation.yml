@@ -78,5 +78,21 @@ jobs:
           version: latest
       - name: Start isolated Supabase
         run: supabase start
-      - name: Validate migrations and RLS
-        run: supabase test db
+      - name: Validate migrations and RLS with first error status
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          supabase test db > db-check.log 2>&1
+          result=$?
+          cat db-check.log
+          summary=$(sed -E 's/\x1B\[[0-9;]*[[:alpha:]]//g' db-check.log | grep -m1 -Ei 'error:|not ok|failed|ERROR ' | head -c 130)
+          if [ -z "$summary" ]; then summary=$(tail -n 1 db-check.log | head -c 130); fi
+          export RESULT="$result" SUMMARY="$summary"
+          node -e 'const s=process.env.RESULT==="0"?"success":"failure"; const d=(process.env.SUMMARY||"Unknown").slice(0,140); require("fs").writeFileSync("db-status.json", JSON.stringify({state:s,description:d,context:"parking-db-test"}))'
+          curl --silent --show-error --fail --retry 2 -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'Content-Type: application/json' \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            --data @db-status.json || true
+          exit "$result"
