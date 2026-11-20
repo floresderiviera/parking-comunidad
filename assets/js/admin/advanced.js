@@ -126,7 +126,7 @@ async function housingDetailView(id){
     document.querySelectorAll('[data-hd-action]').forEach(el=>el.onclick=()=>{
       const a=el.dataset.hdAction;
       if(a==='vehicles'){openVehicles();return}
-      if(a==='history-incidents'||a==='owner-history'){state.cache.incidentPreset={housingId:a==='history-incidents'?h.ID_Vivienda:'',status:''};go('incidents');return}
+      if(a==='history-incidents'||a==='owner-history'){state.cache.incidentPreset={housingId:a==='history-incidents'?h.ID_Vivienda:'',ownerId:a==='owner-history'?h.ResponsableUserId:'',status:''};go('incidents');return}
       if(a==='history-requests'){state.cache.requestPreset={housingId:h.ID_Vivienda,status:''};go('requests');return}
       if(a==='incidents'){state.cache.incidentPreset={housingId:h.ID_Vivienda,status:'Abierta'};go('incidents');return}
       if(a==='requests'){state.cache.requestPreset={housingId:h.ID_Vivienda,status:'Abierta'};go('requests');return}

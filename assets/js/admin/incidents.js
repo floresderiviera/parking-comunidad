@@ -381,11 +381,13 @@ async function incidents(openId=''){
     const relationCount=r=>incidentRelatedPlatesClient(r,incidentRelatedCasesClient(r,rows),incidentPlate).length;
     bindPeriodVisibility('incident');
     const repeatOnly=!!navPreset?.followup;
+    const focusHousingId=navPreset?.housingId||'';
+    const focusOwnerId=navPreset?.ownerId||'';
     const filtered=()=>{
       const q=$('#incident-search').value.trim().toLowerCase(),type=$('#incident-type').value,status=$('#incident-state').value,origin=$('#incident-origin').value,priority=$('#incident-priority').value,period=$('#incident-period').value,from=$('#incident-from').value,to=$('#incident-to').value;
       saveViewUiState('incidents',{q,type,status,origin,priority,period,from,to,page,sortKey,sortDir,viewMode,groupByHousing,v:'1.2.13.14-FIX11.10'});
       const val=(r,k)=>k==='Vivienda'?incidentHouse(r):k==='MatriculaObservada'?incidentPlate(r):k==='Intentos'?Number(r.Intentos||1):r[k]||'';
-      return rows.filter(r=>(!type||r.Tipo===type)&&(!status||r.Estado===status)&&(!origin||(r.OrigenControl||'Manual')===origin)&&(!priority||r.Prioridad===priority)&&(!repeatOnly||Number(r.Intentos||1)>1)&&periodMatches(r.FechaHora,period,from,to)&&[...Object.values(r),recordHousingLabel(r,housingMap[r.ID_Vivienda])].join(' ').toLowerCase().includes(q)).sort((a,b)=>{const c=String(val(a,sortKey)).localeCompare(String(val(b,sortKey)),'es',{numeric:true,sensitivity:'base'});return sortDir==='asc'?c:-c});
+      return rows.filter(r=>(!focusHousingId||r.ID_Vivienda===focusHousingId)&&(!focusOwnerId||r.ID_PropietarioAlHecho===focusOwnerId)&&(!type||r.Tipo===type)&&(!status||r.Estado===status)&&(!origin||(r.OrigenControl||'Manual')===origin)&&(!priority||r.Prioridad===priority)&&(!repeatOnly||Number(r.Intentos||1)>1)&&periodMatches(r.FechaHora,period,from,to)&&[...Object.values(r),recordHousingLabel(r,housingMap[r.ID_Vivienda])].join(' ').toLowerCase().includes(q)).sort((a,b)=>{const c=String(val(a,sortKey)).localeCompare(String(val(b,sortKey)),'es',{numeric:true,sensitivity:'base'});return sortDir==='asc'?c:-c});
     };
     const detail=r=>{
       const canSeeActors=hasUiRole('ADMIN');
@@ -397,7 +399,7 @@ async function incidents(openId=''){
       const eventParticipants=event=>{const participants=event?rows.filter(row=>row.ID_Evento===event||(row.Seguimientos||[]).some(s=>s.ID_EventoSeguimiento===event)):[];return qrLinked?participants.filter(incidentIsQrLinkedCase):participants};
       const eventFollowupCount=x=>eventParticipants(x.ID_EventoSeguimiento||'').length||1;
       const eventFollowupRelated=x=>eventParticipants(x.ID_EventoSeguimiento||'').filter(row=>row.ID_Incidencia!==r.ID_Incidencia).map(linkedLabel);
-      const topActions=`<div class="actions">${hasUiRole('ADMIN')?`<button class="secondary" id="inc-detail-pdf">Generar PDF</button>`:''}${hasUiRole('ADMIN')&&r.Estado==='Abierta'?`<button id="inc-detail-close-case">Resolver incidencia</button>`:''}<button class="secondary" id="inc-detail-close">Cerrar detalle</button></div>`;
+      const topActions=`<div class="actions">${hasUiRole('ADMIN')?`<button class="secondary" id="inc-detail-pdf">Generar PDF</button>`:''}${hasUiRole('ADMIN')&&r.Estado==='Abierta'?`<button id="inc-detail-close-case">Resolver incidencia</button>`:''}${hasUiRole('ADMIN')&&r.Estado==='Cerrada'?'<button class="secondary" id="inc-detail-send-pdf">Preparar PDF de cierre</button>':''}<button class="secondary" id="inc-detail-close">Cerrar detalle</button></div>`;
       const relationHtml=qrLinked&&relatedPlates.length?`<div class="message"><b>Vehículos relacionados (${relatedPlates.length}):</b><div>${relatedPlates.map(x=>`<span class="subtle"><b>${esc(x)}</b></span>`).join(' · ')}</div></div>`:(!qrLinked&&r.MatriculaRelacionada?`<div class="message"><b>Relacionado con:</b> ${esc(r.MatriculaRelacionada)}${r.ID_Evento?` · Evento ${esc(r.ID_Evento)}`:''}</div>`:'');
       const linkedHtml=relatedCases.length?`<div class="message"><b>${qrLinked?'Incidencias vinculadas por uso de QR':'Incidencias vinculadas'}:</b><div class="actions">${relatedCases.map(x=>`<button type="button" class="secondary inc-linked" data-id="${esc(x.ID_Incidencia)}">${esc(linkedLabel(x))}</button>`).join('')}</div></div>`:'';
       const meaningful=v=>{const x=String(v??'').trim();return x&&!['—','-','No aplica'].includes(x)};
@@ -467,6 +469,12 @@ async function incidents(openId=''){
         ${resolutionHtml}
       </section>`;
       $('#inc-detail-close').onclick=()=>host.innerHTML='';const pdfBtn=$('#inc-detail-pdf');if(pdfBtn)pdfBtn.onclick=async()=>{busy(pdfBtn);try{await generateIncidentPdf(r,recordHousingLabel(r,h));toast('PDF generado.')}catch(e){toast(e.message||'No se pudo generar el PDF.',true)}finally{busy(pdfBtn,false)}};document.querySelectorAll('.inc-linked').forEach(b=>b.onclick=()=>detail(rows.find(x=>x.ID_Incidencia===b.dataset.id)));
+      const sendPdf=$('#inc-detail-send-pdf');
+      if(sendPdf)sendPdf.onclick=async()=>{busy(sendPdf);try{
+        await uploadIncidentCloseReports(r,recordHousingLabel(r,h));
+        toast('PDFs preparados para notificación a administración y propietario.');
+      }catch(e){toast(e.message||'No se pudo preparar el correo.',true)}
+      finally{busy(sendPdf,false)}};
       const close=$('#inc-detail-close-case');
       if(close)close.onclick=()=>{
         $('#incident-close-editor').innerHTML=`<form class="form" id="incident-close-form" style="margin-top:1rem"><div class="field"><label>Acción realizada</label><select name="AccionCierre" id="incident-close-action" required><option value="">Selecciona una acción</option>${actions.map(x=>`<option value="${esc(x)}">${esc(actionLabel(x))}</option>`).join('')}</select></div><div class="field wide"><label>Comentario de cierre</label><textarea name="ComentarioCierre" required placeholder="Qué se hizo, contacto con propietario, observaciones..."></textarea></div><div class="message wide" id="incident-action-help"></div><div class="wide actions"><button>CONFIRMAR Y CERRAR</button><button type="button" class="secondary" id="cancel-close-inc">Cancelar</button></div></form>`;

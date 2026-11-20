@@ -72,7 +72,7 @@ function makeSheet(book: ExcelJS.Workbook,name:string,headers:string[],widths:nu
   return sheet;
 }
 function addSafe(sheet:ExcelJS.Worksheet, values:unknown[]) {
-  sheet.addRow(values.map(v=>v instanceof Date?v:safeText(v)));
+  sheet.addRow(values.map(v=>v instanceof Date||typeof v==='number'?v:safeText(v)));
 }
 async function buildWorkbook(community:RecordRow, period:{start:string;end:string}, appUrl:string) {
   const [incidents,dwellings,profiles] = await Promise.all([
@@ -259,7 +259,7 @@ async function processOutbox(appUrl:string,limit=20) {
       const apiKey=Deno.env.get('RESEND_API_KEY')||'',from=Deno.env.get('PARKING_MAIL_FROM')||'';
       if(!apiKey||!from)throw new Error('Email provider credentials missing');
       const resp=await fetch('https://api.resend.com/emails',{
-        method:'POST',headers:{authorization:'Bearer '+apiKey,'content-type':'application/json'},
+        method:'POST',headers:{authorization:'Bearer '+apiKey,'content-type':'application/json','Idempotency-Key':row.id},
         body:JSON.stringify({from,to:[row.recipient_email],subject,text:body,attachments})
       });
       const result=await resp.json().catch(()=>({}));
@@ -308,7 +308,7 @@ Deno.serve(async (req:Request)=>{
       if(!secret||req.headers.get('x-parking-cron-secret')!==secret)throw new Error('Unauthorized scheduler');
       const local=localParts();
       const reports=[];
-      if(local.weekday==='Mon'&&local.hour===8) {
+      if(local.weekday==='Mon'&&local.hour>=8) {
         const period=previousWeek();
         const communities=assertData<RecordRow[]>(await service.from('communities').select('id,name,slug').eq('state','Activo'),'communities');
         for(const c of communities)try{reports.push(await saveReport(c,period,appUrl))}catch(e){reports.push({community:c.slug,error:String(e)})}
