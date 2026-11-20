@@ -386,8 +386,21 @@ function parkingScorePanel(row,all,ownerId,options={}){
  const current=parkingScore(home),person=ownerId?parkingScore(owned):null;
  const prospective=options.action?parkingScore(home,{closeId:row.ID_Incidencia,action:options.action}):null;
  const nextOwner=options.action&&ownerId?parkingScore(owned,{closeId:row.ID_Incidencia,action:options.action}):null;
- const result=(name,s,after)=>'<div class="card incident-stat-card" style="flex:1;min-width:220px"><span>'+name+'</span><b>'+ (s?s.score+'/100':'Sin atribución verificada')+'</b><small>'+(s?s.open+' abiertas · '+s.closed+' cerradas con actuación · '+s.followups+' seguimientos':'Sin historial atribuible')+'</small>'+(after?'<small>Si se resuelve: '+after.score+'/100</small>':'')+'</div>';
- return '<section class="card incident-compliance-panel" id="incident-compliance-panel" style="margin:1rem 0"><div class="head"><h3>Antecedentes y puntuación de cumplimiento</h3></div><p class="muted">Índice orientativo de 365 días: abiertas, cerradas con actuación e intentos. No genera penalizaciones.</p><div style="display:flex;flex-wrap:wrap;gap:.75rem">'+result('Vivienda',current,prospective)+result('Propietario',person,nextOwner)+'</div><p class="muted">Descuentos: Normal 3/6; Atención 5/10; Alta 8/16; Crítica 12/24 (abierta/cerrada). Los seguimientos suman 1/2/3/4, máximo 4 por expediente. Recuperación de hasta 15 puntos por 30/60/90 días sin nuevas detecciones ni casos abiertos.</p><details><summary>Ver antecedentes y desglose</summary><ul>'+current.items.filter(x=>x.row.ID_Incidencia!==row.ID_Incidencia).slice(0,8).map(x=>'<li>'+esc(shortDateTime(x.row.FechaHora))+' · '+esc(x.row.Tipo)+' · '+esc(x.row.Estado)+' · '+(x.attempts+1)+' intentos · -'+x.loss+' puntos</li>').join('')+'</ul></details></section>';
+ const result=(name,score,after)=>`<div class="card incident-stat-card" style="flex:1;min-width:220px">
+   <span>${name}</span><b>${score?score.score+'/100':'Sin atribución verificada'}</b>
+   <small>${score?`${score.open} abiertas · ${score.closed} cerradas con actuación · ${score.followups} seguimientos`:'Sin historial atribuible'}</small>
+   ${after?`<small>Si se resuelve: ${after.score}/100</small>`:''}
+ </div>`;
+ const entries=current.items.filter(x=>x.row.ID_Incidencia!==row.ID_Incidencia).slice(0,8);
+ return `<section class="card incident-compliance-panel" id="incident-compliance-panel" style="margin:1rem 0">
+   <div class="head"><h3>Antecedentes y puntuación de cumplimiento</h3></div>
+   <p class="muted">Índice orientativo de 365 días: abiertas, cerradas con actuación e intentos. No genera penalizaciones.</p>
+   <div style="display:flex;flex-wrap:wrap;gap:.75rem">${result('Vivienda',current,prospective)}${result('Propietario',person,nextOwner)}</div>
+   <p class="muted">Descuentos: Normal 3/6; Atención 5/10; Alta 8/16; Crítica 12/24 (abierta/cerrada). Los seguimientos suman 1/2/3/4, máximo 4 por expediente. Recuperación de hasta 15 puntos por 30/60/90 días sin nuevas detecciones ni casos abiertos.</p>
+   <details><summary>Ver antecedentes y desglose</summary>
+   <ul>${entries.map(x=>`<li>${esc(shortDateTime(x.row.FechaHora))} · ${esc(x.row.Tipo)} · ${esc(x.row.Estado)} · ${x.attempts+1} intentos · −${x.loss} puntos</li>`).join('')}</ul>
+   </details>
+ </section>`;
 }
 function parkingComplianceScore(rows,currentId){const s=parkingScore(rows,{exclude:currentId});return {score:s.score,assessed:s.closed,followups:s.followups,open:s.open,previous:s.items.length,history:s.items.map(x=>x.row)}}
 function parkingCompliancePanel(row,allRows,options={}){return parkingScorePanel(row,allRows,options.ownerId||row.ID_PropietarioAlHecho||'',options)}
