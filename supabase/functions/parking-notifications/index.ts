@@ -83,9 +83,9 @@ async function buildWorkbook(community:RecordRow, period:{start:string;end:strin
   const ds=new Map(dwellings.map(r=>[r.id,r]));
   const ps=new Map(profiles.map(r=>[r.user_id,r]));
   const from=madridMidnightUtc(period.start),to=madridMidnightUtc(period.end);
-  const created=incidents.filter(r=>r.occurred_at>=from&&r.occurred_at<to);
+  const created=incidents.filter(r=>r.created_at>=from&&r.created_at<to);
   const openNew=created.filter(r=>r.state==='Abierta');
-  const previous=incidents.filter(r=>r.occurred_at<from&&r.state==='Abierta');
+  const previous=incidents.filter(r=>r.created_at<from&&r.state==='Abierta');
   const names=(r:RecordRow)=>ds.get(r.dwelling_id)?.display_name || 'Sin vivienda identificada';
   const owner=(r:RecordRow)=>{const user=ps.get(r.responsible_at_event_user_id);return user?.name||user?.email||'Atribución pendiente';};
   const link=(r:RecordRow)=>appUrl+'?openIncident='+encodeURIComponent(r.id);

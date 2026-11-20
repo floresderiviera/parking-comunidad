@@ -48,7 +48,8 @@ async function generateIncidentPdf(row,housingLabel='',options={}){
   if(options.audience==='OWNER'){
     // Never include evidence, third-party plates or uncontrolled free-text in owner attachments.
     row={...row,
-      Descripcion:'Consulta el detalle comunicado por la administración.',
+      Descripcion:'El detalle confidencial y las evidencias se conservan en el expediente administrativo.',
+      Situacion:'',Causa:'',MatriculaObservada:'',MatriculaInfraccion:'',
       ComentarioCierre:'La incidencia ha sido cerrada. Contacta con administración para obtener información adicional.',
       Foto:'',Fotos:[],MatriculaAutorizada:'',MatriculaRelacionada:'',
       MatriculaHabitualOrigen:'',MatriculaHabitualVehiculo:'',EstadoVehiculoOrigen:'',
