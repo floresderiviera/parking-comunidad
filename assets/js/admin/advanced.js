@@ -68,6 +68,24 @@ async function housingDetailView(id){
     const d=await call('housingDetail',{id}),h=d.housing,o=d.owner||{},vs=d.vehicles||[],incs=d.incidents||[],reqs=d.requests||[];
     const openInc=incs.filter(x=>(x.Estado||'Abierta')!=='Cerrada');
     const pendingReq=reqs.filter(x=>x.Estado==='Abierta');
+    const ownerIncs=d.ownerIncidents||[];
+    const now=Date.now(),withinDays=(x,n)=>{const t=Date.parse(x.FechaHora||'');return Number.isFinite(t)&&t<=now&&t>=now-n*86400000};
+    const historic=(items,openTest)=>({
+      total:items.length,
+      open:items.filter(openTest).length,
+      last30:items.filter(x=>withinDays(x,30)).length,
+      last90:items.filter(x=>withinDays(x,90)).length,
+      last365:items.filter(x=>withinDays(x,365)).length
+    });
+    const houseStats=historic(incs,x=>x.Estado!=='Cerrada');
+    const ownerStats=historic(ownerIncs,x=>x.Estado!=='Cerrada');
+    const historicRequests=reqs.filter(x=>!['Abierta','Pendiente'].includes(x.Estado));
+    const incidentHistory=incs.slice().sort((a,b)=>Date.parse(b.FechaHora||0)-Date.parse(a.FechaHora||0));
+    const requestHistory=reqs.slice().sort((a,b)=>Date.parse(b.FechaHora||0)-Date.parse(a.FechaHora||0));
+    const typeCounts=items=>Object.entries(items.reduce((memo,x)=>{const key=x.Tipo||'Otro';memo[key]=(memo[key]||0)+1;return memo},{})).sort((a,b)=>b[1]-a[1]);
+    const typeList=items=>typeCounts(items).map(([name,count])=>`<li>${esc(name)}: <b>${count}</b></li>`).join('')||'<li>Sin incidencias atribuidas.</li>';
+    const incidentTable=incidentHistory.map(x=>`<tr><td>${esc(shortDateTime(x.FechaHora))}</td><td>${esc(x.Tipo)}</td><td>${esc(x.MatriculaInfraccion||x.MatriculaObservada||'—')}</td><td>${esc(x.Prioridad||'Normal')}</td><td>${esc(x.Estado)}</td><td><button type="button" class="secondary hd-incident" data-id="${esc(x.ID_Incidencia)}">Ver</button></td></tr>`).join('');
+    const requestTable=requestHistory.map(x=>`<tr><td>${esc(shortDateTime(x.FechaHora))}</td><td>${esc(requestTypeLabel(x.Tipo))}</td><td>${esc(x.MatriculaHabitual||'—')}</td><td>${esc(x.Estado)}</td><td><button type="button" class="secondary hd-request" data-id="${esc(x.ID_Solicitud)}">Ver</button></td></tr>`).join('');
     const tmp=vs.filter(v=>v.PeriodoTemporalActual);
     const activeSlots=vs.filter(v=>v.Estado==='Activo'&&v.Tipo!=='Moto'&&['1','2'].includes(String(v.Slot||'')));
     const motos=vs.filter(v=>v.Estado==='Activo'&&v.Tipo==='Moto');
@@ -86,14 +104,30 @@ async function housingDetailView(id){
       </div></section>
       <section class="card housing-detail-card"><div class="head"><h2>Vivienda y propietario</h2></div><div class="details">
         <div><small>Vivienda</small>${esc(housingShort(h))}</div><div><small>Estado</small>${esc(h.Estado||'—')}</div><div><small>Responsable</small>${esc(o.Nombre||'Sin responsable')}</div><div><small>Email</small>${esc(o.Email||h.Responsable||'—')}</div>
-      </div><div class="actions" style="margin-top:1rem"><button class="secondary" id="hd-open-vehicles">Abrir vehículos de esta vivienda</button></div></section>`;
+      </div><div class="actions" style="margin-top:1rem"><button class="secondary" id="hd-open-vehicles">Abrir vehículos de esta vivienda</button></div></section>
+      <section class="summary-section"><div class="head"><h2>Historial y reincidencias</h2></div><div class="summary-grid">
+        ${card(houseStats.total,'Incidencias históricas',`${houseStats.open} abiertas · ${houseStats.total-houseStats.open} cerradas`,'history-incidents')}
+        ${card(houseStats.last30,'Últimos 30 días',`${houseStats.last90} en 90 días · ${houseStats.last365} en 365 días`,'history-incidents')}
+        ${card(ownerStats.total,'Por propietario (histórico)',`${ownerStats.last365} en 365 días · ${ownerStats.open} abiertas`,'owner-history')}
+        ${card(reqs.length,'Solicitudes históricas',`${pendingReq.length} abiertas · ${historicRequests.length} resueltas`,'history-requests')}
+      </div></section>
+      <section class="card housing-detail-card"><div class="head"><h2>Reincidencias registradas</h2></div><div class="details">
+        <div><small>Por vivienda</small><b>${houseStats.total} incidencias</b><ul>${typeList(incs)}</ul></div>
+        <div><small>Por propietario responsable al hecho</small><b>${ownerStats.total} incidencias</b><ul>${typeList(ownerIncs)}</ul></div>
+      </div><p class="subtle">Estos recuentos no constituyen penalizaciones automáticas. Las incidencias históricas sin atribución verificada no se imputan al propietario actual.</p></section>
+      <section class="card housing-detail-card"><div class="head"><h2>Historial completo de incidencias</h2></div><div class="tablebox compact-table"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Matrícula</th><th>Prioridad</th><th>Estado</th><th>Acción</th></tr></thead><tbody>${incidentTable||'<tr><td colspan="6">Sin incidencias.</td></tr>'}</tbody></table></div></section>
+      <section class="card housing-detail-card"><div class="head"><h2>Historial completo de solicitudes</h2></div><div class="tablebox compact-table"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Matrícula</th><th>Estado</th><th>Acción</th></tr></thead><tbody>${requestTable||'<tr><td colspan="5">Sin solicitudes.</td></tr>'}</tbody></table></div></section>`;
     const openVehicles=()=>{state.cache.tablePreset={kind:'vehicles',filters:{__Vivienda:h.ID_Vivienda}};go('vehicles')};
     $('#hd-back').onclick=()=>go('housing');
     $('#hd-add').onclick=openVehicles;
     $('#hd-open-vehicles').onclick=openVehicles;
+    document.querySelectorAll('.hd-incident').forEach(b=>b.onclick=()=>{state.cache.incidentFocus=b.dataset.id;go('incidents')});
+    document.querySelectorAll('.hd-request').forEach(b=>b.onclick=()=>{state.cache.requestFocus=b.dataset.id;go('requests')});
     document.querySelectorAll('[data-hd-action]').forEach(el=>el.onclick=()=>{
       const a=el.dataset.hdAction;
       if(a==='vehicles'){openVehicles();return}
+      if(a==='history-incidents'||a==='owner-history'){state.cache.incidentPreset={housingId:a==='history-incidents'?h.ID_Vivienda:'',status:''};go('incidents');return}
+      if(a==='history-requests'){state.cache.requestPreset={housingId:h.ID_Vivienda,status:''};go('requests');return}
       if(a==='incidents'){state.cache.incidentPreset={housingId:h.ID_Vivienda,status:'Abierta'};go('incidents');return}
       if(a==='requests'){state.cache.requestPreset={housingId:h.ID_Vivienda,status:'Abierta'};go('requests');return}
       if(a==='slot1'||a==='slot2'){const v=slot(a==='slot1'?1:2);if(v){state.cache.tablePreset={kind:'vehicles',filters:{__Vivienda:h.ID_Vivienda},search:v.MatriculaHabitual||''};go('vehicles')}}

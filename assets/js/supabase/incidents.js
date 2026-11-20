@@ -194,6 +194,7 @@
     const closer = includeActors ? (refs.profiles.get(row.closed_by) || {}) : {};
     return {
       ID_Incidencia: row.id,
+      ID_PropietarioAlHecho: row.responsible_at_event_user_id || '',
       ID_Evento: row.event_id || '',
       ID_Vivienda: row.dwelling_id || '',
       ID_Vehiculo: row.vehicle_id || '',
