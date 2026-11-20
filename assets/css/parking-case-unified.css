@@ -1,0 +1,59 @@
+/* parking-case-unified-20261120: estilo comun de expedientes. Solo presentacion. */
+/* No modifica las bandejas ni los formularios de registro. */
+:where(.incident-detail-v2, .request-dossier-detail){
+  --case-space: 14px;
+  --case-radius: 10px;
+}
+/* Ritmo compartido en las fichas de solicitudes e incidencias */
+.incident-detail-v2 .request-case-section,
+.incident-detail-v2 > .incident-section-title,
+.incident-detail-v2 > .incident-detail-section,
+.incident-detail-v2 > .incident-timeline,
+.incident-detail-v2 > .incident-resolution { margin-top: 20px; }
+.incident-detail-v2 .request-case-section h4,
+.incident-detail-v2 .incident-section-title h4 {
+  font-weight: 700; line-height: 1.3; font-size: .95rem;
+  margin: 0 0 10px; color: inherit;
+}
+/* Misma familia de casillas para resumen de identidad y vehiculo */
+.incident-detail-v2 .incident-primary-grid,
+.incident-detail-v2 .request-case-section .incident-primary-grid {
+  display: grid;grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px;
+}
+.incident-detail-v2 .incident-primary-grid > div,
+.incident-detail-v2 .request-case-section .incident-primary-grid > div {
+  min-width: 0; padding: 11px 12px; border-radius: var(--case-radius);
+  background: var(--surface-soft,#f6f9f8); border: 1px solid var(--border-soft,#eaf0ee);
+  display:flex;flex-direction:column;gap:4px;
+}
+.incident-detail-v2 .incident-primary-grid small,
+.incident-detail-v2 .request-case-section .incident-primary-grid small {
+  font-size: .74rem; line-height:1.25; color:var(--text-muted,#708383);
+}
+.incident-detail-v2 .incident-primary-grid b,
+.incident-detail-v2 .request-case-section .incident-primary-grid b {
+  font-size:.88rem; line-height:1.3; overflow-wrap:anywhere;
+}
+/* Contexto, historial y puntuaciones con separacion coherente */
+.incident-detail-v2 .request-case-section .incident-primary-grid + p,
+.incident-detail-v2 .incident-audit-line,
+.incident-detail-v2 .incident-detail-section,
+.incident-detail-v2 .incident-resolution { margin-top:14px; }
+.incident-detail-v2 .request-case-section > .muted,
+.incident-detail-v2 .request-case-section > p {line-height:1.5;}
+.incident-detail-v2 .request-case-section details{margin-top:9px;}
+.incident-detail-v2 .request-case-section details summary{cursor:pointer;}
+/* La zona de resolucion se mantiene clara, sin cambiar controles ni eventos */
+.incident-detail-v2 #incident-close-editor:not(:empty),
+.incident-detail-v2 .parking-compliance-panel {margin-top:18px;}
+.incident-detail-v2 .actions{gap:8px;flex-wrap:wrap;}
+@media(max-width:950px){
+ .incident-detail-v2 .incident-primary-grid,
+ .incident-detail-v2 .request-case-section .incident-primary-grid {grid-template-columns: repeat(2,minmax(0,1fr));}
+}
+@media(max-width:520px){
+ .incident-detail-v2 .incident-primary-grid,
+ .incident-detail-v2 .request-case-section .incident-primary-grid {grid-template-columns: minmax(0,1fr);}
+ .incident-detail-v2 .incident-primary-grid > div,
+ .incident-detail-v2 .request-case-section .incident-primary-grid > div {padding:10px;}
+}

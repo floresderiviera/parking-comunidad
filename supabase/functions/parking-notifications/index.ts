@@ -206,8 +206,14 @@ async function outboxBody(row:RecordRow,appUrl:string) {
     body:'Se adjunta el informe semanal en Excel. Su contenido es confidencial.'
   };
   const table=row.event_type.startsWith('incident.')?'incidents':'requests';
-  const res=await service.from(table).select('*').eq('id',row.entity_id).eq('community_id',row.community_id).single();
-  const e=assertData<RecordRow>(res,'case');
+  // case_missing_obsolete_v1: only obsolete creation notifications may be retired.
+  const res=await service.from(table).select('*').eq('id',row.entity_id).eq('community_id',row.community_id).maybeSingle();
+  if(res.error)throw res.error;
+  if(!res.data){
+    if(row.event_type==='incident.created'||row.event_type==='request.created')return null;
+    throw new Error('Missing case for non-creation event: '+row.event_type);
+  }
+  const e=res.data as RecordRow;
   const isIncident=table==='incidents';
   const target=isIncident?'openIncident':'openRequest';
   const link=appUrl+'?'+target+'='+encodeURIComponent(e.id);
@@ -239,7 +245,18 @@ async function processOutbox(appUrl:string,limit=20) {
         const m=await service.from('community_members').select('state,roles').eq('community_id',row.community_id).eq('user_id',row.recipient_user_id).single();
         if(p.state!=='Activo'||m.error||m.data?.state!=='Activo'||(row.recipient_kind==='ADMIN'&&!(m.data.roles||[]).includes('ADMIN')))throw new Error('Recipient no longer authorized');
       }
-      const {subject,body}=await outboxBody(row,appUrl);
+      const message=await outboxBody(row,appUrl);
+      if(message===null){
+        // Keep the original row, event and recipient for audit. Never retry an obsolete notification.
+        const archived=await service.from('parking_notification_outbox').update({
+          state:'obsolete',locked_until:null,
+          last_error:'Orphaned creation notice: original case no longer exists; no email sent'
+        }).eq('id',row.id).eq('state','sending');
+        if(archived.error)throw archived.error;
+        blocked++;
+        continue;
+      }
+      const {subject,body}=message;
       const attachments:any[]=[];
       if(row.attachment_path){
         const download=await service.storage.from(bucket).download(row.attachment_path);
@@ -316,11 +333,34 @@ Deno.serve(async (req:Request)=>{
       const outbox=await processOutbox(appUrl);
       return jsonResponse(200,{ok:true,local,reports,outbox,dryRun:Deno.env.get('PARKING_EMAIL_DRY_RUN')!=='false'},origin);
     }
+    // parking_official_pdf_single_button_v1: signed link to the very file queued for both recipients.
+    if(action==='download-official-pdf') {
+      const incidentId=String(body.incident_id||'');
+      if(!/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(incidentId))throw new Error('Invalid incident id');
+      const incident=assertData<RecordRow>(await service.from('incidents')
+        .select('id,community_id,state').eq('id',incidentId).single(),'incident');
+      await authenticatedAdmin(req,incident.community_id);
+      if(incident.state!=='Cerrada')throw new Error('Official PDF requires a closed case');
+      const queued=await service.from('parking_notification_outbox')
+        .select('attachment_path,recipient_kind')
+        .eq('community_id',incident.community_id)
+        .eq('entity_id',incident.id)
+        .eq('event_type','incident.closed')
+        .in('recipient_kind',['ADMIN','OWNER']);
+      if(queued.error)throw queued.error;
+      const paths=(queued.data||[]).map((r:any)=>r.attachment_path).filter(Boolean);
+      if(paths.length<2||new Set(paths).size!==1)throw new Error('Shared official PDF not yet available for both recipients');
+      const expected=incident.community_id+'/incidents/'+incident.id+'/informe-oficial.pdf';
+      if(paths[0]!==expected)throw new Error('Unexpected official PDF path');
+      const signed=await service.storage.from(bucket).createSignedUrl(expected,60);
+      if(signed.error||!signed.data?.signedUrl)throw signed.error||new Error('Official PDF missing from private storage');
+      return jsonResponse(200,{ok:true,url:signed.data.signedUrl},origin);
+    }
     if(action==='upload-pdf') {
       const incidentId=String(body.incident_id||'');
       const audience=String(body.audience||'');
       if(!/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(incidentId))throw new Error('Invalid incident id');
-      if(!['ADMIN','OWNER'].includes(audience))throw new Error('Invalid audience');
+      if(audience!=='ADMIN')throw new Error('Only the official incident PDF can be uploaded');
       const incident=assertData<RecordRow>(
         await service.from('incidents').select('id,community_id,state').eq('id',incidentId).single(),
         'incident'
@@ -336,14 +376,26 @@ Deno.serve(async (req:Request)=>{
         throw new Error('Invalid PDF or too large');
       }
       const bytes=Uint8Array.from(raw, c=>c.charCodeAt(0));
-      const path=incident.community_id+'/incidents/'+incident.id+'/'+audience.toLowerCase()+'.pdf';
+      // No reemplazar un documento ya enviado o en proceso de envio.
+      const existing=await service.from('parking_notification_outbox').select('id,state,recipient_kind')
+        .eq('community_id',incident.community_id).eq('event_type','incident.closed')
+        .eq('entity_id',incident.id).in('recipient_kind',['ADMIN','OWNER']);
+      if(existing.error)throw existing.error;
+      const targets=existing.data||[];
+      if(!targets.length)throw new Error('No queued incident-close recipients');
+      if(targets.some(r=>!['pending','failed'].includes(r.state)))
+        throw new Error('Cannot replace a PDF after delivery or while sending');
+      const path=incident.community_id+'/incidents/'+incident.id+'/informe-oficial.pdf';
       const upload=await service.storage.from(bucket).upload(path,bytes,{upsert:true,contentType:'application/pdf'});
       if(upload.error)throw upload.error;
       const queued=await service.from('parking_notification_outbox').update({attachment_path:path})
         .eq('community_id',incident.community_id).eq('event_type','incident.closed')
-        .eq('entity_id',incident.id).eq('recipient_kind',audience).in('state',['pending','failed']);
+        .eq('entity_id',incident.id).in('recipient_kind',['ADMIN','OWNER'])
+        .in('state',['pending','failed']).select('id');
       if(queued.error)throw queued.error;
-      return jsonResponse(200,{ok:true,audience,attached:true},origin);
+      if((queued.data||[]).length!==targets.length)
+        throw new Error('PDF attached to an unexpected number of recipients');
+      return jsonResponse(200,{ok:true,audience:'ALL',attached:true,recipientCount:targets.length},origin);
     }
     if(action==='weekly-manual') {
       const communityId=String(body.community_id||'');

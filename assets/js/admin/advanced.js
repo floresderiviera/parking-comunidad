@@ -65,7 +65,7 @@ async function quickVehicleState(v,newState,backFn){const impact=[newState==='Su
 async function housingDetailView(id){
   renderLoading('housing');
   try{
-    const d=await call('housingDetail',{id}),h=d.housing,o=d.owner||{},vs=d.vehicles||[],incs=d.incidents||[],reqs=d.requests||[];
+    const d=await call('housingDetail',{id}),h=d.housing,o=d.owner||{},vs=d.vehicles||[],incs=d.incidents||[],reqs=d.requests||[];if(d.complianceRules)parkingComplianceSetRules(d.complianceRules);
     const openInc=incs.filter(x=>(x.Estado||'Abierta')!=='Cerrada');
     const pendingReq=reqs.filter(x=>x.Estado==='Abierta');
     const ownerIncs=d.ownerIncidents||[];
@@ -215,10 +215,12 @@ async function configurationView(initialTab='identity'){
     const systemAccess=canViewSystem();
     if(!editable)initialTab='data';
     if(initialTab==='system'&&!systemAccess)initialTab=editable?'identity':'data';
+    if(initialTab==='compliance'&&!editable)initialTab='data';
     const s=editable?await call('getSettings'):appSettings();
     $('#main').innerHTML=`<div class="head"><div><div class="eyebrow">CONFIGURACIÓN</div><h1>Configuración</h1><div class="muted">${systemAccess?'Identidad, carga inicial de datos y estado técnico del sistema.':editable?'Identidad y carga inicial de viviendas y propietarios.':'Carga inicial de viviendas y propietarios.'}</div></div></div>
       <div class="config-tabs" role="tablist" aria-label="Configuración">
         ${editable?'<button type="button" class="config-tab" data-config-tab="identity">Identidad</button>':''}
+        ${editable?'<button type="button" class="config-tab" data-config-tab="compliance">Índice de Cumplimiento</button>':''}
         <button type="button" class="config-tab" data-config-tab="data">Datos</button>
         ${systemAccess?'<button type="button" class="config-tab" data-config-tab="system">Sistema</button>':''}
       </div>
@@ -257,6 +259,35 @@ async function configurationView(initialTab='identity'){
       panel.innerHTML=`<section class="card"><div class="system-status-head"><div><h2>Importación de viviendas y propietarios</h2><p class="muted">Carga inicial o actualización controlada de viviendas, propietarios y correos. La importación siempre muestra una previsualización antes de aplicar cambios.</p></div></div><div class="actions"><button type="button" class="secondary" id="owner-template-config">Plantilla viviendas/propietarios</button><button type="button" id="owner-import-config">Importar viviendas/propietarios</button></div><p class="muted" style="margin-top:.8rem">La plantilla puede utilizar viviendas existentes o crear las que falten si activas esa opción durante la importación. Los cambios se registran en Auditoría.</p></section><div id="editor"></div>`;
       $('#owner-template-config').onclick=downloadOwnerImportTemplate;
       $('#owner-import-config').onclick=openOwnerImporter;
+    }
+
+    async function renderCompliance(){
+      if(!editable)return renderData();
+      setActive('compliance');
+      const current=await call('getComplianceRules');
+      const rules=parkingComplianceSetRules(current);
+      const fields=[
+        ['open_normal','Abierta · Normal'],['open_attention','Abierta · Atención'],['open_high','Abierta · Alta'],['open_critical','Abierta · Crítica'],
+        ['closed_normal','Cerrada confirmada · Normal'],['closed_attention','Cerrada confirmada · Atención'],['closed_high','Cerrada confirmada · Alta'],['closed_critical','Cerrada confirmada · Crítica'],
+        ['followup_normal','Seguimiento · Normal'],['followup_attention','Seguimiento · Atención'],['followup_high','Seguimiento · Alta'],['followup_critical','Seguimiento · Crítica']
+      ];
+      const numeric=(key,label,min,max)=>`<div class="field"><label>${esc(label)}</label><input type="number" name="${esc(key)}" min="${min}" max="${max}" value="${esc(rules[key])}" required></div>`;
+      panel.innerHTML=`<form id="compliance-rules-form" class="settings-layout compliance-settings">
+        <section class="card settings-main"><div class="head"><div><h2>Índice de Cumplimiento</h2><p class="muted">Reglas compartidas por Incidencias, Solicitudes, vivienda y propietario. Versión activa: <b>v${esc(rules.version||0)}</b>.</p></div><span class="system-pill ok">0–100</span></div>
+          <p class="message">Las solicitudes no descuentan puntos. La prioridad inicial determina el descuento base; los seguimientos usan la prioridad alcanzada, evitando volver a aplicar la repetición sobre el descuento base. Al cerrar se congela la versión y el descuento del expediente.</p>
+          <h3>Descuentos por expediente</h3><div class="form compliance-weight-grid">${fields.map(([key,label])=>numeric(key,label,0,100)).join('')}</div>
+          <h3>Límites y ventana</h3><div class="form">${numeric('max_followups','Seguimientos computables por expediente',0,20)}${numeric('window_days','Ventana de cálculo (días)',30,3650)}</div>
+          <h3>Recuperación sin nuevas detecciones</h3><div class="form">${numeric('recovery_1_days','Primer hito (días)',1,3650)}${numeric('recovery_1_points','Puntos del primer hito',0,100)}${numeric('recovery_2_days','Segundo hito (días)',2,3650)}${numeric('recovery_2_points','Puntos del segundo hito',0,100)}${numeric('recovery_3_days','Tercer hito (días)',3,3650)}${numeric('recovery_3_points','Puntos del tercer hito',0,100)}${numeric('recovery_extra_every_days','Intervalo adicional (días)',1,3650)}${numeric('recovery_extra_points','Puntos por intervalo adicional',0,100)}${numeric('recovery_cap_points','Máximo recuperable',0,100)}</div>
+          <div class="field wide"><label>Motivo del cambio</label><textarea name="reason" minlength="8" maxlength="500" required placeholder="Explica por qué se modifica la regla y quién lo autorizó"></textarea></div>
+        </section>
+        <aside class="settings-side"><section class="card"><h2>Vista previa</h2><p class="muted">La simulación no escribe en la base de datos.</p><div id="compliance-rule-preview"></div></section><section class="card"><h2>Trazabilidad</h2><p><b>Versión actual:</b> v${esc(rules.version||0)}</p><p><b>Motivo:</b> ${esc(rules.reason||'Reglas iniciales')}</p><p><b>Creada:</b> ${rules.created_at?esc(shortDateTime(rules.created_at)):'—'}</p><p class="subtle">Cada guardado crea una versión nueva y una entrada de Auditoría. No existen ajustes manuales de puntuación.</p></section></aside>
+        <div class="settings-save"><button type="submit">Guardar nueva versión</button></div>
+      </form>`;
+      const form=$('#compliance-rules-form'),preview=$('#compliance-rule-preview');
+      const values=()=>{const data=Object.fromEntries(new FormData(form));const out={};Object.keys(PARKING_COMPLIANCE_DEFAULTS).forEach(key=>out[key]=Number(data[key]));return parkingComplianceRules(out)};
+      const renderPreview=()=>{const proposed=values(),sample=[{ID_Incidencia:'preview',ID_Evento:'preview',FechaHora:new Date().toISOString(),Estado:'Abierta',PrioridadInicial:'Normal',Prioridad:'Alta',Intentos:5,Tipo:'Ejemplo'}],open=parkingScore(sample,{rules:proposed}),closed=parkingScore(sample,{rules:proposed,closeId:'preview',action:'Aviso al propietario'}),excluded=parkingScore(sample,{rules:proposed,closeId:'preview',action:'Sin actuación'});preview.innerHTML=`<div class="summary-grid"><article class="summary-card"><b>${open.score}/100</b><span>Abierta con 5 intentos</span><small>−${open.raw} puntos</small></article><article class="summary-card"><b>${closed.score}/100</b><span>Cierre confirmado</span><small>−${closed.raw} puntos</small></article><article class="summary-card"><b>${excluded.score}/100</b><span>Cierre infundado/sin actuación</span><small>0 puntos</small></article></div><p class="subtle">Ejemplo: prioridad inicial Normal, prioridad alcanzada Alta y cuatro seguimientos. Resultado actual → resultante sin persistir cambios.</p>`};
+      form.addEventListener('input',renderPreview);renderPreview();
+      form.onsubmit=async event=>{event.preventDefault();const button=event.submitter;busy(button);try{const data=Object.fromEntries(new FormData(form));const saved=await call('saveComplianceRules',{rules:values(),reason:data.reason});parkingComplianceSetRules(saved);toast(`Reglas guardadas como versión ${saved.version}.`);await renderCompliance()}catch(error){toast(error.message||String(error),true);busy(button,false)}};
     }
 
     async function renderSystem(){
@@ -573,7 +604,7 @@ async function configurationView(initialTab='identity'){
       }
       loadStatus();
     }
-    tabs.forEach(b=>b.onclick=()=>{const tab=b.dataset.configTab;if(tab==='system')return renderSystem();if(tab==='data')return renderData();return renderIdentity()});
-    if(initialTab==='system')await renderSystem();else if(initialTab==='data')await renderData();else await renderIdentity();
+    tabs.forEach(b=>b.onclick=()=>{const tab=b.dataset.configTab;if(tab==='system')return renderSystem();if(tab==='compliance')return renderCompliance();if(tab==='data')return renderData();return renderIdentity()});
+    if(initialTab==='system')await renderSystem();else if(initialTab==='compliance')await renderCompliance();else if(initialTab==='data')await renderData();else await renderIdentity();
   }catch(e){err(e)}
 }

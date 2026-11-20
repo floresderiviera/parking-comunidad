@@ -16,11 +16,14 @@
       const v = refs.vehicleById.get(row.vehicle_id) || {};
       const requester = refs.profiles.get(row.requested_by) || {};
       const resolver = refs.profiles.get(row.resolved_by) || {};
+      const requestOwner = refs.profiles.get(row.responsible_at_request_user_id) || {};
 
       return {
         ID_Solicitud: row.id,
         ID_Vivienda: row.dwelling_id,
         ID_Vehiculo: row.vehicle_id || '',
+        ID_PropietarioAlHecho: row.responsible_at_request_user_id || '',
+        NombrePropietarioAlHecho: requestOwner.name || requestOwner.email || '',
         FechaHora: row.requested_at,
         Usuario: requester.email || '',
         NombreSolicitante: requester.name || requester.email || '',
@@ -32,6 +35,14 @@
         TipoVehiculo: v.Tipo || row.origin_vehicle_type || '',
         Slot: v.Slot || row.origin_slot || '',
         QR_Estado: v.QR_Estado || row.origin_qr_state || '',
+        // Datos del vehículo AHORA (pueden cambiar después de solicitar).
+        EstadoVehiculo: v.Estado || '',
+        EstadoQR: v.QR_Estado || '',
+        SlotActual: v.Slot || '',
+        // Fotografía del vehículo cuando se creó la solicitud.
+        EstadoVehiculoOrigen: row.origin_vehicle_state || '',
+        QREstadoOrigen: row.origin_qr_state || '',
+        SlotOrigen: row.origin_slot == null ? '' : String(row.origin_slot),
         Tipo: row.type,
         Estado: row.state,
         Motivo: row.reason || '',

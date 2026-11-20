@@ -281,6 +281,75 @@ Object.assign(PARKING_I18N.en,{
 
 
 const PARKING_UI_EN_EXACT={
+  "Identificación y origen": "Identification and origin",
+  "Estado actual del vehículo": "Current vehicle status",
+  "Datos originales del vehículo": "Original vehicle information",
+  "Datos originales al solicitar": "Original details at request time",
+
+  "EXPEDIENTE DE SOLICITUD": "REQUEST CASE",
+
+  "EXPEDIENTE ADMINISTRATIVO": "ADMINISTRATIVE CASE FILE",
+  "Identificación de la incidencia": "Incident identification",
+  "Tipo de incidencia": "Incident type",
+  "Fecha de registro": "Registration date",
+  "Identificación": "Identification",
+  "Tipo de vehículo": "Vehicle type",
+  "Estado al registrar": "State when registered",
+  "RESOLUCIÓN DE SOLICITUD": "REQUEST RESOLUTION",
+  "Efecto de la decisión": "Effect of the decision",
+  "Observaciones de resolución (opcionales)": "Resolution notes (optional)",
+  "El responsable y la fecha de resolución se registran automáticamente. Esta acción conserva el flujo y los efectos actuales.": "The responsible user and resolution date are recorded automatically. This action preserves the existing workflow and effects.",
+  "Justificación, comprobaciones o información para el historial...": "Justification, checks or information for the history...",
+
+  'Los estados no están informados en este expediente. No se interpretan como estados inactivos.': 'Status information is unavailable for this case. Missing values must not be interpreted as inactive.',
+
+  "Identificación de la solicitud": "Request details",
+  "Estado del vehículo y datos de origen": "Vehicle state and original data",
+  "Periodo de permanencia solicitado": "Requested extended-stay period",
+  "Motivo y observaciones": "Reason and comments",
+  "Resolución y trazabilidad": "Decision and audit trail",
+  "No informado": "Not provided",
+  "Estado de la solicitud": "Request status",
+  "Fecha de solicitud": "Request date",
+  "Motivo declarado": "Submitted reason",
+  "Observaciones de resolución": "Decision comments",
+  "Resuelta por": "Resolved by",
+  "Historial de solicitudes relacionadas": "Related request history",
+  "Consultar historial de solicitudes": "View request history",
+  "Sin otras solicitudes relacionadas.": "No other related requests.",
+  "Mostrando las 8 más recientes.": "Showing the 8 most recent.",
+  "Versión actual:": "Current version:",
+  "Explica por qué se modifica la regla y quién lo autorizó": "Explain why the rule is being changed and who authorized it",
+  "Simulación:": "Simulation:",
+  "Bandeja de gestión con agrupación independiente por vivienda, propietario o matrícula.": "Management inbox with separate grouping by property, owner or plate.",
+  "Matrícula, vivienda, propietario, tipo o descripción...": "Plate, property, owner, type or description...",
+  "Por propietario": "By owner",
+  "Descuentos por expediente": "Deductions per case",
+  "Límites y ventana": "Limits and scoring window",
+  "Recuperación sin nuevas detecciones": "Recovery without new detections",
+  "Cierre confirmado": "Confirmed closure",
+  "Cierre infundado/sin actuación": "Unfounded closure / no action",
+  "La simulación no escribe en la base de datos.": "Simulation does not write to the database.",
+  "Abierta con 5 intentos": "Open case with 5 attempts",
+  "Reglas compartidas por Incidencias, Solicitudes, vivienda y propietario. Versión activa:": "Rules shared across Incidents, Requests, properties and owners. Active version:",
+  "Cada guardado crea una versión nueva y una entrada de Auditoría. No existen ajustes manuales de puntuación.": "Each save creates a new version and audit entry. Manual score overrides are not enabled.",
+  "Propietario sin atribución verificada": "Owner without verified attribution",
+  "Índice de Cumplimiento": "Compliance Index",
+  "Índice explicable": "Explainable index",
+  "Sin antecedentes computables.": "No countable history.",
+  "Guardar nueva versión": "Save new version",
+  "Motivo del cambio": "Reason for change",
+  "Trazabilidad": "Audit trail",
+  "Vista previa": "Preview",
+  "Seguimientos computables por expediente": "Countable follow-ups per case",
+  "Ventana de cálculo (días)": "Scoring window (days)",
+  "Puntos del primer hito": "First milestone points",
+  "Puntos del segundo hito": "Second milestone points",
+  "Puntos del tercer hito": "Third milestone points",
+  "Máximo recuperable": "Maximum recoverable points",
+  "No existen ajustes manuales de puntuación.": "Manual score overrides are not enabled.",
+  "Las solicitudes no descuentan puntos.": "Requests do not reduce the score.",
+  "Reglas iniciales": "Initial rules",
   "Índice de cumplimiento": "Compliance index",
   "Puntuación vivienda": "Property score",
   "Puntuación propietario": "Owner score",
@@ -1043,6 +1112,7 @@ Object.assign(PARKING_UI_EN_EXACT,{
 
 function uiTranslateDynamic(text){
   let value=String(text??'').replace(/＋/g,'+');
+  value=value.replace(/^Reglas guardadas como versión (\d+)\.$/, 'Rules saved as version $1.');
 
   const exact=PARKING_UI_EN_EXACT[value.trim()];
   if(exact!==undefined)return exact;
