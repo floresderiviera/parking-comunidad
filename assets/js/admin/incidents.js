@@ -44,7 +44,18 @@ async function incidentPdfImage(url){
     });
   }catch(_){return ''}
 }
-async function generateIncidentPdf(row,housingLabel=''){
+async function generateIncidentPdf(row,housingLabel='',options={}){
+  if(options.audience==='OWNER'){
+    // Never include evidence, third-party plates or uncontrolled free-text in owner attachments.
+    row={...row,
+      Descripcion:'Consulta el detalle comunicado por la administración.',
+      ComentarioCierre:'La incidencia ha sido cerrada. Contacta con administración para obtener información adicional.',
+      Foto:'',Fotos:[],MatriculaAutorizada:'',MatriculaRelacionada:'',
+      MatriculaHabitualOrigen:'',MatriculaHabitualVehiculo:'',EstadoVehiculoOrigen:'',
+      Seguimientos:(row.Seguimientos||[]).map(f=>({...f,Foto:'',Fotos:[],
+        Observacion:'Seguimiento registrado.',MatriculaAutorizada:'',MatriculaObservada:''}))
+    };
+  }
   const lib=await loadExternal(
     'jspdf',
     [
@@ -331,7 +342,21 @@ async function generateIncidentPdf(row,housingLabel=''){
   }
 
   const plate=normalizePlateClient(row.MatriculaObservada||row.MatriculaInfraccion||row.MatriculaHabitualOrigen||'SIN_MATRICULA');
+  if(options.asBlob)return doc.output('blob');
   doc.save(`Informe_Incidencia_${plate}_${shortId}.pdf`);
+}
+async function uploadIncidentCloseReports(row,housingLabel){
+  const to64=blob=>new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(String(reader.result||'').split(',')[1]||'');
+    reader.onerror=()=>reject(reader.error||new Error('No se pudo leer el informe PDF'));
+    reader.readAsDataURL(blob);
+  });
+  for(const audience of ['ADMIN','OWNER']){
+    const pdf=await generateIncidentPdf(row,housingLabel,{audience,asBlob:true});
+    if(pdf.size>10*1024*1024)throw new Error('El PDF supera 10 MB.');
+    await call('uploadIncidentPdf',{id:row.ID_Incidencia,audience,pdfBase64:await to64(pdf)});
+  }
 }
 async function incidents(openId=''){
   try{
@@ -339,7 +364,7 @@ async function incidents(openId=''){
     const response=await call('listIncidentsPayload');const rows=Array.isArray(response)?response:(Array.isArray(response?.rows)?response.rows:[]);if(!Array.isArray(rows))throw new Error('Respuesta inválida al cargar incidencias.');state.cache.incidents=rows;const ui=viewUiState('incidents');let page=ui.page||1,sortKey=ui.sortKey||'FechaHora',sortDir=ui.sortDir||'desc',viewMode=ui.viewMode||'dossiers';
     const types=['Matrícula no registrada','Acceso no autorizado','QR no presentado','QR no corresponde con matrícula','Uso indebido','Vehículo inmovilizado / posible abandono','Estacionamiento o ubicación indebida','Fuga / pérdida de líquidos','Otro'];
     const priorities=[...new Set(rows.map(r=>r.Prioridad).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'es'));
-    $('#main').innerHTML=`<div class="head incidents-head"><div><h1>Incidencias</h1><div class="muted">Bandeja de gestión agrupada por vivienda o matrícula observada.</div></div><div class="actions">${exportButtonsHtml('incidents-export')}</div></div><div id="incident-editor"></div><div id="incident-detail"></div><div id="incident-dossier"></div><div class="incident-overview" id="incident-overview"><div class="card incident-stat-card"><span>Incidencias abiertas</span><b id="inc-stat-open">0</b><small>Pendientes de resolver</small></div><div class="card incident-stat-card"><span>Críticas</span><b id="inc-stat-critical">0</b><small>Abiertas con prioridad crítica</small></div><div class="card incident-stat-card"><span>Vehículos afectados</span><b id="inc-stat-vehicles">0</b><small>Matrículas con casos abiertos</small></div><div class="card incident-stat-card"><span>Intentos abiertos</span><b id="inc-stat-attempts">0</b><small>Acumulados en incidencias abiertas</small></div></div><div class="mobile-filter-toggle-wrap">
+    $('#main').innerHTML=`<div class="head incidents-head"><div><h1>Incidencias</h1><div class="muted">Bandeja de gestión agrupada por vivienda o matrícula observada.</div></div><div class="actions">${hasUiRole('ADMIN')?'<button type="button" class="secondary" id="incident-weekly-report">Generar Excel semanal</button>':''}${exportButtonsHtml('incidents-export')}</div></div><div id="incident-editor"></div><div id="incident-detail"></div><div id="incident-dossier"></div><div class="incident-overview" id="incident-overview"><div class="card incident-stat-card"><span>Incidencias abiertas</span><b id="inc-stat-open">0</b><small>Pendientes de resolver</small></div><div class="card incident-stat-card"><span>Críticas</span><b id="inc-stat-critical">0</b><small>Abiertas con prioridad crítica</small></div><div class="card incident-stat-card"><span>Vehículos afectados</span><b id="inc-stat-vehicles">0</b><small>Matrículas con casos abiertos</small></div><div class="card incident-stat-card"><span>Intentos abiertos</span><b id="inc-stat-attempts">0</b><small>Acumulados en incidencias abiertas</small></div></div><div class="mobile-filter-toggle-wrap">
       <button type="button" class="secondary mobile-filter-toggle" id="incident-filter-toggle">
         Filtros
       </button>
@@ -449,7 +474,18 @@ async function incidents(openId=''){
         const refreshAction=()=>{const a=actionSel.value;const mismatch=r.Tipo==='QR no corresponde con matrícula';const messages={'Revocar QR':mismatch?`Se revocará el QR presentado, perteneciente a ${qrOwnerPlate}. El vehículo observado ${observedPlate} no cambia de estado.`:'El QR quedará revocado. El vehículo seguirá activo.','Renovar QR':'El QR anterior quedará invalidado y se generará uno nuevo.','Suspender vehículo':mismatch?`Se suspenderá el vehículo observado ${observedPlate}. El QR presentado de ${qrOwnerPlate} no se modifica.`:(isMoto?'La moto quedará suspendida.':'El vehículo quedará suspendido, liberará su slot y quedará sin QR asignado.'),'Dar de baja':isMoto?'La moto quedará dada de baja.':'El vehículo quedará dado de baja, liberará el slot y quedará sin QR asignado.','Mantener suspensión':mismatch?`La incidencia se cerrará manteniendo suspendido el vehículo observado ${observedPlate}.`:'La incidencia se cerrará manteniendo el vehículo suspendido.','Aviso al propietario':'Se registrará que se realizó un aviso. Esta acción no envía automáticamente un email ni una notificación.','Datos corregidos':'Se registrará que los datos fueron corregidos. Esta acción no modifica automáticamente la ficha del vehículo o vivienda.'};help.textContent=messages[a]||'La incidencia se cerrará con la acción seleccionada.'};
         actionSel.onchange=refreshAction;refreshAction();
         $('#cancel-close-inc').onclick=()=>$('#incident-close-editor').innerHTML='';
-        $('#incident-close-form').onsubmit=async e=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.target)),action=data.AccionCierre;if(!action){toast('Selecciona la acción realizada.',true);return}if(!String(data.ComentarioCierre||'').trim()){toast('El comentario de cierre es obligatorio.',true);return}const mutating=['Revocar QR','Renovar QR','Suspender vehículo','Dar de baja'].includes(action),mismatch=r.Tipo==='QR no corresponde con matrícula',effects={'Revocar QR':mismatch?`Se revocará únicamente el QR presentado de ${qrOwnerPlate}.`:'El vehículo seguirá activo y su QR quedará revocado.','Renovar QR':'Se invalidará el QR anterior y se generará uno nuevo.','Suspender vehículo':mismatch?`Se suspenderá únicamente el vehículo observado ${observedPlate}.`:(isMoto?'La moto quedará suspendida.':'El vehículo quedará suspendido, liberará su slot y quedará sin QR asignado.'),'Dar de baja':isMoto?'La moto quedará de baja.':'El vehículo quedará de baja, liberará el slot y quedará sin QR asignado.'},target=action==='Revocar QR'&&mismatch?qrOwnerPlate:observedPlate;if(mutating&&!confirm(`${actionLabel(action)}.\n\n${effects[action]||''}\n\nObjetivo: ${target}.\n\n¿Confirmar y cerrar la incidencia?`))return;const b=e.submitter;busy(b);try{await call('closeIncident',Object.assign({id:r.ID_Incidencia},data));toast('Incidencia resuelta y cerrada.');invalidateClientParkingData();incidents()}catch(x){toast(x.message,true);busy(b,false)}};
+        $('#incident-close-form').onsubmit=async e=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.target)),action=data.AccionCierre;if(!action){toast('Selecciona la acción realizada.',true);return}if(!String(data.ComentarioCierre||'').trim()){toast('El comentario de cierre es obligatorio.',true);return}const mutating=['Revocar QR','Renovar QR','Suspender vehículo','Dar de baja'].includes(action),mismatch=r.Tipo==='QR no corresponde con matrícula',effects={'Revocar QR':mismatch?`Se revocará únicamente el QR presentado de ${qrOwnerPlate}.`:'El vehículo seguirá activo y su QR quedará revocado.','Renovar QR':'Se invalidará el QR anterior y se generará uno nuevo.','Suspender vehículo':mismatch?`Se suspenderá únicamente el vehículo observado ${observedPlate}.`:(isMoto?'La moto quedará suspendida.':'El vehículo quedará suspendido, liberará su slot y quedará sin QR asignado.'),'Dar de baja':isMoto?'La moto quedará de baja.':'El vehículo quedará de baja, liberará el slot y quedará sin QR asignado.'},target=action==='Revocar QR'&&mismatch?qrOwnerPlate:observedPlate;if(mutating&&!confirm(`${actionLabel(action)}.\n\n${effects[action]||''}\n\nObjetivo: ${target}.\n\n¿Confirmar y cerrar la incidencia?`))return;const b=e.submitter;busy(b);try{await call('closeIncident',Object.assign({id:r.ID_Incidencia},data));
+      toast('Incidencia cerrada. Preparando notificaciones.');
+      try{
+        const refreshed=await call('listIncidentsPayload');
+        const closed=(refreshed.rows||[]).find(x=>x.ID_Incidencia===r.ID_Incidencia);
+        if(!closed||closed.Estado!=='Cerrada')throw new Error('No se pudo recuperar el informe final.');
+        await uploadIncidentCloseReports(closed,recordHousingLabel(closed,housingMap[closed.ID_Vivienda]));
+        toast('Informes de cierre preparados para notificación.');
+      }catch(pdfError){
+        toast('Cierre guardado, pero falta preparar el PDF para email: '+(pdfError.message||pdfError),true);
+      }
+      invalidateClientParkingData();incidents()}catch(x){toast(x.message,true);busy(b,false)}};
       };
       host.scrollIntoView({behavior:'smooth',block:'start'});
     };
@@ -473,6 +509,12 @@ async function incidents(openId=''){
       $('#incident-body').innerHTML=slice.map(r=>{const plate=incidentPlate(r),house=incidentHouse(r);return `<tr><td data-label="Fecha">${esc(shortDateTime(r.FechaHora))}</td><td data-label="Matrícula"><b>${esc(plate)}</b></td><td data-label="Vivienda">${esc(house)}</td><td data-label="Incidencia"><b>${esc(r.Tipo)}</b>${r.Situacion?`<div class="subtle">Situación: ${esc(r.Situacion)}</div>`:''}${r.Causa?`<div class="subtle">Causa: ${esc(r.Causa)}</div>`:''}</td><td data-label="Prioridad"><span class="incident-priority ${String(r.Prioridad||'Normal').toLowerCase()}">${esc(r.Prioridad||'Normal')}</span></td><td data-label="Intentos"><b>${esc(r.Intentos||1)}</b>${r.UltimoSeguimiento?`<span class="subtle">${esc(shortDateTime(r.UltimoSeguimiento))}</span>`:''}</td><td data-label="Estado"><span class="status ${r.Estado==='Cerrada'?'':'bad'}">${esc(r.Estado||'Abierta')}</span></td><td data-label="Acciones">${actionMenuHtml(`<button class="secondary inc-view" data-id="${esc(r.ID_Incidencia)}">Ver</button><button class="secondary inc-row-dossier" data-key="${esc(dossierKey(r))}">Expediente</button>`)}</td></tr>`}).join('');$('#incident-empty').classList.toggle('hide',!!list.length);$('#incident-pager').innerHTML=pagerHtml('incident',page,list.length);document.querySelectorAll('.inc-view').forEach(b=>b.onclick=()=>detail(rows.find(r=>r.ID_Incidencia===b.dataset.id)));document.querySelectorAll('.inc-row-dossier').forEach(b=>b.onclick=()=>showDossier(b.dataset.key));const prev=$('#incident-prev'),next=$('#incident-next');if(prev)prev.onclick=()=>{page--;render()};if(next)next.onclick=()=>{page++;render()};
     };
     const render=()=>{const list=filtered();state.cache.incidentsFiltered=list;renderSummary();const dossiers=viewMode==='dossiers';$('#incident-dossier-list').classList.toggle('hide',!dossiers);$('#incident-flat-list').classList.toggle('hide',dossiers);$('#incident-view-dossiers').classList.toggle('active',dossiers&&!groupByHousing);$('#incident-view-housing').classList.toggle('active',dossiers&&groupByHousing);$('#incident-view-list').classList.toggle('active',!dossiers);if(dossiers)renderDossiers(list);else renderList(list)};
+    const reportButton=$('#incident-weekly-report');
+    if(reportButton)reportButton.onclick=async()=>{busy(reportButton);try{
+      const result=await call('weeklyManualReport');
+      toast(result.report?.status==='already_ready'?'Informe semanal ya generado.':'Informe semanal Excel generado. Envío en cola.');
+    }catch(e){toast(e.message||'No se pudo generar el informe.',true)}
+    finally{busy(reportButton,false)}};
     $('#incidents-export-xlsx').onclick=()=>downloadXlsx(`incidencias_${new Date().toISOString().slice(0,10)}.xlsx`,state.cache.incidentsFiltered||filtered(),null,'Incidencias').catch(err);$('#incidents-export-csv').onclick=()=>downloadCsv(`incidencias_${new Date().toISOString().slice(0,10)}.csv`,state.cache.incidentsFiltered||filtered());
     $('#incident-search').value=navPreset?.search||ui.q||'';$('#incident-state').value=navPreset?.status!==undefined?navPreset.status:(ui.status===undefined?'Abierta':ui.status);$('#incident-priority').value=ui.priority||'';$('#incident-type').value=ui.type||'';$('#incident-origin').value=ui.origin||'';$('#incident-period').value=ui.period||'';$('#incident-from').value=ui.from||'';$('#incident-to').value=ui.to||'';bindPeriodVisibility('incident');
     const reset=()=>{page=1;$('#incident-dossier').innerHTML='';render()};$('#incident-search').oninput=reset;['incident-state','incident-priority','incident-type','incident-origin','incident-period','incident-from','incident-to'].forEach(id=>$("#"+id).onchange=reset);

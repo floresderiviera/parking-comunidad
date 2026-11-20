@@ -321,6 +321,28 @@ export function createRouter({
             payload
           );
 
+        case 'uploadIncidentPdf': {
+          const boot=await appBootstrap();
+          if(!boot.user.IsRoot&&!boot.roles.includes('ADMIN'))throw new Error('ADMIN requerido.');
+          const response=await sb.functions.invoke('parking-notifications',{
+            body:{action:'upload-pdf',incident_id:payload.id,audience:payload.audience,pdf_base64:payload.pdfBase64}
+          });
+          if(response.error)throw response.error;
+          if(response.data?.error)throw new Error(response.data.error);
+          return response.data;
+        }
+
+        case 'weeklyManualReport': {
+          const boot=await appBootstrap();
+          if(!boot.user.IsRoot&&!boot.roles.includes('ADMIN'))throw new Error('ADMIN requerido.');
+          const response=await sb.functions.invoke('parking-notifications',{
+            body:{action:'weekly-manual',community_id:boot.communityId}
+          });
+          if(response.error)throw response.error;
+          if(response.data?.error)throw new Error(response.data.error);
+          return response.data;
+        }
+
         case 'housingDetail':
           return housingDetail(
             payload

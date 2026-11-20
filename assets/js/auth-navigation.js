@@ -25,7 +25,13 @@ async function init(){if(new URLSearchParams(location.search).get('resetPassword
     const data=await call('bootstrap');state.user=data.user;state.cache.bootstrap=data;applyParkingSettings(data.settings);
     if(publicState?.maintenance?.enabled&&!state.user?.IsRoot)return renderMaintenanceScreen(publicState);
     state.activeRole=activeUiRole();shell();
-    if(INITIAL_TOKEN&&activeUiRole()==='CONTROL'){state.view='control';rememberCurrentView('control');renderNav();control(INITIAL_TOKEN)}
+    const deep=new URLSearchParams(location.search);
+    const incident=deep.get('openIncident'),request=deep.get('openRequest');
+    if(activeUiRole()==='ADMIN'&&incident&&/^[a-f0-9-]{36}$/i.test(incident)){
+      state.cache.incidentFocus=incident;go('incidents');
+    }else if(activeUiRole()==='ADMIN'&&request&&/^[a-f0-9-]{36}$/i.test(request)){
+      state.cache.requestFocus=request;go('requests');
+    }else if(INITIAL_TOKEN&&activeUiRole()==='CONTROL'){state.view='control';rememberCurrentView('control');renderNav();control(INITIAL_TOKEN)}
     else go(restoredStartView());
   }catch(e){login(e.message)}
 }
@@ -330,7 +336,13 @@ function login(message=''){
 
         shell();
 
-        if(
+        const deep=new URLSearchParams(location.search);
+        const incident=deep.get('openIncident'),request=deep.get('openRequest');
+        if(activeUiRole()==='ADMIN'&&incident&&/^[a-f0-9-]{36}$/i.test(incident)){
+          state.cache.incidentFocus=incident;go('incidents');
+        }else if(activeUiRole()==='ADMIN'&&request&&/^[a-f0-9-]{36}$/i.test(request)){
+          state.cache.requestFocus=request;go('requests');
+        }else if(
           INITIAL_TOKEN &&
           activeUiRole()==='CONTROL'
         ){
