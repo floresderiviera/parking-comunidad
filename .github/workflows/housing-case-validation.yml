@@ -30,13 +30,13 @@ jobs:
       - name: Syntax assets/js/auth-navigation.js
         run: node --check assets/js/auth-navigation.js
       - name: Syntax assets/js/supabase/reference-data.js
-        run: node --check assets/js/supabase/reference-data.js
+        run: node --input-type=module --check < assets/js/supabase/reference-data.js
       - name: Syntax assets/js/supabase/requests.js
         run: node --check assets/js/supabase/requests.js
       - name: Syntax assets/js/supabase/incidents.js
         run: node --check assets/js/supabase/incidents.js
       - name: Syntax assets/js/supabase/router.js
-        run: node --check assets/js/supabase/router.js
+        run: node --input-type=module --check < assets/js/supabase/router.js
       - run: npm test
       - run: npm run build:frontend
       - run: npm run build:vite
