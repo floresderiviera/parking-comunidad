@@ -281,6 +281,15 @@ Object.assign(PARKING_I18N.en,{
 
 
 const PARKING_UI_EN_EXACT={
+  "Antecedentes y puntuación de cumplimiento": "History and compliance score",
+  "No se calcula la nota del propietario sin atribución verificada.": "The owner score cannot be calculated without verified attribution.",
+  "Vivienda": "Property",
+  "Propietario responsable al hecho": "Owner responsible at the time of the incident",
+  "Sin datos": "No data",
+  "Sin antecedentes recientes.": "No recent history.",
+  "Sin actuación registrada": "No recorded action",
+  "Valoración orientativa de los últimos 365 días, anterior a esta incidencia. No determina sanciones ni confirma automáticamente infracciones.": "Indicative assessment of the previous 365 days, excluding this incident. It does not determine penalties or automatically confirm violations.",
+  "Cálculo: base 100; −12 por incidencia anterior cerrada con actuación explícita y −3 por seguimiento posterior (máximo 4 por expediente). Las incidencias abiertas no descuentan puntos. Los cierres sin actuación o de datos corregidos no descuentan. La atribución del propietario utiliza el responsable registrado en el momento del hecho.": "Calculation: start at 100; −12 for each earlier closed incident with a recorded action and −3 per follow-up (up to 4 per case). Open incidents do not reduce the score. Closures without action or with corrected data do not reduce the score. Owner attribution uses the person recorded as responsible when the event occurred.",
   "Por vivienda": "By property",
   "Por matrícula": "By plate",
   "Por propietario responsable al hecho": "By responsible owner at the time of the incident",
