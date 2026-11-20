@@ -316,6 +316,35 @@ Deno.serve(async (req:Request)=>{
       const outbox=await processOutbox(appUrl);
       return jsonResponse(200,{ok:true,local,reports,outbox,dryRun:Deno.env.get('PARKING_EMAIL_DRY_RUN')!=='false'},origin);
     }
+    if(action==='upload-pdf') {
+      const incidentId=String(body.incident_id||'');
+      const audience=String(body.audience||'');
+      if(!/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(incidentId))throw new Error('Invalid incident id');
+      if(!['ADMIN','OWNER'].includes(audience))throw new Error('Invalid audience');
+      const incident=assertData<RecordRow>(
+        await service.from('incidents').select('id,community_id,state').eq('id',incidentId).single(),
+        'incident'
+      );
+      await authenticatedAdmin(req,incident.community_id);
+      if(incident.state!=='Cerrada')throw new Error('Only closed incidents accept final reports');
+      const encoded=String(body.pdf_base64||'');
+      if(encoded.length<100||encoded.length>14000000||!/^[A-Za-z0-9+/=]+$/.test(encoded)){
+        throw new Error('Invalid PDF encoding or size');
+      }
+      const raw=atob(encoded);
+      if(raw.length>10*1024*1024||!raw.startsWith('%PDF-')||!raw.slice(-4096).includes('%%EOF')){
+        throw new Error('Invalid PDF or too large');
+      }
+      const bytes=Uint8Array.from(raw, c=>c.charCodeAt(0));
+      const path=incident.community_id+'/incidents/'+incident.id+'/'+audience.toLowerCase()+'.pdf';
+      const upload=await service.storage.from(bucket).upload(path,bytes,{upsert:true,contentType:'application/pdf'});
+      if(upload.error)throw upload.error;
+      const queued=await service.from('parking_notification_outbox').update({attachment_path:path})
+        .eq('community_id',incident.community_id).eq('event_type','incident.closed')
+        .eq('entity_id',incident.id).eq('recipient_kind',audience).in('state',['pending','failed']);
+      if(queued.error)throw queued.error;
+      return jsonResponse(200,{ok:true,audience,attached:true},origin);
+    }
     if(action==='weekly-manual') {
       const communityId=String(body.community_id||'');
       await authenticatedAdmin(req,communityId);
