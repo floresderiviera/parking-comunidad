@@ -22,11 +22,11 @@ select is(
    from pg_class where oid = 'public.parking_incident_owner_stats'::regclass),
   true, 'Owner view applies caller RLS'
 );
-select has_table_privilege('authenticated',
-  'public.parking_incident_dwelling_stats', 'SELECT',
+select ok(has_table_privilege('authenticated',
+  'public.parking_incident_dwelling_stats', 'SELECT'),
   'Authenticated role can query dwelling aggregates');
-select has_table_privilege('authenticated',
-  'public.parking_incident_owner_stats', 'SELECT',
+select ok(has_table_privilege('authenticated',
+  'public.parking_incident_owner_stats', 'SELECT'),
   'Authenticated role can query owner aggregates');
 select is(
   (select count(*)::int from public.incidents
