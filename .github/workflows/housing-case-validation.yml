@@ -1,0 +1,54 @@
+name: Parking housing and notifications - isolated validation
+on:
+  push:
+    branches:
+      - feat/housing-case-history-notifications
+  pull_request:
+    branches:
+      - supabase-poc
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: JavaScript syntax
+        run: |
+          node --check assets/js/admin/advanced.js
+          node --check assets/js/admin/incidents.js
+          node --check assets/js/admin/requests.js
+          node --check assets/js/auth-navigation.js
+          node --check assets/js/supabase/reference-data.js
+          node --check assets/js/supabase/requests.js
+          node --check assets/js/supabase/incidents.js
+          node --check assets/js/supabase/router.js
+      - run: npm test
+      - run: npm run build:frontend
+      - run: npm run build:vite
+      - name: Deno type check Edge Function
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - run: deno check supabase/functions/parking-notifications/index.ts
+
+  database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Start isolated Supabase
+        run: supabase start
+      - name: Validate migrations and RLS
+        run: supabase test db
