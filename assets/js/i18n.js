@@ -281,6 +281,13 @@ Object.assign(PARKING_I18N.en,{
 
 
 const PARKING_UI_EN_EXACT={
+  "Índice de cumplimiento": "Compliance index",
+  "Puntuación vivienda": "Property score",
+  "Puntuación propietario": "Owner score",
+  "Sin historial atribuible": "No attributable history",
+  "Ver antecedentes y desglose": "View history and breakdown",
+  "Índice orientativo de 365 días: abiertas, cerradas con actuación e intentos. No genera penalizaciones.": "Indicative 365-day index: open cases, closures with recorded action and attempts. It does not impose penalties.",
+  "Descuentos: Normal 3/6; Atención 5/10; Alta 8/16; Crítica 12/24 (abierta/cerrada). Los seguimientos suman 1/2/3/4, máximo 4 por expediente. Recuperación de hasta 15 puntos por 30/60/90 días sin nuevas detecciones ni casos abiertos.": "Deductions: Normal 3/6; Attention 5/10; High 8/16; Critical 12/24 (open/closed). Follow-ups add 1/2/3/4, up to 4 per case. Recover up to 15 points after 30/60/90 days with no new detections and no open cases.",
   "Antecedentes y puntuación de cumplimiento": "History and compliance score",
   "No se calcula la nota del propietario sin atribución verificada.": "The owner score cannot be calculated without verified attribution.",
   "Vivienda": "Property",

@@ -69,6 +69,7 @@ async function housingDetailView(id){
     const openInc=incs.filter(x=>(x.Estado||'Abierta')!=='Cerrada');
     const pendingReq=reqs.filter(x=>x.Estado==='Abierta');
     const ownerIncs=d.ownerIncidents||[];
+    const homeScore=parkingScore(incs),ownerScore=h.ResponsableUserId?parkingScore(ownerIncs):null;
     const now=Date.now(),withinDays=(x,n)=>{const t=Date.parse(x.FechaHora||'');return Number.isFinite(t)&&t<=now&&t>=now-n*86400000};
     const historic=(items,openTest)=>({
       total:items.length,
@@ -105,7 +106,11 @@ async function housingDetailView(id){
       <section class="card housing-detail-card"><div class="head"><h2>Vivienda y propietario</h2></div><div class="details">
         <div><small>Vivienda</small>${esc(housingShort(h))}</div><div><small>Estado</small>${esc(h.Estado||'—')}</div><div><small>Responsable</small>${esc(o.Nombre||'Sin responsable')}</div><div><small>Email</small>${esc(o.Email||h.Responsable||'—')}</div>
       </div><div class="actions" style="margin-top:1rem"><button class="secondary" id="hd-open-vehicles">Abrir vehículos de esta vivienda</button></div></section>
-      <section class="summary-section"><div class="head"><h2>Historial y reincidencias</h2></div><div class="summary-grid">
+      <section class="summary-section"><div class="head"><h2>Índice de cumplimiento</h2></div><div class="summary-grid">
+${card(homeScore.score+"/100","Puntuación vivienda",homeScore.open+" abiertas · "+homeScore.closed+" cerradas con actuación · "+homeScore.followups+" seguimientos")}
+${card(ownerScore?ownerScore.score+"/100":"Sin datos","Puntuación propietario",ownerScore?ownerScore.open+" abiertas · "+ownerScore.closed+" cerradas con actuación · "+ownerScore.followups+" seguimientos":"Sin atribución verificada")}
+</div></section>
+<section class="summary-section"><div class="head"><h2>Historial y reincidencias</h2></div><div class="summary-grid">
         ${card(houseStats.total,'Incidencias históricas',`${houseStats.open} abiertas · ${houseStats.total-houseStats.open} cerradas`,'history-incidents')}
         ${card(houseStats.last30,'Últimos 30 días',`${houseStats.last90} en 90 días · ${houseStats.last365} en 365 días`,'history-incidents')}
         ${card(ownerStats.total,'Por propietario (histórico)',`${ownerStats.last365} en 365 días · ${ownerStats.open} abiertas`,'owner-history')}
