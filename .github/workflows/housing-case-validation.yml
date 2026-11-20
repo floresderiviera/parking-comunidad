@@ -21,16 +21,22 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
-      - name: JavaScript syntax
-        run: |
-          node --check assets/js/admin/advanced.js
-          node --check assets/js/admin/incidents.js
-          node --check assets/js/admin/requests.js
-          node --check assets/js/auth-navigation.js
-          node --check assets/js/supabase/reference-data.js
-          node --check assets/js/supabase/requests.js
-          node --check assets/js/supabase/incidents.js
-          node --check assets/js/supabase/router.js
+      - name: Syntax assets/js/admin/advanced.js
+        run: node --check assets/js/admin/advanced.js
+      - name: Syntax assets/js/admin/incidents.js
+        run: node --check assets/js/admin/incidents.js
+      - name: Syntax assets/js/admin/requests.js
+        run: node --check assets/js/admin/requests.js
+      - name: Syntax assets/js/auth-navigation.js
+        run: node --check assets/js/auth-navigation.js
+      - name: Syntax assets/js/supabase/reference-data.js
+        run: node --check assets/js/supabase/reference-data.js
+      - name: Syntax assets/js/supabase/requests.js
+        run: node --check assets/js/supabase/requests.js
+      - name: Syntax assets/js/supabase/incidents.js
+        run: node --check assets/js/supabase/incidents.js
+      - name: Syntax assets/js/supabase/router.js
+        run: node --check assets/js/supabase/router.js
       - run: npm test
       - run: npm run build:frontend
       - run: npm run build:vite
