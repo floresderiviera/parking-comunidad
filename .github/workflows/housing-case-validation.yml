@@ -51,7 +51,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set +e
-          deno check supabase/functions/parking-notifications/index.ts > deno-check.log 2>&1
+          deno check --node-modules-dir=auto supabase/functions/parking-notifications/index.ts > deno-check.log 2>&1
           result=$?
           cat deno-check.log
           summary=$(sed -E 's/\x1B\[[0-9;]*[[:alpha:]]//g' deno-check.log | grep -m1 -E 'error:|TS[0-9]+' | head -c 130)
