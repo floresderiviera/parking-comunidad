@@ -39,7 +39,22 @@ jobs:
       - name: Syntax assets/js/supabase/router.js
         run: node --input-type=module --check < assets/js/supabase/router.js
       - run: npm test
-      - run: npm run test:i18n
+      - name: Validate i18n and publish diagnostic
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          npm run test:i18n > i18n-check.log 2>&1
+          result=$?
+          cat i18n-check.log
+          summary=$(grep -m1 -E 'residuo|Error:|error:|FAIL|failed|not found|Cannot' i18n-check.log | head -c 130)
+          if [ -z "$summary" ]; then summary=$(tail -n 2 i18n-check.log | head -c 130); fi
+          export RESULT="$result" SUMMARY="$summary"
+          node -e 'const state=process.env.RESULT==="0"?"success":"failure";require("fs").writeFileSync("i18n-status.json",JSON.stringify({state,description:(process.env.SUMMARY||"Unknown").slice(0,140),context:"parking-i18n-test"}))'
+          curl --silent --show-error --fail -X POST -H "Authorization: Bearer $GH_TOKEN" -H 'Content-Type: application/json' \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" --data @i18n-status.json || true
+          exit "$result"
       - run: npm run test:local-gate
       - run: npm run build:frontend
       - run: npm run build:vite
