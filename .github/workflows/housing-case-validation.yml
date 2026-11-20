@@ -54,7 +54,7 @@ jobs:
           deno check supabase/functions/parking-notifications/index.ts > deno-check.log 2>&1
           result=$?
           cat deno-check.log
-          summary=$(grep -m1 -E '^error:|^TS[0-9]+' deno-check.log | head -c 130)
+          summary=$(sed -E 's/\x1B\[[0-9;]*[[:alpha:]]//g' deno-check.log | grep -m1 -E 'error:|TS[0-9]+' | head -c 130)
           if [ -z "$summary" ]; then
             summary=$(tail -n 1 deno-check.log | head -c 130)
           fi
