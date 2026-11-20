@@ -359,6 +359,44 @@ async function uploadIncidentCloseReports(row,housingLabel){
     await call('uploadIncidentPdf',{id:row.ID_Incidencia,audience,pdfBase64:await to64(pdf)});
   }
 }
+
+/* Índice orientativo de cumplimiento, v1. No impone sanciones ni atribuye
+ * incidencias históricas sin responsable verificado. */
+function parkingComplianceScore(rows,currentId){
+  const cutoff=Date.now()-365*86400000;
+  const previous=(rows||[]).filter(x=>x&&x.ID_Incidencia!==currentId);
+  const recent=previous.filter(x=>{const t=Date.parse(x.FechaHora||'');return Number.isFinite(t)&&t>=cutoff&&t<=Date.now()});
+  // Un cierre no demuestra por sí solo una infracción confirmada. Se computan
+  // únicamente cierres con actuación explícita; el resultado es orientativo.
+  const assessed=recent.filter(x=>x.Estado==='Cerrada'&&x.AccionCierre&&
+    !['Sin actuación','Datos corregidos'].includes(x.AccionCierre));
+  const followups=assessed.reduce((sum,x)=>sum+Math.min(4,Math.max(0,(Number(x.Intentos)||1)-1)),0);
+  const deductions=assessed.length*12+followups*3;
+  return {score:Math.max(0,100-deductions),assessed:assessed.length,
+    followups,open:recent.filter(x=>x.Estado!=='Cerrada').length,
+    excluded:recent.length-assessed.length-recent.filter(x=>x.Estado!=='Cerrada').length,
+    previous:recent.length,history:recent.slice().sort((a,b)=>Date.parse(b.FechaHora||0)-Date.parse(a.FechaHora||0))};
+}
+function parkingCompliancePanel(row,allRows){
+  const house=(allRows||[]).filter(x=>row.ID_Vivienda&&x.ID_Vivienda===row.ID_Vivienda);
+  const ownerId=row.ID_PropietarioAlHecho;
+  const owner=ownerId?(allRows||[]).filter(x=>x.ID_PropietarioAlHecho===ownerId):[];
+  const houseScore=parkingComplianceScore(house,row.ID_Incidencia);
+  const ownerScore=ownerId?parkingComplianceScore(owner,row.ID_Incidencia):null;
+  const heading=(label,stat)=>`<div class="card" style="flex:1;min-width:220px;padding:1rem"><strong>${label}</strong><div style="font-size:1.65rem;font-weight:700;margin:.35rem 0">${stat?stat.score+'/100':'Sin datos'}</div><small>${stat?`${stat.assessed} cierres con actuación · ${stat.followups} seguimientos computados · ${stat.open} abiertas`:'Sin atribución histórica verificada'}</small></div>`;
+  const previous=houseScore.history.slice(0,5);
+  return `<section class="card wide" id="incident-compliance-panel" style="margin-bottom:1rem">
+    <div class="head"><h3>Antecedentes y puntuación de cumplimiento</h3></div>
+    <p class="muted">Valoración orientativa de los últimos 365 días, anterior a esta incidencia. No determina sanciones ni confirma automáticamente infracciones.</p>
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap">${heading('Vivienda',houseScore)}${heading('Propietario responsable al hecho',ownerScore)}</div>
+    <p class="muted" style="margin-top:.75rem">Cálculo: base 100; −12 por incidencia anterior cerrada con actuación explícita y −3 por seguimiento posterior (máximo 4 por expediente). Las incidencias abiertas no descuentan puntos. Los cierres sin actuación o de datos corregidos no descuentan. La atribución del propietario utiliza el responsable registrado en el momento del hecho.</p>
+    <details><summary>Ver antecedentes de la vivienda (${houseScore.previous} en 365 días)</summary>
+      ${previous.length?`<ul>${previous.map(x=>`<li>${esc(shortDateTime(x.FechaHora))} · ${esc(x.Tipo||'Incidencia')} · ${esc(x.Estado||'')} · ${esc(x.Intentos||1)} intento(s) · ${esc(x.AccionCierre||'Sin actuación registrada')}</li>`).join('')}</ul>`:'<p class="muted">Sin antecedentes recientes.</p>'}
+    </details>
+    ${!ownerId?'<p class="muted">No se calcula la nota del propietario sin atribución verificada.</p>':''}
+  </section>`;
+}
+
 async function incidents(openId=''){
   try{
     const focusId=openId||state.cache.incidentFocus||'';delete state.cache.incidentFocus;const navPreset=state.cache.incidentPreset||null;delete state.cache.incidentPreset;
@@ -478,7 +516,7 @@ async function incidents(openId=''){
       finally{busy(sendPdf,false)}};
       const close=$('#inc-detail-close-case');
       if(close)close.onclick=()=>{
-        $('#incident-close-editor').innerHTML=`<form class="form" id="incident-close-form" style="margin-top:1rem"><div class="field"><label>Acción realizada</label><select name="AccionCierre" id="incident-close-action" required><option value="">Selecciona una acción</option>${actions.map(x=>`<option value="${esc(x)}">${esc(actionLabel(x))}</option>`).join('')}</select></div><div class="field wide"><label>Comentario de cierre</label><textarea name="ComentarioCierre" required placeholder="Qué se hizo, contacto con propietario, observaciones..."></textarea></div><div class="message wide" id="incident-action-help"></div><div class="wide actions"><button>CONFIRMAR Y CERRAR</button><button type="button" class="secondary" id="cancel-close-inc">Cancelar</button></div></form>`;
+        $('#incident-close-editor').innerHTML=`${parkingCompliancePanel(r,rows)}<form class="form" id="incident-close-form" style="margin-top:1rem"><div class="field"><label>Acción realizada</label><select name="AccionCierre" id="incident-close-action" required><option value="">Selecciona una acción</option>${actions.map(x=>`<option value="${esc(x)}">${esc(actionLabel(x))}</option>`).join('')}</select></div><div class="field wide"><label>Comentario de cierre</label><textarea name="ComentarioCierre" required placeholder="Qué se hizo, contacto con propietario, observaciones..."></textarea></div><div class="message wide" id="incident-action-help"></div><div class="wide actions"><button>CONFIRMAR Y CERRAR</button><button type="button" class="secondary" id="cancel-close-inc">Cancelar</button></div></form>`;
         const actionSel=$('#incident-close-action'),help=$('#incident-action-help');
         const refreshAction=()=>{const a=actionSel.value;const mismatch=r.Tipo==='QR no corresponde con matrícula';const messages={'Revocar QR':mismatch?`Se revocará el QR presentado, perteneciente a ${qrOwnerPlate}. El vehículo observado ${observedPlate} no cambia de estado.`:'El QR quedará revocado. El vehículo seguirá activo.','Renovar QR':'El QR anterior quedará invalidado y se generará uno nuevo.','Suspender vehículo':mismatch?`Se suspenderá el vehículo observado ${observedPlate}. El QR presentado de ${qrOwnerPlate} no se modifica.`:(isMoto?'La moto quedará suspendida.':'El vehículo quedará suspendido, liberará su slot y quedará sin QR asignado.'),'Dar de baja':isMoto?'La moto quedará dada de baja.':'El vehículo quedará dado de baja, liberará el slot y quedará sin QR asignado.','Mantener suspensión':mismatch?`La incidencia se cerrará manteniendo suspendido el vehículo observado ${observedPlate}.`:'La incidencia se cerrará manteniendo el vehículo suspendido.','Aviso al propietario':'Se registrará que se realizó un aviso. Esta acción no envía automáticamente un email ni una notificación.','Datos corregidos':'Se registrará que los datos fueron corregidos. Esta acción no modifica automáticamente la ficha del vehículo o vivienda.'};help.textContent=messages[a]||'La incidencia se cerrará con la acción seleccionada.'};
         actionSel.onchange=refreshAction;refreshAction();
