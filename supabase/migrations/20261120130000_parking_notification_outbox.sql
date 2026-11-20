@@ -42,7 +42,7 @@ begin
     join public.profiles p on p.user_id=cm.user_id
    where cm.community_id=target_community and cm.state='Activo'
      and 'ADMIN'=any(cm.roles)
-     and p.state='Activo' and p.email~* '^[^ @]+@[^ @]+\\.[^ @]+$'
+     and p.state='Activo' and p.email~* '^[^ @]+@[^ @]+[.][^ @]+$'
   on conflict (community_id,event_type,entity_id,recipient_email) do nothing;
 
   if target_owner is not null and target_event in ('incident.closed','request.resolved') then
@@ -51,7 +51,7 @@ begin
     select target_community,target_event,target_entity,p.user_id,lower(trim(p.email)),'OWNER'
       from public.profiles p
      where p.user_id=target_owner and p.state='Activo'
-       and p.email~* '^[^ @]+@[^ @]+\\.[^ @]+$'
+       and p.email~* '^[^ @]+@[^ @]+[.][^ @]+$'
        and exists(select 1 from public.community_members cm
             where cm.community_id=target_community and cm.user_id=p.user_id
               and cm.state='Activo')

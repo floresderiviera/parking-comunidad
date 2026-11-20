@@ -121,7 +121,7 @@ async function buildWorkbook(community:RecordRow, period:{start:string;end:strin
         r.last_followup_at?new Date(r.last_followup_at):'',safeText(link(r))]);
       row.getCell(2).numFmt='dd/mm/yyyy hh:mm';
       if(r.last_followup_at)row.getCell(10).numFmt='dd/mm/yyyy hh:mm';
-      row.getCell(11).hyperlink=link(r);
+      row.getCell(11).value={text:link(r),hyperlink:link(r)};
     }
   }
   detail(makeSheet(workbook,'Creadas y abiertas',headers,widths),openNew);

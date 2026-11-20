@@ -41,7 +41,7 @@ begin
     join public.profiles p on p.user_id=cm.user_id
    where cm.community_id=r.community_id and cm.state='Activo'
      and p.state='Activo' and 'ADMIN'=any(cm.roles)
-     and p.email~* '^[^ @]+@[^ @]+\\.[^ @]+$'
+     and p.email~* '^[^ @]+@[^ @]+[.][^ @]+$'
   on conflict (community_id,event_type,entity_id,recipient_email) do nothing;
 end;
 $$;
