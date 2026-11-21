@@ -1,0 +1,42 @@
+/* parking-pre-case-v2: PRE + informe TEST001; solo detalle administrativo. */
+.parking-official-case {overflow:hidden; padding-top:0!important;}
+.parking-official-case > .parking-case-masthead {
+  margin: 0 -12px 18px; padding: 16px 18px;
+  background:#145d4b;color:#fff;display:flex;align-items:center;
+  justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.parking-official-case .parking-case-community {font-weight:700;font-size:.92rem;letter-spacing:.005em;}
+.parking-official-case .parking-case-report-label {font-size:.69rem;letter-spacing:.075em;font-weight:700;opacity:.9;}
+.parking-official-case .incident-detail-header,
+.parking-official-case > .head {border-bottom:1px solid #e5eeeb;padding-bottom:13px;margin-bottom:15px;}
+.parking-official-case .incident-section-title.compact,
+.parking-official-case .request-case-section h4 {margin:19px 0 11px;font-weight:750;color:#203e36;line-height:1.35;}
+.parking-official-case .incident-primary-grid,
+.parking-official-case .request-case-section .incident-primary-grid {
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;
+}
+.parking-official-case .incident-primary-grid>div,
+.parking-official-case .request-case-section .incident-primary-grid>div {
+  min-width:0; padding:10px 11px;border-radius:8px;
+  background:#f5f8f7;border:1px solid #e7eeeb;
+}
+.parking-official-case .incident-primary-grid b,
+.parking-official-case .request-case-section .incident-primary-grid b {overflow-wrap:anywhere;line-height:1.35;}
+.parking-official-case .incident-technical {margin:16px 0 6px;}
+.parking-official-case .incident-technical summary {cursor:pointer;}
+.parking-official-case .incident-detail-section,
+.parking-official-case .request-case-section,
+.parking-official-case .incident-resolution {margin-top:19px;}
+.parking-official-case .incident-timeline,
+.parking-official-case .request-case-section details {line-height:1.55;}
+.parking-official-case .parking-compliance-panel {margin-top:18px;}
+.parking-official-case .incident-followup {break-inside:avoid;}
+@media(max-width:980px){
+ .parking-official-case .incident-primary-grid,
+ .parking-official-case .request-case-section .incident-primary-grid {grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media(max-width:570px){
+ .parking-official-case > .parking-case-masthead {margin:0 -10px 16px;padding:14px 12px;}
+ .parking-official-case .incident-primary-grid,
+ .parking-official-case .request-case-section .incident-primary-grid {grid-template-columns:minmax(0,1fr);}
+}

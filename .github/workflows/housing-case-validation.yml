@@ -1,0 +1,117 @@
+name: Parking housing and notifications - isolated validation
+on:
+  push:
+    branches:
+      - feat/housing-case-history-notifications
+  pull_request:
+    branches:
+      - supabase-poc
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Install Playwright Chromium for i18n browser tests
+        run: npx playwright install --with-deps chromium
+      - name: Syntax assets/js/admin/advanced.js
+        run: node --check assets/js/admin/advanced.js
+      - name: Syntax assets/js/admin/incidents.js
+        run: node --check assets/js/admin/incidents.js
+      - name: Syntax assets/js/admin/requests.js
+        run: node --check assets/js/admin/requests.js
+      - name: Syntax assets/js/auth-navigation.js
+        run: node --check assets/js/auth-navigation.js
+      - name: Syntax assets/js/supabase/reference-data.js
+        run: node --input-type=module --check < assets/js/supabase/reference-data.js
+      - name: Syntax assets/js/supabase/requests.js
+        run: node --check assets/js/supabase/requests.js
+      - name: Syntax assets/js/supabase/incidents.js
+        run: node --check assets/js/supabase/incidents.js
+      - name: Syntax assets/js/supabase/router.js
+        run: node --input-type=module --check < assets/js/supabase/router.js
+      - run: npm test
+      - name: Validate i18n and publish diagnostic
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          npm run test:i18n > i18n-check.log 2>&1
+          result=$?
+          cat i18n-check.log
+          summary=$(grep -m1 -E 'residuo|Error:|error:|FAIL|failed|not found|Cannot' i18n-check.log | head -c 130)
+          if [ -z "$summary" ]; then summary=$(tail -n 2 i18n-check.log | head -c 130); fi
+          export RESULT="$result" SUMMARY="$summary"
+          node -e 'const state=process.env.RESULT==="0"?"success":"failure";require("fs").writeFileSync("i18n-status.json",JSON.stringify({state,description:(process.env.SUMMARY||"Unknown").slice(0,140),context:"parking-i18n-test"}))'
+          curl --silent --show-error --fail -X POST -H "Authorization: Bearer $GH_TOKEN" -H 'Content-Type: application/json' \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" --data @i18n-status.json || true
+          exit "$result"
+      - run: npm run test:local-gate
+      - run: npm run build:frontend
+      - run: npm run build:vite
+      - name: Deno type check Edge Function
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Deno check and publish first compiler diagnostic
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          deno check --node-modules-dir=auto supabase/functions/parking-notifications/index.ts > deno-check.log 2>&1
+          result=$?
+          cat deno-check.log
+          summary=$(sed -E 's/\x1B\[[0-9;]*[[:alpha:]]//g' deno-check.log | grep -m1 -E 'error:|TS[0-9]+' | head -c 130)
+          if [ -z "$summary" ]; then
+            summary=$(tail -n 1 deno-check.log | head -c 130)
+          fi
+          export RESULT="$result"
+          export SUMMARY="$summary"
+          node -e 'const s=process.env.RESULT==="0"?"success":"failure"; const d=(process.env.SUMMARY||"Unknown").slice(0,140); require("fs").writeFileSync("status.json", JSON.stringify({state:s,description:d,context:"parking-deno-check"}))'
+          curl --silent --show-error --fail --retry 2 -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H 'Content-Type: application/json' \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            --data @status.json || true
+          exit "$result"
+
+  database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Start isolated Supabase
+        run: supabase start
+      - name: Validate migrations and RLS with first error status
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          supabase test db > db-check.log 2>&1
+          result=$?
+          cat db-check.log
+          summary=$(sed -E 's/\x1B\[[0-9;]*[[:alpha:]]//g' db-check.log | grep -m1 -Ei 'error:|not ok|failed|ERROR ' | head -c 130)
+          if [ -z "$summary" ]; then summary=$(tail -n 1 db-check.log | head -c 130); fi
+          export RESULT="$result" SUMMARY="$summary"
+          node -e 'const s=process.env.RESULT==="0"?"success":"failure"; const d=(process.env.SUMMARY||"Unknown").slice(0,140); require("fs").writeFileSync("db-status.json", JSON.stringify({state:s,description:d,context:"parking-db-test"}))'
+          curl --silent --show-error --fail --retry 2 -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'Content-Type: application/json' \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            --data @db-status.json || true
+          exit "$result"
