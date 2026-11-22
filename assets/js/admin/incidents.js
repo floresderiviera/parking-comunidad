@@ -591,7 +591,7 @@ async function incidents(openId=''){
           if(result?.missing){
             prepareOfficialPdf=true;
             officialPdf.textContent='Preparar PDF oficial';
-            toast('El PDF oficial todavía no está preparado. Pulsa «Preparar PDF oficial» para generarlo.');
+            toast('Preparar PDF de cierre');
             return;
           }
           if(!result?.url)throw new Error('No se encontró el PDF oficial del expediente.');
