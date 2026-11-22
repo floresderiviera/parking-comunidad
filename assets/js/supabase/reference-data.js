@@ -128,7 +128,10 @@ export function createReferenceData({
             (incident) =>
               incident.ID_Vivienda ===
               payload.id
-          )
+          ),
+        ownerIncidents: housing && housing.ResponsableUserId
+          ? incidents.filter((incident) => incident.ID_PropietarioAlHecho === housing.ResponsableUserId)
+          : []
       };
     }
 

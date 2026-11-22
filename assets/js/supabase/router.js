@@ -158,7 +158,9 @@ export function createRouter({
         case 'listIncidentsPayload':
           return {
             rows:
-              await listIncidents()
+              await listIncidents(),
+            complianceRules:
+              await settingsApi.getComplianceRules()
           };
 
         case 'listAudit':
@@ -278,6 +280,14 @@ export function createRouter({
           return settingsApi
             .getSettings();
 
+        case 'getComplianceRules':
+          return settingsApi
+            .getComplianceRules();
+
+        case 'saveComplianceRules':
+          return settingsApi
+            .saveComplianceRules(payload);
+
         case 'saveSettings':
           return settingsApi
             .saveSettings(
@@ -321,10 +331,57 @@ export function createRouter({
             payload
           );
 
-        case 'housingDetail':
-          return housingDetail(
-            payload
-          );
+        // parking_official_pdf_single_button_v1: issue a short-lived signed URL via server-side authorization.
+        case 'downloadIncidentPdf': {
+          const boot=await appBootstrap();
+          if(!boot.user.IsRoot&&!boot.roles.includes('ADMIN'))throw new Error('ADMIN requerido.');
+          const response=await sb.functions.invoke('parking-notifications',{
+            body:{action:'download-official-pdf',incident_id:payload.id}
+          });
+          if(response.error)throw response.error;
+          if(response.data?.error)throw new Error(response.data.error);
+          if(!response.data?.url)throw new Error('El PDF oficial no está disponible.');
+          // parking_official_pdf_browser_origin_v2: Supabase Storage can sign using Docker's internal 'kong' host.
+          // Keep the signed path and token unchanged; use only the public API origin configured for this client.
+          const publicBase=new URL(sb.supabaseUrl);
+          const signed=new URL(response.data.url,publicBase);
+          if(!signed.pathname.startsWith('/storage/v1/object/sign/')){
+            throw new Error('Ruta del PDF oficial no autorizada.');
+          }
+          signed.protocol=publicBase.protocol;
+          signed.host=publicBase.host;
+          return {...response.data,url:signed.href};
+        }
+
+        case 'uploadIncidentPdf': {
+          const boot=await appBootstrap();
+          if(!boot.user.IsRoot&&!boot.roles.includes('ADMIN'))throw new Error('ADMIN requerido.');
+          const response=await sb.functions.invoke('parking-notifications',{
+            body:{action:'upload-pdf',incident_id:payload.id,audience:payload.audience,pdf_base64:payload.pdfBase64}
+          });
+          if(response.error)throw response.error;
+          if(response.data?.error)throw new Error(response.data.error);
+          return response.data;
+        }
+
+        case 'weeklyManualReport': {
+          const boot=await appBootstrap();
+          if(!boot.user.IsRoot&&!boot.roles.includes('ADMIN'))throw new Error('ADMIN requerido.');
+          const response=await sb.functions.invoke('parking-notifications',{
+            body:{action:'weekly-manual',community_id:boot.communityId}
+          });
+          if(response.error)throw response.error;
+          if(response.data?.error)throw new Error(response.data.error);
+          return response.data;
+        }
+
+        case 'housingDetail': {
+          const [detail, complianceRules] = await Promise.all([
+            housingDetail(payload),
+            settingsApi.getComplianceRules()
+          ]);
+          return { ...detail, complianceRules };
+        }
 
         case 'vehicleHistory':
           return vehicleHistory(

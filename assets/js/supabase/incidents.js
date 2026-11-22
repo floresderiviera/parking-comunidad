@@ -192,8 +192,11 @@
     const v = refs.vehicleById.get(row.vehicle_id) || {};
     const creator = includeActors ? (refs.profiles.get(row.created_by) || {}) : {};
     const closer = includeActors ? (refs.profiles.get(row.closed_by) || {}) : {};
+    const eventOwner = refs.profiles.get(row.responsible_at_event_user_id) || {};
     return {
       ID_Incidencia: row.id,
+      ID_PropietarioAlHecho: row.responsible_at_event_user_id || '',
+      NombrePropietarioAlHecho: eventOwner.name || eventOwner.email || '',
       ID_Evento: row.event_id || '',
       ID_Vivienda: row.dwelling_id || '',
       ID_Vehiculo: row.vehicle_id || '',
@@ -229,6 +232,7 @@
       Causa: row.cause || '',
       Intentos: row.attempts || 1,
       Prioridad: row.priority || 'Normal',
+      PrioridadInicial: row.initial_priority || 'Normal',
       UltimoSeguimiento: row.last_followup_at || '',
       ITV_Vencida: row.expired_itv ? 'Sí' : 'No verificado',
       FugaLiquidos: row.fluid_leak ? 'Sí' : 'No',
@@ -237,6 +241,10 @@
       NombreUsuarioCierre: closer.name || closer.email || '',
       AccionCierre: row.close_action || '',
       ComentarioCierre: row.close_comment || '',
+      ComplianceOutcome: row.compliance_outcome || '',
+      CompliancePoints: row.compliance_deduction,
+      ComplianceRuleVersion: row.compliance_rule_version_id || '',
+      ComplianceScoredAt: row.compliance_scored_at || '',
       AccionesDisponibles: incidentAllowedActionsClient(row, refs),
       Seguimientos: followups
     };

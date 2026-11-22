@@ -90,6 +90,27 @@
       return (await appBootstrap()).settings;
     }
 
+    async function getComplianceRules() {
+      const boot = await appBootstrap();
+      return unwrap(await sb.rpc('parking_get_compliance_rules', {
+        p_community_id: boot.communityId
+      }));
+    }
+
+    async function saveComplianceRules(payload = {}) {
+      const boot = await appBootstrap();
+      if (!boot.user.IsRoot && !boot.roles.includes('ADMIN')) {
+        throw new Error('No tienes permisos para modificar el índice de cumplimiento.');
+      }
+      const result = unwrap(await sb.rpc('parking_save_compliance_rules', {
+        p_community_id: boot.communityId,
+        p_rules: payload.rules || {},
+        p_reason: String(payload.reason || '').trim()
+      }));
+      invalidate();
+      return result;
+    }
+
     async function saveSettings(payload = {}) {
       const boot = await appBootstrap();
 
@@ -230,6 +251,8 @@
     return {
       getSettings,
       saveSettings,
+      getComplianceRules,
+      saveComplianceRules,
       uploadLogo,
       consistencyReport,
       consistencyFix

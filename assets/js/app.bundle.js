@@ -281,6 +281,112 @@ Object.assign(PARKING_I18N.en,{
 
 
 const PARKING_UI_EN_EXACT={
+  "Identificación y origen": "Identification and origin",
+  "Estado actual del vehículo": "Current vehicle status",
+  "Datos originales del vehículo": "Original vehicle information",
+  "Datos originales al solicitar": "Original details at request time",
+
+  "EXPEDIENTE DE SOLICITUD": "REQUEST CASE",
+
+  "EXPEDIENTE ADMINISTRATIVO": "ADMINISTRATIVE CASE FILE",
+  "Identificación de la incidencia": "Incident identification",
+  "Tipo de incidencia": "Incident type",
+  "Fecha de registro": "Registration date",
+  "Identificación": "Identification",
+  "Tipo de vehículo": "Vehicle type",
+  "Estado al registrar": "State when registered",
+  "RESOLUCIÓN DE SOLICITUD": "REQUEST RESOLUTION",
+  "Efecto de la decisión": "Effect of the decision",
+  "Observaciones de resolución (opcionales)": "Resolution notes (optional)",
+  "El responsable y la fecha de resolución se registran automáticamente. Esta acción conserva el flujo y los efectos actuales.": "The responsible user and resolution date are recorded automatically. This action preserves the existing workflow and effects.",
+  "Justificación, comprobaciones o información para el historial...": "Justification, checks or information for the history...",
+
+  'Los estados no están informados en este expediente. No se interpretan como estados inactivos.': 'Status information is unavailable for this case. Missing values must not be interpreted as inactive.',
+
+  "Identificación de la solicitud": "Request details",
+  "Estado del vehículo y datos de origen": "Vehicle state and original data",
+  "Periodo de permanencia solicitado": "Requested extended-stay period",
+  "Motivo y observaciones": "Reason and comments",
+  "Resolución y trazabilidad": "Decision and audit trail",
+  "No informado": "Not provided",
+  "Estado de la solicitud": "Request status",
+  "Fecha de solicitud": "Request date",
+  "Motivo declarado": "Submitted reason",
+  "Observaciones de resolución": "Decision comments",
+  "Resuelta por": "Resolved by",
+  "Historial de solicitudes relacionadas": "Related request history",
+  "Consultar historial de solicitudes": "View request history",
+  "Sin otras solicitudes relacionadas.": "No other related requests.",
+  "Mostrando las 8 más recientes.": "Showing the 8 most recent.",
+  "Versión actual:": "Current version:",
+  "Explica por qué se modifica la regla y quién lo autorizó": "Explain why the rule is being changed and who authorized it",
+  "Simulación:": "Simulation:",
+  "Bandeja de gestión con agrupación independiente por vivienda, propietario o matrícula.": "Management inbox with separate grouping by property, owner or plate.",
+  "Matrícula, vivienda, propietario, tipo o descripción...": "Plate, property, owner, type or description...",
+  "Por propietario": "By owner",
+  "Descuentos por expediente": "Deductions per case",
+  "Límites y ventana": "Limits and scoring window",
+  "Recuperación sin nuevas detecciones": "Recovery without new detections",
+  "Cierre confirmado": "Confirmed closure",
+  "Cierre infundado/sin actuación": "Unfounded closure / no action",
+  "La simulación no escribe en la base de datos.": "Simulation does not write to the database.",
+  "Abierta con 5 intentos": "Open case with 5 attempts",
+  "Reglas compartidas por Incidencias, Solicitudes, vivienda y propietario. Versión activa:": "Rules shared across Incidents, Requests, properties and owners. Active version:",
+  "Cada guardado crea una versión nueva y una entrada de Auditoría. No existen ajustes manuales de puntuación.": "Each save creates a new version and audit entry. Manual score overrides are not enabled.",
+  "Propietario sin atribución verificada": "Owner without verified attribution",
+  "Índice de Cumplimiento": "Compliance Index",
+  "Índice explicable": "Explainable index",
+  "Sin antecedentes computables.": "No countable history.",
+  "Guardar nueva versión": "Save new version",
+  "Motivo del cambio": "Reason for change",
+  "Trazabilidad": "Audit trail",
+  "Vista previa": "Preview",
+  "Seguimientos computables por expediente": "Countable follow-ups per case",
+  "Ventana de cálculo (días)": "Scoring window (days)",
+  "Puntos del primer hito": "First milestone points",
+  "Puntos del segundo hito": "Second milestone points",
+  "Puntos del tercer hito": "Third milestone points",
+  "Máximo recuperable": "Maximum recoverable points",
+  "No existen ajustes manuales de puntuación.": "Manual score overrides are not enabled.",
+  "Las solicitudes no descuentan puntos.": "Requests do not reduce the score.",
+  "Reglas iniciales": "Initial rules",
+  "Índice de cumplimiento": "Compliance index",
+  "Puntuación vivienda": "Property score",
+  "Puntuación propietario": "Owner score",
+  "Sin historial atribuible": "No attributable history",
+  "Ver antecedentes y desglose": "View history and breakdown",
+  "Índice orientativo de 365 días: abiertas, cerradas con actuación e intentos. No genera penalizaciones.": "Indicative 365-day index: open cases, closures with recorded action and attempts. It does not impose penalties.",
+  "Descuentos: Normal 3/6; Atención 5/10; Alta 8/16; Crítica 12/24 (abierta/cerrada). Los seguimientos suman 1/2/3/4, máximo 4 por expediente. Recuperación de hasta 15 puntos por 30/60/90 días sin nuevas detecciones ni casos abiertos.": "Deductions: Normal 3/6; Attention 5/10; High 8/16; Critical 12/24 (open/closed). Follow-ups add 1/2/3/4, up to 4 per case. Recover up to 15 points after 30/60/90 days with no new detections and no open cases.",
+  "Antecedentes y puntuación de cumplimiento": "History and compliance score",
+  "No se calcula la nota del propietario sin atribución verificada.": "The owner score cannot be calculated without verified attribution.",
+  "Vivienda": "Property",
+  "Propietario responsable al hecho": "Owner responsible at the time of the incident",
+  "Sin datos": "No data",
+  "Sin antecedentes recientes.": "No recent history.",
+  "Sin actuación registrada": "No recorded action",
+  "Valoración orientativa de los últimos 365 días, anterior a esta incidencia. No determina sanciones ni confirma automáticamente infracciones.": "Indicative assessment of the previous 365 days, excluding this incident. It does not determine penalties or automatically confirm violations.",
+  "Cálculo: base 100; −12 por incidencia anterior cerrada con actuación explícita y −3 por seguimiento posterior (máximo 4 por expediente). Las incidencias abiertas no descuentan puntos. Los cierres sin actuación o de datos corregidos no descuentan. La atribución del propietario utiliza el responsable registrado en el momento del hecho.": "Calculation: start at 100; −12 for each earlier closed incident with a recorded action and −3 per follow-up (up to 4 per case). Open incidents do not reduce the score. Closures without action or with corrected data do not reduce the score. Owner attribution uses the person recorded as responsible when the event occurred.",
+  "Por vivienda": "By property",
+  "Por matrícula": "By plate",
+  "Por propietario responsable al hecho": "By responsible owner at the time of the incident",
+  "Bandeja de gestión agrupada por vivienda o matrícula observada.": "Management inbox grouped by property or observed plate.",
+  "Bandeja de gestión agrupada por vivienda o vehículo/matrícula. Expedientes y lista comparten los mismos filtros.": "Management inbox grouped by property or vehicle/plate. Cases and list share the same filters.",
+  "PDFs preparados para notificación a administración y propietario.": "PDFs prepared for notification to administration and owner.",
+  "Incidencia cerrada. Preparando notificaciones.": "Incident closed. Preparing notifications.",
+  "Informes de cierre preparados para notificación.": "Closure reports prepared for notification.",
+  "Generar Excel semanal": "Generate weekly Excel",
+  "Historial y reincidencias": "History and repeat incidents",
+  "Reincidencias registradas": "Recorded repeat incidents",
+  "Historial completo de incidencias": "Full incident history",
+  "Historial completo de solicitudes": "Full request history",
+  "Incidencias históricas": "Historical incidents",
+  "Solicitudes históricas": "Historical requests",
+  "Por propietario (histórico)": "By owner (historical)",
+  "Últimos 30 días": "Last 30 days",
+  "Atribución pendiente": "Attribution pending",
+  "Preparar PDF de cierre": "Prepare closure PDF",
+  "Sin vivienda identificada": "Unidentified property",
+  "Estos recuentos no constituyen penalizaciones automáticas. Las incidencias históricas sin atribución verificada no se imputan al propietario actual.": "These counts do not result in automatic penalties. Historical incidents without verified attribution are not assigned to the current owner.",
   'Viviendas con vehículos': 'Properties with vehicles',
   'Al menos uno activo': 'At least one active vehicle',
   'Viviendas sin vehículos': 'Properties without vehicles',
@@ -1006,6 +1112,7 @@ Object.assign(PARKING_UI_EN_EXACT,{
 
 function uiTranslateDynamic(text){
   let value=String(text??'').replace(/＋/g,'+');
+  value=value.replace(/^Reglas guardadas como versión (\d+)\.$/, 'Rules saved as version $1.');
 
   const exact=PARKING_UI_EN_EXACT[value.trim()];
   if(exact!==undefined)return exact;
@@ -2103,6 +2210,123 @@ function groupedRowsStable(rows,groupKey,sortFn,groupOrderFn){
   sorted.forEach(r=>{const k=groupKey(r);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(r)});
   let entries=[...groups.entries()];if(groupOrderFn)entries.sort(groupOrderFn);return entries;
 }
+'use strict';
+
+const PARKING_COMPLIANCE_DEFAULTS=Object.freeze({
+  open_normal:3,open_attention:5,open_high:8,open_critical:12,
+  closed_normal:6,closed_attention:10,closed_high:16,closed_critical:24,
+  followup_normal:1,followup_attention:2,followup_high:3,followup_critical:4,
+  max_followups:4,window_days:365,
+  recovery_1_days:30,recovery_1_points:5,
+  recovery_2_days:60,recovery_2_points:5,
+  recovery_3_days:90,recovery_3_points:5,
+  recovery_extra_every_days:30,recovery_extra_points:0,recovery_cap_points:15
+});
+
+function parkingComplianceRules(source={}){
+  const raw=source?.rules||source||{},out={};
+  Object.entries(PARKING_COMPLIANCE_DEFAULTS).forEach(([key,fallback])=>{
+    const value=Number(raw[key]);out[key]=Number.isFinite(value)?Math.round(value):fallback;
+  });
+  out.version=Number(source?.version||raw.version||0);
+  out.id=source?.id||raw.id||'';
+  out.reason=source?.reason||raw.reason||'';
+  out.created_at=source?.created_at||raw.created_at||'';
+  return out;
+}
+
+function parkingComplianceSetRules(source){
+  const normalized=parkingComplianceRules(source);
+  state.cache.complianceRules=normalized;
+  return normalized;
+}
+
+function parkingComplianceActiveRules(){
+  return parkingComplianceRules(state?.cache?.complianceRules||PARKING_COMPLIANCE_DEFAULTS);
+}
+
+function parkingCompliancePriorityKey(priority){
+  return ({'Atención':'attention','Alta':'high','Crítica':'critical'})[priority]||'normal';
+}
+
+function parkingComplianceExcluded(action){
+  return ['','Sin actuación','Datos corregidos','Anulada','Anulado','Infundada','Infundado']
+    .includes(String(action||''));
+}
+
+function parkingComplianceRecovery(raw,days,rules){
+  if(!raw||days<0)return 0;
+  let points=0;
+  if(days>=rules.recovery_1_days)points+=rules.recovery_1_points;
+  if(days>=rules.recovery_2_days)points+=rules.recovery_2_points;
+  if(days>=rules.recovery_3_days)points+=rules.recovery_3_points;
+  if(rules.recovery_extra_points>0&&days>rules.recovery_3_days){
+    points+=Math.floor((days-rules.recovery_3_days)/Math.max(1,rules.recovery_extra_every_days))*rules.recovery_extra_points;
+  }
+  return Math.min(raw,rules.recovery_cap_points,points);
+}
+
+function parkingScore(rows,options={}){
+  const rules=parkingComplianceRules(options.rules||parkingComplianceActiveRules());
+  const now=Number(options.now||Date.now()),cut=now-rules.window_days*86400000;
+  const candidates=[];
+  for(const original of rows||[]){
+    if(!original?.ID_Incidencia||options.exclude===original.ID_Incidencia)continue;
+    const ts=Date.parse(original.FechaHora||'');
+    if(!Number.isFinite(ts)||ts<cut||ts>now)continue;
+    const row=options.closeId===original.ID_Incidencia
+      ?{...original,Estado:'Cerrada',AccionCierre:options.action}:original;
+    const open=row.Estado!=='Cerrada';
+    const attempts=Math.min(rules.max_followups,Math.max(0,(Number(row.Intentos)||1)-1));
+    const initialKey=parkingCompliancePriorityKey(row.PrioridadInicial||'Normal');
+    const currentKey=parkingCompliancePriorityKey(row.Prioridad||'Normal');
+    const excluded=!open&&parkingComplianceExcluded(row.AccionCierre);
+    const frozen=row.CompliancePoints===null||row.CompliancePoints===undefined||row.CompliancePoints===''?NaN:Number(row.CompliancePoints);
+    let loss=0,origin='Reglas activas';
+    if(open){
+      loss=rules['open_'+initialKey]+attempts*rules['followup_'+currentKey];
+    }else if(!excluded&&Number.isFinite(frozen)){
+      loss=frozen;origin=`Cierre congelado${row.ComplianceRuleVersion?` · referencia ${row.ComplianceRuleVersion}`:''}`;
+    }else if(!excluded){
+      loss=rules['closed_'+initialKey]+attempts*rules['followup_'+currentKey];
+      origin='Histórico sin snapshot · reglas activas';
+    }
+    loss=Math.max(0,Math.min(100,loss));
+    const eventKey=String(row.ID_Evento||'').trim();
+    // Un evento puede contener infracciones diferentes: no fusionar tipos ni viviendas.
+    const relation=[row.ID_Vivienda||'',row.Tipo||'',row.Situacion||'',row.MatriculaRelacionada||'',row.MatriculaInfraccion||row.MatriculaObservada||'',row.ID_VehiculoRelacionado||''].join('|');
+    const dedupKey=eventKey?`event:${eventKey}:${relation}`:`incident:${row.ID_Incidencia}`;
+    candidates.push({row,loss,open,closedValid:!open&&!excluded,excluded,attempts,origin,dedupKey,linked:1});
+  }
+  const grouped=new Map();
+  for(const item of candidates){
+    const previous=grouped.get(item.dedupKey);
+    if(!previous){grouped.set(item.dedupKey,item);continue}
+    previous.linked++;
+    if(item.loss>previous.loss)grouped.set(item.dedupKey,{...item,linked:previous.linked});
+  }
+  const items=[...grouped.values()];
+  const raw=items.reduce((sum,item)=>sum+item.loss,0);
+  const last=Math.max(0,...items.map(item=>Date.parse(item.row.UltimoSeguimiento||item.row.FechaHora||'')||0));
+  const days=last?Math.floor((now-last)/86400000):0;
+  const recovery=items.some(item=>item.open)?0:parkingComplianceRecovery(raw,days,rules);
+  return {
+    score:Math.max(0,Math.min(100,100-raw+recovery)),raw,recovery,items,rules,
+    open:items.filter(item=>item.open).length,
+    closed:items.filter(item=>item.closedValid).length,
+    excluded:items.filter(item=>item.excluded).length,
+    followups:items.reduce((sum,item)=>sum+item.attempts,0),
+    duplicates:candidates.length-items.length,
+    lastActivityAt:last?new Date(last).toISOString():'',daysWithoutDetection:days
+  };
+}
+
+function parkingComplianceScore(rows,currentId,options={}){
+  const score=parkingScore(rows,{...options,exclude:currentId});
+  return {score:score.score,assessed:score.closed,followups:score.followups,
+    open:score.open,previous:score.items.length,history:score.items.map(item=>item.row),
+    recovery:score.recovery,raw:score.raw,excluded:score.excluded};
+}
 function requestTypeLabel(v){return v==='REACTIVACION_VEHICULO'?'Activación de vehículo':v==='RENOVACION_QR'?'Renovación de QR':v==='PERMANENCIA_PROLONGADA'?'Permanencia prolongada':v}
 const PAGE_SIZE=20;
 function shortDateTime(v){if(!v)return '—';const x=String(v);const d=x.slice(0,10),t=x.length>=16?x.slice(11,16):'';return `${dateEs(d)}${t?' '+t:''}`}
@@ -2164,7 +2388,17 @@ async function init(){if(new URLSearchParams(location.search).get('resetPassword
     const data=await call('bootstrap');state.user=data.user;state.cache.bootstrap=data;applyParkingSettings(data.settings);
     if(publicState?.maintenance?.enabled&&!state.user?.IsRoot)return renderMaintenanceScreen(publicState);
     state.activeRole=activeUiRole();shell();
-    if(INITIAL_TOKEN&&activeUiRole()==='CONTROL'){state.view='control';rememberCurrentView('control');renderNav();control(INITIAL_TOKEN)}
+    const deep=new URLSearchParams(location.search);
+    const incident=deep.get('openIncident'),request=deep.get('openRequest');
+    if(activeUiRole()==='ADMIN'&&incident&&/^[a-f0-9-]{36}$/i.test(incident)){
+      state.cache.incidentFocus=incident;go('incidents');
+    }else if(activeUiRole()==='ADMIN'&&request&&/^[a-f0-9-]{36}$/i.test(request)){
+      state.cache.requestFocus=request;go('requests');
+    }else if(activeUiRole()==='PROPIETARIO'&&incident&&/^[a-f0-9-]{36}$/i.test(incident)){
+      state.cache.ownerNavPreset={view:'ownerIncidents',incidentId:incident};go('ownerIncidents');
+    }else if(activeUiRole()==='PROPIETARIO'&&request&&/^[a-f0-9-]{36}$/i.test(request)){
+      state.cache.ownerNavPreset={view:'ownerRequests',requestId:request};go('ownerRequests');
+    }else if(INITIAL_TOKEN&&activeUiRole()==='CONTROL'){state.view='control';rememberCurrentView('control');renderNav();control(INITIAL_TOKEN)}
     else go(restoredStartView());
   }catch(e){login(e.message)}
 }
@@ -2469,7 +2703,17 @@ function login(message=''){
 
         shell();
 
-        if(
+        const deep=new URLSearchParams(location.search);
+        const incident=deep.get('openIncident'),request=deep.get('openRequest');
+        if(activeUiRole()==='ADMIN'&&incident&&/^[a-f0-9-]{36}$/i.test(incident)){
+          state.cache.incidentFocus=incident;go('incidents');
+        }else if(activeUiRole()==='ADMIN'&&request&&/^[a-f0-9-]{36}$/i.test(request)){
+          state.cache.requestFocus=request;go('requests');
+        }else if(activeUiRole()==='PROPIETARIO'&&incident&&/^[a-f0-9-]{36}$/i.test(incident)){
+          state.cache.ownerNavPreset={view:'ownerIncidents',incidentId:incident};go('ownerIncidents');
+        }else if(activeUiRole()==='PROPIETARIO'&&request&&/^[a-f0-9-]{36}$/i.test(request)){
+          state.cache.ownerNavPreset={view:'ownerRequests',requestId:request};go('ownerRequests');
+        }else if(
           INITIAL_TOKEN &&
           activeUiRole()==='CONTROL'
         ){
@@ -3527,9 +3771,28 @@ async function quickVehicleState(v,newState,backFn){const impact=[newState==='Su
 async function housingDetailView(id){
   renderLoading('housing');
   try{
-    const d=await call('housingDetail',{id}),h=d.housing,o=d.owner||{},vs=d.vehicles||[],incs=d.incidents||[],reqs=d.requests||[];
+    const d=await call('housingDetail',{id}),h=d.housing,o=d.owner||{},vs=d.vehicles||[],incs=d.incidents||[],reqs=d.requests||[];if(d.complianceRules)parkingComplianceSetRules(d.complianceRules);
     const openInc=incs.filter(x=>(x.Estado||'Abierta')!=='Cerrada');
     const pendingReq=reqs.filter(x=>x.Estado==='Abierta');
+    const ownerIncs=d.ownerIncidents||[];
+    const homeScore=parkingScore(incs),ownerScore=h.ResponsableUserId?parkingScore(ownerIncs):null;
+    const now=Date.now(),withinDays=(x,n)=>{const t=Date.parse(x.FechaHora||'');return Number.isFinite(t)&&t<=now&&t>=now-n*86400000};
+    const historic=(items,openTest)=>({
+      total:items.length,
+      open:items.filter(openTest).length,
+      last30:items.filter(x=>withinDays(x,30)).length,
+      last90:items.filter(x=>withinDays(x,90)).length,
+      last365:items.filter(x=>withinDays(x,365)).length
+    });
+    const houseStats=historic(incs,x=>x.Estado!=='Cerrada');
+    const ownerStats=historic(ownerIncs,x=>x.Estado!=='Cerrada');
+    const historicRequests=reqs.filter(x=>!['Abierta','Pendiente'].includes(x.Estado));
+    const incidentHistory=incs.slice().sort((a,b)=>Date.parse(b.FechaHora||0)-Date.parse(a.FechaHora||0));
+    const requestHistory=reqs.slice().sort((a,b)=>Date.parse(b.FechaHora||0)-Date.parse(a.FechaHora||0));
+    const typeCounts=items=>Object.entries(items.reduce((memo,x)=>{const key=x.Tipo||'Otro';memo[key]=(memo[key]||0)+1;return memo},{})).sort((a,b)=>b[1]-a[1]);
+    const typeList=items=>typeCounts(items).map(([name,count])=>`<li>${esc(name)}: <b>${count}</b></li>`).join('')||'<li>Sin incidencias atribuidas.</li>';
+    const incidentTable=incidentHistory.map(x=>`<tr><td>${esc(shortDateTime(x.FechaHora))}</td><td>${esc(x.Tipo)}</td><td>${esc(x.MatriculaInfraccion||x.MatriculaObservada||'—')}</td><td>${esc(x.Prioridad||'Normal')}</td><td>${esc(x.Estado)}</td><td><button type="button" class="secondary hd-incident" data-id="${esc(x.ID_Incidencia)}">Ver</button></td></tr>`).join('');
+    const requestTable=requestHistory.map(x=>`<tr><td>${esc(shortDateTime(x.FechaHora))}</td><td>${esc(requestTypeLabel(x.Tipo))}</td><td>${esc(x.MatriculaHabitual||'—')}</td><td>${esc(x.Estado)}</td><td><button type="button" class="secondary hd-request" data-id="${esc(x.ID_Solicitud)}">Ver</button></td></tr>`).join('');
     const tmp=vs.filter(v=>v.PeriodoTemporalActual);
     const activeSlots=vs.filter(v=>v.Estado==='Activo'&&v.Tipo!=='Moto'&&['1','2'].includes(String(v.Slot||'')));
     const motos=vs.filter(v=>v.Estado==='Activo'&&v.Tipo==='Moto');
@@ -3548,14 +3811,34 @@ async function housingDetailView(id){
       </div></section>
       <section class="card housing-detail-card"><div class="head"><h2>Vivienda y propietario</h2></div><div class="details">
         <div><small>Vivienda</small>${esc(housingShort(h))}</div><div><small>Estado</small>${esc(h.Estado||'—')}</div><div><small>Responsable</small>${esc(o.Nombre||'Sin responsable')}</div><div><small>Email</small>${esc(o.Email||h.Responsable||'—')}</div>
-      </div><div class="actions" style="margin-top:1rem"><button class="secondary" id="hd-open-vehicles">Abrir vehículos de esta vivienda</button></div></section>`;
+      </div><div class="actions" style="margin-top:1rem"><button class="secondary" id="hd-open-vehicles">Abrir vehículos de esta vivienda</button></div></section>
+      <section class="summary-section"><div class="head"><h2>Índice de cumplimiento</h2></div><div class="summary-grid">
+${card(homeScore.score+"/100","Puntuación vivienda",homeScore.open+" abiertas · "+homeScore.closed+" cerradas con actuación · "+homeScore.followups+" seguimientos")}
+${card(ownerScore?ownerScore.score+"/100":"Sin datos","Puntuación propietario",ownerScore?ownerScore.open+" abiertas · "+ownerScore.closed+" cerradas con actuación · "+ownerScore.followups+" seguimientos":"Sin atribución verificada")}
+</div></section>
+<section class="summary-section"><div class="head"><h2>Historial y reincidencias</h2></div><div class="summary-grid">
+        ${card(houseStats.total,'Incidencias históricas',`${houseStats.open} abiertas · ${houseStats.total-houseStats.open} cerradas`,'history-incidents')}
+        ${card(houseStats.last30,'Últimos 30 días',`${houseStats.last90} en 90 días · ${houseStats.last365} en 365 días`,'history-incidents')}
+        ${card(ownerStats.total,'Por propietario (histórico)',`${ownerStats.last365} en 365 días · ${ownerStats.open} abiertas`,'owner-history')}
+        ${card(reqs.length,'Solicitudes históricas',`${pendingReq.length} abiertas · ${historicRequests.length} resueltas`,'history-requests')}
+      </div></section>
+      <section class="card housing-detail-card"><div class="head"><h2>Reincidencias registradas</h2></div><div class="details">
+        <div><small>Por vivienda</small><b>${houseStats.total} incidencias</b><ul>${typeList(incs)}</ul></div>
+        <div><small>Por propietario responsable al hecho</small><b>${ownerStats.total} incidencias</b><ul>${typeList(ownerIncs)}</ul></div>
+      </div><p class="subtle">Estos recuentos no constituyen penalizaciones automáticas. Las incidencias históricas sin atribución verificada no se imputan al propietario actual.</p></section>
+      <section class="card housing-detail-card"><div class="head"><h2>Historial completo de incidencias</h2></div><div class="tablebox compact-table"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Matrícula</th><th>Prioridad</th><th>Estado</th><th>Acción</th></tr></thead><tbody>${incidentTable||'<tr><td colspan="6">Sin incidencias.</td></tr>'}</tbody></table></div></section>
+      <section class="card housing-detail-card"><div class="head"><h2>Historial completo de solicitudes</h2></div><div class="tablebox compact-table"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Matrícula</th><th>Estado</th><th>Acción</th></tr></thead><tbody>${requestTable||'<tr><td colspan="5">Sin solicitudes.</td></tr>'}</tbody></table></div></section>`;
     const openVehicles=()=>{state.cache.tablePreset={kind:'vehicles',filters:{__Vivienda:h.ID_Vivienda}};go('vehicles')};
     $('#hd-back').onclick=()=>go('housing');
     $('#hd-add').onclick=openVehicles;
     $('#hd-open-vehicles').onclick=openVehicles;
+    document.querySelectorAll('.hd-incident').forEach(b=>b.onclick=()=>{state.cache.incidentFocus=b.dataset.id;go('incidents')});
+    document.querySelectorAll('.hd-request').forEach(b=>b.onclick=()=>{state.cache.requestFocus=b.dataset.id;go('requests')});
     document.querySelectorAll('[data-hd-action]').forEach(el=>el.onclick=()=>{
       const a=el.dataset.hdAction;
       if(a==='vehicles'){openVehicles();return}
+      if(a==='history-incidents'||a==='owner-history'){state.cache.incidentPreset={housingId:a==='history-incidents'?h.ID_Vivienda:'',ownerId:a==='owner-history'?h.ResponsableUserId:'',status:''};go('incidents');return}
+      if(a==='history-requests'){state.cache.requestPreset={housingId:h.ID_Vivienda,status:''};go('requests');return}
       if(a==='incidents'){state.cache.incidentPreset={housingId:h.ID_Vivienda,status:'Abierta'};go('incidents');return}
       if(a==='requests'){state.cache.requestPreset={housingId:h.ID_Vivienda,status:'Abierta'};go('requests');return}
       if(a==='slot1'||a==='slot2'){const v=slot(a==='slot1'?1:2);if(v){state.cache.tablePreset={kind:'vehicles',filters:{__Vivienda:h.ID_Vivienda},search:v.MatriculaHabitual||''};go('vehicles')}}
@@ -3638,10 +3921,12 @@ async function configurationView(initialTab='identity'){
     const systemAccess=canViewSystem();
     if(!editable)initialTab='data';
     if(initialTab==='system'&&!systemAccess)initialTab=editable?'identity':'data';
+    if(initialTab==='compliance'&&!editable)initialTab='data';
     const s=editable?await call('getSettings'):appSettings();
     $('#main').innerHTML=`<div class="head"><div><div class="eyebrow">CONFIGURACIÓN</div><h1>Configuración</h1><div class="muted">${systemAccess?'Identidad, carga inicial de datos y estado técnico del sistema.':editable?'Identidad y carga inicial de viviendas y propietarios.':'Carga inicial de viviendas y propietarios.'}</div></div></div>
       <div class="config-tabs" role="tablist" aria-label="Configuración">
         ${editable?'<button type="button" class="config-tab" data-config-tab="identity">Identidad</button>':''}
+        ${editable?'<button type="button" class="config-tab" data-config-tab="compliance">Índice de Cumplimiento</button>':''}
         <button type="button" class="config-tab" data-config-tab="data">Datos</button>
         ${systemAccess?'<button type="button" class="config-tab" data-config-tab="system">Sistema</button>':''}
       </div>
@@ -3680,6 +3965,35 @@ async function configurationView(initialTab='identity'){
       panel.innerHTML=`<section class="card"><div class="system-status-head"><div><h2>Importación de viviendas y propietarios</h2><p class="muted">Carga inicial o actualización controlada de viviendas, propietarios y correos. La importación siempre muestra una previsualización antes de aplicar cambios.</p></div></div><div class="actions"><button type="button" class="secondary" id="owner-template-config">Plantilla viviendas/propietarios</button><button type="button" id="owner-import-config">Importar viviendas/propietarios</button></div><p class="muted" style="margin-top:.8rem">La plantilla puede utilizar viviendas existentes o crear las que falten si activas esa opción durante la importación. Los cambios se registran en Auditoría.</p></section><div id="editor"></div>`;
       $('#owner-template-config').onclick=downloadOwnerImportTemplate;
       $('#owner-import-config').onclick=openOwnerImporter;
+    }
+
+    async function renderCompliance(){
+      if(!editable)return renderData();
+      setActive('compliance');
+      const current=await call('getComplianceRules');
+      const rules=parkingComplianceSetRules(current);
+      const fields=[
+        ['open_normal','Abierta · Normal'],['open_attention','Abierta · Atención'],['open_high','Abierta · Alta'],['open_critical','Abierta · Crítica'],
+        ['closed_normal','Cerrada confirmada · Normal'],['closed_attention','Cerrada confirmada · Atención'],['closed_high','Cerrada confirmada · Alta'],['closed_critical','Cerrada confirmada · Crítica'],
+        ['followup_normal','Seguimiento · Normal'],['followup_attention','Seguimiento · Atención'],['followup_high','Seguimiento · Alta'],['followup_critical','Seguimiento · Crítica']
+      ];
+      const numeric=(key,label,min,max)=>`<div class="field"><label>${esc(label)}</label><input type="number" name="${esc(key)}" min="${min}" max="${max}" value="${esc(rules[key])}" required></div>`;
+      panel.innerHTML=`<form id="compliance-rules-form" class="settings-layout compliance-settings">
+        <section class="card settings-main"><div class="head"><div><h2>Índice de Cumplimiento</h2><p class="muted">Reglas compartidas por Incidencias, Solicitudes, vivienda y propietario. Versión activa: <b>v${esc(rules.version||0)}</b>.</p></div><span class="system-pill ok">0–100</span></div>
+          <p class="message">Las solicitudes no descuentan puntos. La prioridad inicial determina el descuento base; los seguimientos usan la prioridad alcanzada, evitando volver a aplicar la repetición sobre el descuento base. Al cerrar se congela la versión y el descuento del expediente.</p>
+          <h3>Descuentos por expediente</h3><div class="form compliance-weight-grid">${fields.map(([key,label])=>numeric(key,label,0,100)).join('')}</div>
+          <h3>Límites y ventana</h3><div class="form">${numeric('max_followups','Seguimientos computables por expediente',0,20)}${numeric('window_days','Ventana de cálculo (días)',30,3650)}</div>
+          <h3>Recuperación sin nuevas detecciones</h3><div class="form">${numeric('recovery_1_days','Primer hito (días)',1,3650)}${numeric('recovery_1_points','Puntos del primer hito',0,100)}${numeric('recovery_2_days','Segundo hito (días)',2,3650)}${numeric('recovery_2_points','Puntos del segundo hito',0,100)}${numeric('recovery_3_days','Tercer hito (días)',3,3650)}${numeric('recovery_3_points','Puntos del tercer hito',0,100)}${numeric('recovery_extra_every_days','Intervalo adicional (días)',1,3650)}${numeric('recovery_extra_points','Puntos por intervalo adicional',0,100)}${numeric('recovery_cap_points','Máximo recuperable',0,100)}</div>
+          <div class="field wide"><label>Motivo del cambio</label><textarea name="reason" minlength="8" maxlength="500" required placeholder="Explica por qué se modifica la regla y quién lo autorizó"></textarea></div>
+        </section>
+        <aside class="settings-side"><section class="card"><h2>Vista previa</h2><p class="muted">La simulación no escribe en la base de datos.</p><div id="compliance-rule-preview"></div></section><section class="card"><h2>Trazabilidad</h2><p><b>Versión actual:</b> v${esc(rules.version||0)}</p><p><b>Motivo:</b> ${esc(rules.reason||'Reglas iniciales')}</p><p><b>Creada:</b> ${rules.created_at?esc(shortDateTime(rules.created_at)):'—'}</p><p class="subtle">Cada guardado crea una versión nueva y una entrada de Auditoría. No existen ajustes manuales de puntuación.</p></section></aside>
+        <div class="settings-save"><button type="submit">Guardar nueva versión</button></div>
+      </form>`;
+      const form=$('#compliance-rules-form'),preview=$('#compliance-rule-preview');
+      const values=()=>{const data=Object.fromEntries(new FormData(form));const out={};Object.keys(PARKING_COMPLIANCE_DEFAULTS).forEach(key=>out[key]=Number(data[key]));return parkingComplianceRules(out)};
+      const renderPreview=()=>{const proposed=values(),sample=[{ID_Incidencia:'preview',ID_Evento:'preview',FechaHora:new Date().toISOString(),Estado:'Abierta',PrioridadInicial:'Normal',Prioridad:'Alta',Intentos:5,Tipo:'Ejemplo'}],open=parkingScore(sample,{rules:proposed}),closed=parkingScore(sample,{rules:proposed,closeId:'preview',action:'Aviso al propietario'}),excluded=parkingScore(sample,{rules:proposed,closeId:'preview',action:'Sin actuación'});preview.innerHTML=`<div class="summary-grid"><article class="summary-card"><b>${open.score}/100</b><span>Abierta con 5 intentos</span><small>−${open.raw} puntos</small></article><article class="summary-card"><b>${closed.score}/100</b><span>Cierre confirmado</span><small>−${closed.raw} puntos</small></article><article class="summary-card"><b>${excluded.score}/100</b><span>Cierre infundado/sin actuación</span><small>0 puntos</small></article></div><p class="subtle">Ejemplo: prioridad inicial Normal, prioridad alcanzada Alta y cuatro seguimientos. Resultado actual → resultante sin persistir cambios.</p>`};
+      form.addEventListener('input',renderPreview);renderPreview();
+      form.onsubmit=async event=>{event.preventDefault();const button=event.submitter;busy(button);try{const data=Object.fromEntries(new FormData(form));const saved=await call('saveComplianceRules',{rules:values(),reason:data.reason});parkingComplianceSetRules(saved);toast(`Reglas guardadas como versión ${saved.version}.`);await renderCompliance()}catch(error){toast(error.message||String(error),true);busy(button,false)}};
     }
 
     async function renderSystem(){
@@ -3996,8 +4310,8 @@ async function configurationView(initialTab='identity'){
       }
       loadStatus();
     }
-    tabs.forEach(b=>b.onclick=()=>{const tab=b.dataset.configTab;if(tab==='system')return renderSystem();if(tab==='data')return renderData();return renderIdentity()});
-    if(initialTab==='system')await renderSystem();else if(initialTab==='data')await renderData();else await renderIdentity();
+    tabs.forEach(b=>b.onclick=()=>{const tab=b.dataset.configTab;if(tab==='system')return renderSystem();if(tab==='compliance')return renderCompliance();if(tab==='data')return renderData();return renderIdentity()});
+    if(initialTab==='system')await renderSystem();else if(initialTab==='compliance')await renderCompliance();else if(initialTab==='data')await renderData();else await renderIdentity();
   }catch(e){err(e)}
 }
 async function control(token=''){
@@ -4086,33 +4400,223 @@ function requestIsOpenClient(row){return ['Abierta','Pendiente'].includes(String
 function requestDisplayState(row){return requestIsOpenClient(row)?'Abierta':String(row?.Estado||'')}
 function requestMatchesState(row,state){return !state||(state==='Abierta'?requestIsOpenClient(row):String(row?.Estado||'')===state)}
 
+// Vista contextual de Solicitudes. Sin cambios en las acciones ni en los datos almacenados.
+function parkingRequestStructuredDetails(row,part='all'){
+  const r=row||{},renewal=r.Tipo==='RENOVACION_QR',activation=r.Tipo==='REACTIVACION_VEHICULO',stay=r.Tipo==='PERMANENCIA_PROLONGADA';
+  const moto=r.TipoVehiculo==='Moto'||r.TipoVehiculoOrigen==='Moto';
+  const field=(name,value,{applicable=true}={})=>{
+    const hasValue=value!==null&&value!==undefined&&String(value).trim()!=='';
+    const shown=!applicable?'No aplica':hasValue?String(value):'No informado';
+    return `<div><small>${esc(name)}</small><b${name==='Expediente'&&r.ID_Solicitud?` title="${esc(r.ID_Solicitud)}"`:''}>${esc(shown)}</b></div>`;
+  };
+  const group=(heading,fields)=>`<section class="request-case-section parking-case-section">
+    <h4>${esc(heading)}</h4><div class="details incident-primary-grid">${fields.join('')}</div></section>`;
+  const dwelling=[r.Bloque,r.Planta,r.Apartamento].filter(x=>x!==null&&x!==undefined&&String(x).trim()).join(' · ');
+  const base=`<details class="parking-case-section parking-case-extra"><summary>Identificación de la solicitud</summary>
+    <div class="details incident-primary-grid">${[
+      field('Solicitante',r.NombreSolicitante||r.Usuario),
+      field('Vivienda',dwelling||null),
+      field('Matrícula',requestDossierPlate(r)==='SIN MATRÍCULA'?null:requestDossierPlate(r)),
+      field('Fecha de solicitud',r.FechaHora?shortDateTime(r.FechaHora):null)
+    ].join('')}</div></details>`;
+  const vehicle=group('Estado actual del vehículo',[
+    field('Tipo de vehículo',moto?'Moto':r.TipoVehiculo||r.TipoVehiculoOrigen),
+    field('Estado actual',r.EstadoVehiculo),
+    ...(!moto&&renewal?[field('QR actual',r.EstadoQR)]:[]),
+    ...(!moto&&(activation||renewal)&&r.SlotActual?[field('Slot actual',r.SlotActual)]:[])
+  ])+`<details class="parking-case-section parking-case-extra"><summary>Datos originales al solicitar</summary>
+    <div class="details incident-primary-grid">${[
+      field('Estado al solicitar',r.EstadoVehiculoOrigen),
+      ...(!moto&&renewal?[field('QR al solicitar',r.QREstadoOrigen)]:[]),
+      ...(!moto&&activation?[field('Slot al solicitar',r.SlotOrigen)]:[])
+    ].join('')}</div></details>`;
+  const period=stay?group('Periodo de permanencia solicitado',[
+    field('Inicio',r.FechaInicio?dateEs(r.FechaInicio):null),field('Fin previsto',r.FechaFin?dateEs(r.FechaFin):null)
+  ]):'';
+  const noVehicleData=!r.EstadoVehiculoOrigen&&!r.EstadoVehiculo;
+  const note=noVehicleData?'<p class="muted" style="margin:.4rem 0">Los estados no están informados en este expediente. No se interpretan como estados inactivos.</p>':'';
+  const reason=group('Motivo y observaciones',[
+    field('Motivo declarado',r.Motivo),
+    ...(r.Observaciones?[field('Observaciones',r.Observaciones)]:[])
+  ]);
+  const resolution=!requestIsOpenClient(r)?group('Resolución y trazabilidad',[
+    field('Decisión',requestDisplayState(r)),field('Fecha de resolución',r.FechaResolucion?shortDateTime(r.FechaResolucion):null),
+    field('Resuelta por',r.NombreResolucion||r.UsuarioResolucion),
+    field('Observaciones de resolución',r.ObservacionesResolucion)
+  ]):'';
+  if(part==='main')return base+reason+period;
+  if(part==='side')return vehicle+note+resolution;
+  return base+vehicle+note+period+reason+resolution;
+}
+function parkingRequestRelatedContext(row,requestsRows,ownerId){
+  const owner=ownerId||row.ID_PropietarioAlHecho||'';
+  const related=(requestsRows||[]).filter(r=>r.ID_Solicitud!==row.ID_Solicitud&&(
+    (owner&&r.ID_PropietarioAlHecho===owner)||(row.ID_Vivienda&&r.ID_Vivienda===row.ID_Vivienda)
+  )).sort((a,b)=>(Date.parse(b.FechaResolucion||b.FechaHora||0)||0)-(Date.parse(a.FechaResolucion||a.FechaHora||0)||0));
+  const sameHome=related.filter(r=>r.ID_Vivienda===row.ID_Vivienda).length;
+  const otherHomes=owner?related.filter(r=>r.ID_Vivienda!==row.ID_Vivienda&&r.ID_PropietarioAlHecho===owner).length:0;
+  const items=related.slice(0,8).map(r=>`<li>${esc(shortDateTime(r.FechaHora))} · ${esc(requestTypeLabel(r.Tipo))} · ${esc(requestDisplayState(r))}${r.ID_Vivienda!==row.ID_Vivienda?' · otra vivienda':''}</li>`).join('');
+  return `<section class="card request-case-section" style="margin:1rem 0"><h3>Historial de solicitudes relacionadas</h3>
+    <p class="muted">${sameHome} de esta vivienda${owner?` · ${otherHomes} de otras viviendas del propietario`:''}. Las solicitudes no restan puntos al índice.</p>
+    <details><summary>Consultar historial de solicitudes (${related.length})</summary>${items?`<ul>${items}</ul>`:'<p class="muted">Sin otras solicitudes relacionadas.</p>'}${related.length>8?'<p class="muted">Mostrando las 8 más recientes.</p>':''}</details>
+  </section>`;
+}
+
+// Resolución guiada: presentación solamente. No cambia ni estado ni contrato de RPC.
+function parkingRequestResolutionDialog(row, decision, effect){
+  return new Promise(resolve=>{
+    const dialog=document.createElement('dialog');
+    dialog.className='parking-request-resolution-dialog';
+    dialog.setAttribute('aria-label','Confirmar resolución de solicitud');
+    dialog.style.cssText='border:1px solid var(--border,#ccd5dd);border-radius:16px;padding:0;max-width:min(560px,calc(100vw - 32px));width:100%;box-shadow:0 22px 70px #0005;';
+    const plate=requestDossierPlate(row);
+    const heading=decision==='Aprobada'?'Aprobar solicitud':'Rechazar solicitud';
+    const names=decision==='Aprobada'?'Confirmar aprobación':'Confirmar rechazo';
+    const warning=decision==='Aprobada'?effect:'Se rechazará la solicitud sin modificar el vehículo.';
+    dialog.innerHTML=`<form method="dialog" style="padding:1.25rem;display:grid;gap:1rem;">
+      <div><div class="eyebrow">RESOLUCIÓN DE SOLICITUD</div><h3 style="margin:.25rem 0">${esc(heading)}</h3><div class="muted">${esc(requestTypeLabel(row.Tipo))} · ${esc(plate)}</div></div>
+      <div class="details incident-primary-grid"><div><small>Vivienda</small><b>${esc(`Bloque ${row.Bloque||'—'}, ${row.Planta||''} ${row.Apartamento||''}`)}</b></div><div><small>Solicitante</small><b>${esc(row.NombreSolicitante||row.Usuario||'No informado')}</b></div><div><small>Estado actual</small><b>${esc(requestDisplayState(row))}</b></div><div><small>Fecha de solicitud</small><b>${esc(shortDateTime(row.FechaHora))}</b></div></div>
+      ${row.Motivo?`<div><small>Motivo declarado</small><p style="margin:.25rem 0">${esc(row.Motivo)}</p></div>`:''}
+      <div class="message"><b>Efecto de la decisión</b><p style="margin:.35rem 0 0">${esc(warning)}</p></div>
+      <div class="field"><label for="request-resolution-notes">Observaciones de resolución (opcionales)</label><textarea id="request-resolution-notes" rows="3" placeholder="Justificación, comprobaciones o información para el historial..."></textarea></div>
+      <div class="muted" style="font-size:.85em">El responsable y la fecha de resolución se registran automáticamente. Esta acción conserva el flujo y los efectos actuales.</div>
+      <div class="actions" style="display:flex;gap:.6rem;justify-content:flex-end;flex-wrap:wrap"><button type="button" class="secondary" data-request-cancel>Cancelar</button><button type="submit" value="confirm">${esc(names)}</button></div>
+    </form>`;
+    let settled=false;
+    const finish=answer=>{if(settled)return;settled=true;dialog.close();dialog.remove();resolve(answer)};
+    dialog.querySelector('[data-request-cancel]').onclick=()=>finish(null);
+    dialog.addEventListener('cancel',e=>{e.preventDefault();finish(null)});
+    dialog.querySelector('form').addEventListener('submit',e=>{e.preventDefault();finish(dialog.querySelector('#request-resolution-notes').value.trim())});
+    document.body.appendChild(dialog);
+    if(typeof dialog.showModal==='function')dialog.showModal();else {dialog.setAttribute('open','');dialog.style.position='fixed';dialog.style.top='12vh';dialog.style.left='50%';dialog.style.transform='translateX(-50%)';dialog.style.zIndex='9999'}
+    dialog.querySelector('#request-resolution-notes').focus();
+  });
+}
+
 async function requests(openId=''){
   try{
     const focusId=openId||state.cache.requestFocus||'';delete state.cache.requestFocus;
     const navPreset=state.cache.requestPreset||null;delete state.cache.requestPreset;
     const forcedView=state.cache.requestViewMode||'';delete state.cache.requestViewMode;
     const dossierFocus=state.cache.requestDossierFocus||'';delete state.cache.requestDossierFocus;
-    const rows=await call('listRequests');const ui=viewUiState('requests');let page=ui.page||1,sortKey=ui.sortKey||'FechaHora',sortDir=ui.sortDir||'desc',viewMode=(forcedView==='dossiers'||dossierFocus)?'dossiers':(forcedView==='list'?'list':(ui.viewMode==='list'?'list':'dossiers'));
-    const rowsForDossier=key=>rows.filter(r=>requestDossierKey(r)===key).sort((a,b)=>requestActivityTs(b)-requestActivityTs(a));
-    $('#main').innerHTML=`<div class="head requests-head"><div><h1>Solicitudes</h1><div class="muted">Bandeja de gestión agrupada por vehículo o matrícula. Expedientes y lista comparten los mismos filtros.</div></div>${exportButtonsHtml('requests-export')}</div><div id="request-detail"></div><div id="request-dossier"></div><div class="request-overview" id="request-overview"><div class="card request-stat-card"><span>Solicitudes abiertas</span><b id="req-stat-open">0</b><small>Solicitudes por resolver</small></div><div class="card request-stat-card"><span>Expedientes abiertos</span><b id="req-stat-dossiers">0</b><small>Vehículos o matrículas con solicitudes abiertas</small></div><div class="card request-stat-card"><span>Viviendas afectadas</span><b id="req-stat-housing">0</b><small>Con solicitudes abiertas</small></div><div class="card request-stat-card"><span>Solicitudes resueltas</span><b id="req-stat-resolved">0</b><small>Aprobadas o rechazadas</small></div></div><div class="mobile-filter-toggle-wrap">
+    const [rows,incidentResponse]=await Promise.all([call('listRequests'),call('listIncidentsPayload')]);const incidentRows=Array.isArray(incidentResponse)?incidentResponse:(incidentResponse?.rows||[]);if(incidentResponse?.complianceRules)parkingComplianceSetRules(incidentResponse.complianceRules);const ui=viewUiState('requests');let page=ui.page||1,sortKey=ui.sortKey||'FechaHora',sortDir=ui.sortDir||'desc',viewMode=(forcedView==='dossiers'||dossierFocus)?'dossiers':(forcedView==='list'?'list':(ui.viewMode==='list'?'list':'dossiers'));
+    let groupByHousing=ui.groupMode?ui.groupMode==='housing':ui.groupByHousing!==false,groupByOwner=ui.groupMode==='owner';
+    const requestOwnerLabel=r=>r.NombrePropietarioAlHecho||'Propietario sin atribución verificada';
+    const dossierKeyFor=r=>groupByOwner?(r.ID_PropietarioAlHecho?`owner:${r.ID_PropietarioAlHecho}`:`request:${r.ID_Solicitud}`):groupByHousing?`housing:${r.ID_Vivienda||'unassigned'}`:requestDossierKey(r);
+    const rowsForDossier=key=>rows.filter(r=>dossierKeyFor(r)===key).sort((a,b)=>requestActivityTs(b)-requestActivityTs(a));
+    $('#main').innerHTML=`<div class="head requests-head"><div><h1>Solicitudes</h1><div class="muted">Bandeja de gestión agrupada por vivienda o vehículo/matrícula. Expedientes y lista comparten los mismos filtros.</div></div>${exportButtonsHtml('requests-export')}</div><div id="request-detail"></div><div id="request-dossier"></div><div class="request-overview" id="request-overview"><div class="card request-stat-card"><span>Solicitudes abiertas</span><b id="req-stat-open">0</b><small>Solicitudes por resolver</small></div><div class="card request-stat-card"><span>Expedientes abiertos</span><b id="req-stat-dossiers">0</b><small>Vehículos o matrículas con solicitudes abiertas</small></div><div class="card request-stat-card"><span>Viviendas afectadas</span><b id="req-stat-housing">0</b><small>Con solicitudes abiertas</small></div><div class="card request-stat-card"><span>Solicitudes resueltas</span><b id="req-stat-resolved">0</b><small>Aprobadas o rechazadas</small></div></div><div class="mobile-filter-toggle-wrap">
       <button type="button" class="secondary mobile-filter-toggle" id="request-filter-toggle">
         Filtros
       </button>
-    </div><div class="request-viewbar"><div class="request-view-tabs"><button type="button" class="secondary" id="request-view-dossiers">Expedientes</button><button type="button" class="secondary" id="request-view-list">Lista de solicitudes</button></div><span class="count" id="req-count"></span></div><div class="filterbar admin-record-filterbar admin-request-filters"><div class="field filter-search"><label>Buscar</label><input id="req-search" class="search" placeholder="Matrícula, vivienda, solicitante o tipo..."></div>${periodFilterFields('req')}<div class="field"><label>Estado</label><select id="req-state"><option value="Abierta" selected>Abiertas</option><option value="">Todas</option><option>Aprobada</option><option>Rechazada</option></select></div><div class="field"><label>Tipo</label><select id="req-type"><option value="">Todos</option><option value="REACTIVACION_VEHICULO">Activación</option><option value="RENOVACION_QR">Renovación QR</option><option value="PERMANENCIA_PROLONGADA">Permanencia prolongada</option></select></div></div><div id="request-dossier-list" class="request-dossier-list"></div><div id="request-flat-list" class="tablebox compact-table admin-record-tablebox hide"><table class="table responsive-data-table admin-record-table admin-request-table"><thead><tr><th class="sortable-th" data-sort="FechaHora">Fecha</th><th class="sortable-th" data-sort="MatriculaHabitual">Matrícula</th><th class="sortable-th" data-sort="Vivienda">Vivienda</th><th class="sortable-th" data-sort="NombreSolicitante">Solicitante</th><th class="sortable-th" data-sort="Tipo">Tipo</th><th class="sortable-th" data-sort="Estado">Estado</th><th>Acciones</th></tr></thead><tbody id="req-body"></tbody></table><div id="req-empty" class="empty hide">No hay solicitudes.</div></div><div id="req-pager"></div>`
+    </div><div class="request-viewbar incident-viewbar"><div class="request-view-tabs incident-view-tabs"><button type="button" class="secondary" id="request-view-dossiers">Por matrícula</button><button type="button" class="secondary" id="request-view-housing">Por vivienda</button><button type="button" class="secondary" id="request-view-owner">Por propietario</button><button type="button" class="secondary" id="request-view-list">Lista de solicitudes</button></div><span class="count" id="req-count"></span></div><div class="filterbar admin-record-filterbar admin-request-filters"><div class="field filter-search"><label>Buscar</label><input id="req-search" class="search" placeholder="Matrícula, vivienda, solicitante o tipo..."></div>${periodFilterFields('req')}<div class="field"><label>Estado</label><select id="req-state"><option value="Abierta" selected>Abiertas</option><option value="">Todas</option><option>Aprobada</option><option>Rechazada</option></select></div><div class="field"><label>Tipo</label><select id="req-type"><option value="">Todos</option><option value="REACTIVACION_VEHICULO">Activación</option><option value="RENOVACION_QR">Renovación QR</option><option value="PERMANENCIA_PROLONGADA">Permanencia prolongada</option></select></div></div><div id="request-dossier-list" class="request-dossier-list"></div><div id="request-flat-list" class="tablebox compact-table admin-record-tablebox hide"><table class="table responsive-data-table admin-record-table admin-request-table"><thead><tr><th class="sortable-th" data-sort="FechaHora">Fecha</th><th class="sortable-th" data-sort="MatriculaHabitual">Matrícula</th><th class="sortable-th" data-sort="Vivienda">Vivienda</th><th class="sortable-th" data-sort="NombreSolicitante">Solicitante</th><th class="sortable-th" data-sort="Tipo">Tipo</th><th class="sortable-th" data-sort="Estado">Estado</th><th>Acciones</th></tr></thead><tbody id="req-body"></tbody></table><div id="req-empty" class="empty hide">No hay solicitudes.</div></div><div id="req-pager"></div>`
     bindPeriodVisibility('req');
+    const homeOwners=new Map((state.cache.formOptions?.housing||[]).map(x=>[x.ID_Vivienda,x.ResponsableUserId||'']));
+    const requestOwnerId=r=>r.ID_PropietarioAlHecho||homeOwners.get(r.ID_Vivienda)||'';
 
-    const filtered=()=>{const q=$('#req-search').value.trim().toLowerCase(),st=$('#req-state').value,tp=$('#req-type').value,period=$('#req-period').value,from=$('#req-from').value,to=$('#req-to').value,housingId=navPreset?.housingId||'';saveViewUiState('requests',{q,st,tp,period,from,to,page,sortKey,sortDir,viewMode,v:'1.2.13.14-FIX11.25'});const val=(r,k)=>k==='Vivienda'?`Bloque ${r.Bloque}, ${r.Planta} ${r.Apartamento}`:k==='MatriculaHabitual'?requestDossierPlate(r):k==='NombreSolicitante'?(r.NombreSolicitante||r.Usuario||''):k==='Tipo'?requestTypeLabel(r.Tipo):k==='Estado'?requestDisplayState(r):r[k]||'';return rows.filter(r=>(!housingId||r.ID_Vivienda===housingId)&&requestMatchesState(r,st)&&(!tp||r.Tipo===tp)&&periodMatches(r.FechaHora,period,from,to)&&[...Object.values(r),requestDossierPlate(r),`Bloque ${r.Bloque||''}, ${r.Planta||''} ${r.Apartamento||''}`,requestTypeLabel(r.Tipo)].join(' ').toLowerCase().includes(q)).sort((a,b)=>{const c=String(val(a,sortKey)).localeCompare(String(val(b,sortKey)),'es',{numeric:true,sensitivity:'base'});return sortDir==='asc'?c:-c})};
+    const filtered=()=>{const q=$('#req-search').value.trim().toLowerCase(),st=$('#req-state').value,tp=$('#req-type').value,period=$('#req-period').value,from=$('#req-from').value,to=$('#req-to').value,housingId=navPreset?.housingId||'';saveViewUiState('requests',{q,st,tp,period,from,to,page,sortKey,sortDir,viewMode,groupByHousing,groupMode:groupByOwner?'owner':groupByHousing?'housing':'plate',v:'1.2.13.14-FIX11.25'});const val=(r,k)=>k==='Vivienda'?`Bloque ${r.Bloque}, ${r.Planta} ${r.Apartamento}`:k==='MatriculaHabitual'?requestDossierPlate(r):k==='NombreSolicitante'?(r.NombreSolicitante||r.Usuario||''):k==='Tipo'?requestTypeLabel(r.Tipo):k==='Estado'?requestDisplayState(r):r[k]||'';return rows.filter(r=>(!housingId||r.ID_Vivienda===housingId)&&requestMatchesState(r,st)&&(!tp||r.Tipo===tp)&&periodMatches(r.FechaHora,period,from,to)&&[...Object.values(r),requestDossierPlate(r),`Bloque ${r.Bloque||''}, ${r.Planta||''} ${r.Apartamento||''}`,requestTypeLabel(r.Tipo)].join(' ').toLowerCase().includes(q)).sort((a,b)=>{const c=String(val(a,sortKey)).localeCompare(String(val(b,sortKey)),'es',{numeric:true,sensitivity:'base'});return sortDir==='asc'?c:-c})};
 
     const detail=r=>{
       const host=$('#request-detail'),isMoto=r.TipoVehiculo==='Moto',reactivation=r.Tipo==='REACTIVACION_VEHICULO',renewal=r.Tipo==='RENOVACION_QR',longstay=r.Tipo==='PERMANENCIA_PROLONGADA',canApproveReactivation=true;
       const approvalLabel=reactivation?'APROBAR ACTIVACIÓN':renewal?'APROBAR Y RENOVAR QR':longstay?'APROBAR PERMANENCIA':'APROBAR';
-      host.innerHTML=`<section class="card detail-panel"><div class="head"><div><h3>${esc(requestTypeLabel(r.Tipo))} · ${esc(requestDossierPlate(r))}</h3><span class="status ${requestIsOpenClient(r)?'bad':''}">${esc(requestDisplayState(r))}</span></div><button class="secondary" id="req-detail-close">Cerrar</button></div><div class="details"><div><small>Vivienda</small>${esc(`Bloque ${r.Bloque}, ${r.Planta} ${r.Apartamento}`)}</div><div><small>Solicitante</small>${esc(r.NombreSolicitante||r.Usuario)}</div><div><small>Clase / tipo</small>${esc(isMoto?'Moto':r.TipoVehiculo||r.TipoVehiculoOrigen||'Vehículo')}</div><div><small>Estado actual</small>${esc(r.EstadoVehiculo||'—')}</div><div><small>Estado al solicitar</small>${esc(r.EstadoVehiculoOrigen||'—')}</div><div><small>QR actual</small>${esc(isMoto?'No aplica':r.EstadoQR||'—')}</div><div><small>QR al solicitar</small>${esc(isMoto?'No aplica':r.QREstadoOrigen||'—')}</div><div><small>Slot actual</small>${esc(isMoto?'No aplica':r.SlotActual||'—')}</div><div><small>Slot origen</small>${esc(isMoto?'No aplica':r.SlotOrigen||'—')}</div><div><small>Fecha</small>${esc(shortDateTime(r.FechaHora))}</div>${longstay?`<div><small>Inicio</small>${esc(dateEs(r.FechaInicio))}</div><div><small>Fin prevista</small>${esc(dateEs(r.FechaFin))}</div>`:''}</div>${r.Motivo?`<p><b>Motivo:</b> ${esc(r.Motivo)}</p>`:''}${!requestIsOpenClient(r)?`<div class="message"><b>Resolución:</b> ${esc(r.Estado)}<br><b>Comentario:</b> ${esc(r.ObservacionesResolucion||'—')}<br><span class="subtle">${esc(r.Estado==='Aprobada'?'Aprobada':'Rechazada')} por ${esc(r.NombreResolucion||r.UsuarioResolucion||'—')} · ${esc(shortDateTime(r.FechaResolucion))}</span></div>`:''}${requestIsOpenClient(r)?`<div class="message">${reactivation?(isMoto?'La moto quedará activa y seguirá controlándose por matrícula.':'El vehículo quedará Desasignado, registrado sin slot. Después el propietario podrá asignar uno desde Mis vehículos.'):renewal?'Al aprobar, el QR anterior quedará invalidado y se generará uno nuevo.':longstay?'Al aprobar, Control verá este vehículo como permanencia autorizada durante las fechas solicitadas.':'Se aprobará la solicitud.'}</div><div class="actions"><button id="req-detail-approve" ${!canApproveReactivation?'disabled':''}>${approvalLabel}</button><button class="secondary" id="req-detail-reject">RECHAZAR SOLICITUD</button></div>`:''}</section>`;
+      host.innerHTML=`<section class="card detail-panel incident-detail-v2 parking-official-case parking-case-v4">
+        <style>
+/* parking-real-ux-v4: styles scoped to the administrative case, not the whole application */
+.parking-case-v4{--case-green:#155e4c;--case-ink:#19352e;--case-line:#e1e9e5;--case-muted:#61756f;padding:0!important;overflow:hidden;background:#fbfcfb!important}
+.parking-case-v4 .parking-case-hero{background:linear-gradient(115deg,#145846,#237c62);padding:23px 25px 21px;color:#fff;display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.parking-case-v4 .parking-case-hero small,.parking-case-v4 .parking-case-hero .eyebrow{color:#cceadf!important;font-size:10px;letter-spacing:.095em;font-weight:750}
+.parking-case-v4 .parking-case-hero h3{color:#fff!important;font-size:21px!important;line-height:1.25;margin:8px 0 10px!important}
+.parking-case-v4 .parking-case-hero .status{display:inline-block;background:#effbf4;color:#1c644d;border-radius:6px;padding:4px 9px;font-size:12px}
+.parking-case-v4 .parking-case-hero .incident-priority{background:#fff2d1;color:#684800;padding:4px 9px;border-radius:6px}
+.parking-case-v4 .parking-case-hero .incident-header-status{display:flex;flex-wrap:wrap;align-items:center;gap:9px;color:#e1f6ed;font-size:12px}
+.parking-case-v4 .parking-case-hero .actions,.parking-case-v4 .parking-case-hero .parking-case-hero-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.parking-case-v4 .parking-case-hero button{background:#e7f5ef!important;border-color:transparent!important;color:#145846!important;white-space:nowrap}
+.parking-case-v4 .parking-case-hero button:not(.secondary){background:#fff!important;color:#114c3a!important}
+.parking-case-v4 .parking-case-hero .parking-case-hero-title{min-width:0}
+.parking-case-v4 .parking-case-hero .parking-case-hero-code{font-size:11px;color:#ddf4e9;margin-top:7px;overflow-wrap:anywhere}
+.parking-case-v4 .parking-case-inner{padding:23px;display:grid;gap:16px}
+.parking-case-v4 .parking-case-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.parking-case-v4 .parking-case-overview>div{background:#edf6f1;border:1px solid #d7e9e0;border-radius:10px;padding:11px 13px;min-width:0}
+.parking-case-v4 .parking-case-overview small{display:block;color:#628175;font-size:10px;margin-bottom:4px}
+.parking-case-v4 .parking-case-overview b{color:#123d2f;font-size:13px;overflow-wrap:anywhere}
+.parking-case-v4 .parking-case-columns{display:grid;grid-template-columns:minmax(0,1.26fr) minmax(0,.94fr);gap:16px;align-items:start}
+.parking-case-v4 .parking-case-column{min-width:0;display:grid;gap:15px;align-content:start}
+.parking-case-v4 .parking-case-section{border:1px solid var(--case-line);background:white;border-radius:12px;padding:16px;min-width:0;margin:0!important}
+.parking-case-v4 .parking-case-section>h4,.parking-case-v4 .parking-case-section .incident-section-title h4{color:var(--case-ink);font-weight:750;font-size:13px;margin:0 0 12px!important}
+.parking-case-v4 .parking-case-section .incident-section-title{margin:0 0 10px}
+.parking-case-v4 .parking-case-section .details,.parking-case-v4 .parking-case-section .incident-primary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.parking-case-v4 .parking-case-section .details>div,.parking-case-v4 .parking-case-section .incident-primary-grid>div{background:#f6f9f7;border:1px solid #eef2ef;border-radius:8px;padding:10px 11px;min-width:0}
+.parking-case-v4 .parking-case-section small{display:block;font-size:10px;color:var(--case-muted);margin-bottom:5px}
+.parking-case-v4 .parking-case-section b{display:block;font-size:12px;line-height:1.4;overflow-wrap:anywhere}
+.parking-case-v4 .parking-case-section .incident-narrative{padding:12px;background:#f7faf8;border-radius:8px;margin:0 0 12px;line-height:1.5}
+.parking-case-v4 .parking-case-section .incident-technical{margin:0;border:0;background:transparent}
+.parking-case-v4 .parking-case-section .incident-technical-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.parking-case-v4 .parking-case-score{min-width:0}.parking-case-v4 .parking-case-score>.card{margin:0!important}
+.parking-case-v4 .parking-case-score #incident-compliance-panel,.parking-case-v4 .parking-case-score #incident-compliance-detail-panel{margin:0!important}
+.parking-case-v4 .parking-case-score .card,.parking-case-v4 .parking-case-history .card{box-shadow:none;border:1px solid var(--case-line);border-radius:12px;margin:0!important}
+.parking-case-v4 .parking-case-history .request-case-section{margin:0!important}
+.parking-case-v4 .parking-case-followups .incident-timeline,.parking-case-v4 .parking-case-resolution .incident-resolution{margin:0}
+.parking-case-v4 .parking-case-decision{border:1px solid #b9dace;background:#f0faf5;border-radius:12px;padding:15px}
+.parking-case-v4 .parking-case-decision .actions{margin-top:12px}
+.parking-case-v4 .parking-case-audit{font-size:12px}
+@media(max-width:840px){.parking-case-v4 .parking-case-columns{grid-template-columns:1fr}.parking-case-v4 .parking-case-hero{flex-direction:column}.parking-case-v4 .parking-case-hero .actions,.parking-case-v4 .parking-case-hero .parking-case-hero-actions{justify-content:flex-start}}
+@media(max-width:560px){.parking-case-v4 .parking-case-inner{padding:12px}.parking-case-v4 .parking-case-hero{padding:16px}.parking-case-v4 .parking-case-hero h3{font-size:18px!important}.parking-case-v4 .parking-case-overview{grid-template-columns:1fr}.parking-case-v4 .parking-case-section .details,.parking-case-v4 .parking-case-section .incident-primary-grid,.parking-case-v4 .parking-case-section .incident-technical-grid{grid-template-columns:1fr}}
+/* v6 - information density */
+.parking-case-v4 .parking-case-compact{gap:12px}
+.parking-case-v4 .parking-case-extra{padding:11px 14px!important}
+.parking-case-v4 .parking-case-extra>summary{cursor:pointer;font-size:12px;font-weight:700;color:#27594b}
+.parking-case-v4 .parking-case-extra[open]>summary{margin-bottom:12px}
+.parking-case-v4 .parking-case-overview{gap:8px}
+</style>
+        <header class="parking-case-hero">
+          <div class="parking-case-hero-title"><small>${esc(appDisplayName()||'Parking Comunidad')} · EXPEDIENTE DE SOLICITUD</small>
+            <h3>${esc(requestTypeLabel(r.Tipo))} · ${esc(requestDossierPlate(r))}</h3>
+            <span class="status ${requestIsOpenClient(r)?'bad':''}">${esc(requestDisplayState(r))}</span>
+            <div class="parking-case-hero-code" title="${esc(r.ID_Solicitud||'')}">${esc(r.ID_Solicitud?'SOL-'+String(r.ID_Solicitud).slice(-8).toUpperCase():'')}</div>
+          </div><div class="parking-case-hero-actions"><button class="secondary" id="req-detail-close">Cerrar</button></div>
+        </header>
+        <div class="parking-case-inner parking-case-compact">
+          <div class="parking-case-overview">
+            <div><small>Vivienda</small><b>${esc([r.Bloque,r.Planta,r.Apartamento].filter(Boolean).join(' · ')||'No informado')}</b></div>
+            <div><small>Solicitante</small><b>${esc(r.NombreSolicitante||r.Usuario||'No informado')}</b></div>
+            <div><small>Fecha de solicitud</small><b>${esc(shortDateTime(r.FechaHora))}</b></div>
+          </div>
+          <div class="parking-case-columns">
+            <div class="parking-case-column parking-case-main">${parkingRequestStructuredDetails(r,'main')}</div>
+            <aside class="parking-case-column parking-case-side">
+              ${parkingRequestStructuredDetails(r,'side')}
+              <div class="parking-case-score">${parkingCompliancePanel(r,incidentRows,{ownerId:requestOwnerId(r)})}</div>
+              <div class="parking-case-history">${parkingRequestRelatedContext(r,rows,requestOwnerId(r))}</div>
+            </aside>
+          </div>
+          ${requestIsOpenClient(r)?`<div class="parking-case-decision"><div class="message">${reactivation?(isMoto?'La moto quedará activa y seguirá controlándose por matrícula.':'El vehículo quedará Desasignado, registrado sin slot. Después el propietario podrá asignar uno desde Mis vehículos.'):renewal?'Al aprobar, el QR anterior quedará invalidado y se generará uno nuevo.':longstay?'Al aprobar, Control verá este vehículo como permanencia autorizada durante las fechas solicitadas.':'Se aprobará la solicitud.'}</div><div class="actions"><button id="req-detail-approve" ${!canApproveReactivation?'disabled':''}>${approvalLabel}</button><button class="secondary" id="req-detail-reject">RECHAZAR SOLICITUD</button></div></div>`:''}
+        </div>
+      </section>`;
       $('#req-detail-close').onclick=()=>host.innerHTML='';
-      const refreshAfterResolution=()=>{if(viewMode==='dossiers'){state.cache.requestViewMode='dossiers';state.cache.requestDossierFocus=requestDossierKey(r)}requests(r.ID_Solicitud)};
+      const refreshAfterResolution=()=>{if(viewMode==='dossiers'){state.cache.requestViewMode='dossiers';state.cache.requestDossierFocus=dossierKeyFor(r)}requests(r.ID_Solicitud)};
       if(requestIsOpenClient(r)){
         const approve=$('#req-detail-approve'),reject=$('#req-detail-reject');
-        if(approve)approve.onclick=async()=>{const slot='',obs=prompt('Observaciones de resolución (opcional):','')||'';const plate=requestDossierPlate(r),effect=reactivation?(isMoto?'La moto quedará Activa y seguirá controlándose por matrícula.':'El vehículo quedará Desasignado. Al asignarle un slot pasará a Activo y se generará un QR nuevo.'):renewal?'El QR anterior quedará invalidado y se generará uno nuevo.':longstay?`Se autorizará la permanencia del ${dateEs(r.FechaInicio)} al ${dateEs(r.FechaFin)}.`:'Se aprobará la solicitud.';if(!confirm(`${approvalLabel} de ${plate}.\n\n${effect}\n\n¿Continuar?`))return;busy(approve);if(reject)busy(reject);try{await call('resolveRequest',{id:r.ID_Solicitud,decision:'Aprobada',slot,observaciones:obs});invalidateClientParkingData();toast(reactivation?'Activación aprobada.':renewal?'QR renovado y solicitud aprobada.':'Permanencia autorizada.');refreshAfterResolution()}catch(e){err(e);busy(approve,false);if(reject)busy(reject,false)}};
-        if(reject)reject.onclick=async()=>{const obs=prompt('Motivo del rechazo (opcional):','')||'';if(!confirm('¿Rechazar esta solicitud? No se modificará el vehículo.'))return;busy(reject);if(approve)busy(approve);try{await call('resolveRequest',{id:r.ID_Solicitud,decision:'Rechazada',observaciones:obs});invalidateClientParkingData();toast('Solicitud rechazada.');refreshAfterResolution()}catch(e){err(e);busy(reject,false);if(approve)busy(approve,false)}};
+        if(approve)approve.onclick=async()=>{
+          const plate=requestDossierPlate(r);
+          const effect=reactivation?(isMoto?'La moto quedará Activa y seguirá controlándose por matrícula.':'El vehículo quedará Desasignado. Al asignarle un slot pasará a Activo y se generará un QR nuevo.'):renewal?'El QR anterior quedará invalidado y se generará uno nuevo.':longstay?`Se autorizará la permanencia del ${dateEs(r.FechaInicio)} al ${dateEs(r.FechaFin)}.`:'Se aprobará la solicitud.';
+          const obs=await parkingRequestResolutionDialog(r,'Aprobada',effect);
+          if(obs===null)return;
+          const slot='';busy(approve);if(reject)busy(reject);
+          try{
+            await call('resolveRequest',{id:r.ID_Solicitud,decision:'Aprobada',slot,observaciones:obs});
+            invalidateClientParkingData();
+            toast(reactivation?'Activación aprobada.':renewal?'QR renovado y solicitud aprobada.':'Permanencia autorizada.');
+            refreshAfterResolution();
+          }catch(e){err(e);busy(approve,false);if(reject)busy(reject,false)}
+        };
+        if(reject)reject.onclick=async()=>{
+          const obs=await parkingRequestResolutionDialog(r,'Rechazada','Se rechazará la solicitud sin modificar el vehículo.');
+          if(obs===null)return;
+          busy(reject);if(approve)busy(approve);
+          try{
+            await call('resolveRequest',{id:r.ID_Solicitud,decision:'Rechazada',observaciones:obs});
+            invalidateClientParkingData();toast('Solicitud rechazada.');refreshAfterResolution();
+          }catch(e){err(e);busy(reject,false);if(approve)busy(approve,false)}
+        };
       }
       host.scrollIntoView({behavior:'smooth',block:'start'});
     };
@@ -4120,26 +4624,26 @@ async function requests(openId=''){
     const showDossier=key=>{
       const all=rowsForDossier(key);if(!all.length)return;const pending=all.filter(requestIsOpenClient),history=all.filter(r=>!requestIsOpenClient(r)),latest=all[0],plate=requestDossierPlate(latest),house=`Bloque ${latest.Bloque||'—'}, ${latest.Planta||''} ${latest.Apartamento||''}`.replace(/\s+/g,' ').trim(),approved=history.filter(r=>r.Estado==='Aprobada').length,rejected=history.filter(r=>r.Estado==='Rechazada').length,isMoto=(latest.TipoVehiculo||latest.TipoVehiculoOrigen)==='Moto';
       const rowHtml=(r,open)=>`<div class="request-dossier-item ${open?'is-open':'is-history'}"><div class="request-dossier-item-main"><div class="request-dossier-item-title"><b>${esc(requestTypeLabel(r.Tipo))}</b><span class="status ${open?'bad':''}">${esc(requestDisplayState(r))}</span></div><div class="request-dossier-item-meta"><span>Solicitada ${esc(shortDateTime(r.FechaHora))}</span><span>${esc(r.NombreSolicitante||r.Usuario||'—')}</span>${r.FechaInicio?`<span>${esc(dateEs(r.FechaInicio))} → ${esc(dateEs(r.FechaFin))}</span>`:''}</div>${r.Motivo?`<div class="request-dossier-description">${esc(r.Motivo)}</div>`:''}${!open&&r.FechaResolucion?`<div class="subtle">Resuelta ${esc(shortDateTime(r.FechaResolucion))}${r.NombreResolucion||r.UsuarioResolucion?` por ${esc(r.NombreResolucion||r.UsuarioResolucion)}`:''}</div>`:''}</div><button type="button" class="secondary req-dossier-view" data-id="${esc(r.ID_Solicitud)}">${open?'Gestionar':'Ver detalle'}</button></div>`;
-      $('#request-dossier').innerHTML=`<section class="card request-dossier-detail"><div class="head"><div><div class="eyebrow">EXPEDIENTE DE SOLICITUDES</div><h2>${esc(plate)}</h2><div class="muted">${esc(house)}</div></div><div class="actions">${latest.ID_Vehiculo?'<button class="secondary" id="req-dossier-vehicle">Ver ficha del vehículo</button>':''}<button class="secondary" id="req-dossier-close">Cerrar expediente</button></div></div><div class="request-dossier-current"><div><small>Estado actual</small><b>${esc(latest.EstadoVehiculo||'—')}</b></div><div><small>QR actual</small><b>${esc(isMoto?'No aplica':latest.EstadoQR||'—')}</b></div><div><small>Slot actual</small><b>${esc(isMoto?'No aplica':latest.SlotActual||'—')}</b></div><div><small>Última actividad</small><b>${esc(shortDateTime(latest.FechaResolucion||latest.FechaHora))}</b></div></div><div class="request-dossier-metrics"><div><b>${pending.length}</b><span>Abiertas</span></div><div><b>${history.length}</b><span>Históricas</span></div><div><b>${approved}</b><span>Aprobadas</span></div><div><b>${rejected}</b><span>Rechazadas</span></div></div><div class="request-dossier-section"><div class="request-dossier-section-head"><h3>Solicitudes abiertas</h3><span>${pending.length}</span></div>${pending.length?pending.map(r=>rowHtml(r,true)).join(''):'<div class="empty compact">No hay solicitudes abiertas para este vehículo.</div>'}</div><div class="request-dossier-section"><div class="request-dossier-section-head"><h3>Histórico</h3><span>${history.length}</span></div>${history.length?history.map(r=>rowHtml(r,false)).join(''):'<div class="empty compact">Todavía no hay solicitudes resueltas.</div>'}</div></section>`;
+      $('#request-dossier').innerHTML=`<section class="card request-dossier-detail"><div class="head"><div><div class="eyebrow">EXPEDIENTE DE SOLICITUDES</div><h2>${esc(groupByOwner?requestOwnerLabel(latest):groupByHousing?house:plate)}</h2><div class="muted">${esc(house)}</div></div><div class="actions">${latest.ID_Vehiculo?'<button class="secondary" id="req-dossier-vehicle">Ver ficha del vehículo</button>':''}<button class="secondary" id="req-dossier-close">Cerrar expediente</button></div></div><div class="request-dossier-current"><div><small>Estado actual</small><b>${esc(latest.EstadoVehiculo||'—')}</b></div><div><small>QR actual</small><b>${esc(isMoto?'No aplica':latest.EstadoQR||'—')}</b></div><div><small>Slot actual</small><b>${esc(isMoto?'No aplica':latest.SlotActual||'—')}</b></div><div><small>Última actividad</small><b>${esc(shortDateTime(latest.FechaResolucion||latest.FechaHora))}</b></div></div><div class="request-dossier-metrics"><div><b>${pending.length}</b><span>Abiertas</span></div><div><b>${history.length}</b><span>Históricas</span></div><div><b>${approved}</b><span>Aprobadas</span></div><div><b>${rejected}</b><span>Rechazadas</span></div></div><div class="request-dossier-section"><div class="request-dossier-section-head"><h3>Solicitudes abiertas</h3><span>${pending.length}</span></div>${pending.length?pending.map(r=>rowHtml(r,true)).join(''):'<div class="empty compact">No hay solicitudes abiertas para este vehículo.</div>'}</div><div class="request-dossier-section"><div class="request-dossier-section-head"><h3>Histórico</h3><span>${history.length}</span></div>${history.length?history.map(r=>rowHtml(r,false)).join(''):'<div class="empty compact">Todavía no hay solicitudes resueltas.</div>'}</div></section>`;
       $('#req-dossier-close').onclick=()=>$('#request-dossier').innerHTML='';
       if($('#req-dossier-vehicle'))$('#req-dossier-vehicle').onclick=()=>vehicleDetailView(latest.ID_Vehiculo,()=>{state.cache.requestViewMode='dossiers';state.cache.requestDossierFocus=key;go('requests')});
       document.querySelectorAll('.req-dossier-view').forEach(b=>b.onclick=()=>detail(rows.find(r=>r.ID_Solicitud===b.dataset.id)));
       $('#request-dossier').scrollIntoView({behavior:'smooth',block:'start'});
     };
 
-    const renderOverview=()=>{const openRows=rows.filter(requestIsOpenClient),openKeys=new Set(openRows.map(requestDossierKey)),openHousing=new Set(openRows.map(r=>r.ID_Vivienda).filter(Boolean)),resolved=rows.filter(r=>!requestIsOpenClient(r));$('#req-stat-open').textContent=openRows.length;$('#req-stat-dossiers').textContent=openKeys.size;$('#req-stat-housing').textContent=openHousing.size;$('#req-stat-resolved').textContent=resolved.length};
+    const renderOverview=()=>{const openRows=rows.filter(requestIsOpenClient),openKeys=new Set(openRows.map(dossierKeyFor)),openHousing=new Set(openRows.map(r=>r.ID_Vivienda).filter(Boolean)),resolved=rows.filter(r=>!requestIsOpenClient(r));$('#req-stat-open').textContent=openRows.length;$('#req-stat-dossiers').textContent=openKeys.size;$('#req-stat-housing').textContent=openHousing.size;$('#req-stat-resolved').textContent=resolved.length};
 
-    const renderList=()=>{const list=filtered();state.cache.requestsFiltered=list;const pages=Math.max(1,Math.ceil(list.length/PAGE_SIZE));page=Math.min(page,pages);const slice=list.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE);$('#req-count').textContent=`Mostrando ${slice.length?((page-1)*PAGE_SIZE+1):0}–${Math.min(page*PAGE_SIZE,list.length)} de ${list.length}`;$('#req-body').innerHTML=slice.map(r=>{const plate=requestDossierPlate(r),house=`Bloque ${r.Bloque}, ${r.Planta} ${r.Apartamento}`;return `<tr><td data-label="Fecha">${esc(shortDateTime(r.FechaHora))}</td><td data-label="Matrícula"><b>${esc(plate)}</b></td><td data-label="Vivienda">${esc(house)}</td><td data-label="Solicitante">${esc(r.NombreSolicitante||r.Usuario)}</td><td data-label="Tipo">${esc(requestTypeLabel(r.Tipo))}</td><td data-label="Estado"><span class="status ${requestIsOpenClient(r)?'bad':''}">${esc(requestDisplayState(r))}</span></td><td data-label="Acciones">${actionMenuHtml(`<button class="secondary req-view" data-id="${esc(r.ID_Solicitud)}">Ver</button><button class="secondary req-row-dossier" data-key="${esc(requestDossierKey(r))}">Expediente</button>`)}</td></tr>`}).join('');$('#req-empty').classList.toggle('hide',!!list.length);$('#req-pager').innerHTML=pagerHtml('req',page,list.length);document.querySelectorAll('.req-view').forEach(b=>b.onclick=()=>detail(rows.find(r=>r.ID_Solicitud===b.dataset.id)));document.querySelectorAll('.req-row-dossier').forEach(b=>b.onclick=()=>{viewMode='dossiers';page=1;renderMode();showDossier(b.dataset.key)});const prev=$('#req-prev'),next=$('#req-next');if(prev)prev.onclick=()=>{page--;renderList()};if(next)next.onclick=()=>{page++;renderList()}};
+    const renderList=()=>{const list=filtered();state.cache.requestsFiltered=list;const pages=Math.max(1,Math.ceil(list.length/PAGE_SIZE));page=Math.min(page,pages);const slice=list.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE);$('#req-count').textContent=`Mostrando ${slice.length?((page-1)*PAGE_SIZE+1):0}–${Math.min(page*PAGE_SIZE,list.length)} de ${list.length}`;$('#req-body').innerHTML=slice.map(r=>{const plate=requestDossierPlate(r),house=`Bloque ${r.Bloque}, ${r.Planta} ${r.Apartamento}`;return `<tr><td data-label="Fecha">${esc(shortDateTime(r.FechaHora))}</td><td data-label="Matrícula"><b>${esc(plate)}</b></td><td data-label="Vivienda">${esc(house)}</td><td data-label="Solicitante">${esc(r.NombreSolicitante||r.Usuario)}</td><td data-label="Tipo">${esc(requestTypeLabel(r.Tipo))}</td><td data-label="Estado"><span class="status ${requestIsOpenClient(r)?'bad':''}">${esc(requestDisplayState(r))}</span></td><td data-label="Acciones">${actionMenuHtml(`<button class="secondary req-view" data-id="${esc(r.ID_Solicitud)}">Ver</button><button class="secondary req-row-dossier" data-key="${esc(dossierKeyFor(r))}">Expediente</button>`)}</td></tr>`}).join('');$('#req-empty').classList.toggle('hide',!!list.length);$('#req-pager').innerHTML=pagerHtml('req',page,list.length);document.querySelectorAll('.req-view').forEach(b=>b.onclick=()=>detail(rows.find(r=>r.ID_Solicitud===b.dataset.id)));document.querySelectorAll('.req-row-dossier').forEach(b=>b.onclick=()=>{viewMode='dossiers';page=1;renderMode();showDossier(b.dataset.key)});const prev=$('#req-prev'),next=$('#req-next');if(prev)prev.onclick=()=>{page--;renderList()};if(next)next.onclick=()=>{page++;renderList()}};
 
-    const dossierMatches=()=>{const visible=filtered(),keys=[...new Set(visible.map(requestDossierKey))];return keys.map(key=>{const all=rowsForDossier(key),matching=visible.filter(r=>requestDossierKey(r)===key),latest=matching.slice().sort((a,b)=>requestActivityTs(b)-requestActivityTs(a))[0]||all[0],openAll=all.filter(requestIsOpenClient);return {key,all,matching,latest,openAll}}).filter(g=>g.matching.length>0).sort((a,b)=>requestActivityTs(b.latest)-requestActivityTs(a.latest)||naturalSort(requestDossierPlate(a.latest),requestDossierPlate(b.latest)))};
-    const renderDossiers=()=>{const groups=dossierMatches(),matchingCount=groups.reduce((n,g)=>n+g.matching.length,0),selectedState=$('#req-state').value;const pages=Math.max(1,Math.ceil(groups.length/PAGE_SIZE));page=Math.min(page,pages);const slice=groups.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE);$('#req-count').textContent=`${groups.length} expediente${groups.length===1?'':'s'} · ${matchingCount} solicitud${matchingCount===1?'':'es'}`;$('#request-dossier-list').innerHTML=slice.map(g=>{const latest=g.latest,plate=requestDossierPlate(latest),house=`Bloque ${latest.Bloque||'—'}, ${latest.Planta||''} ${latest.Apartamento||''}`.replace(/\s+/g,' ').trim(),history=g.all.filter(r=>!requestIsOpenClient(r)).length,last=latest.FechaResolucion||latest.FechaHora,tags=[...new Set(g.matching.map(r=>requestTypeLabel(r.Tipo)))],label=selectedState==='Abierta'?`${g.matching.length} abierta${g.matching.length===1?'':'s'}`:selectedState==='Aprobada'?`${g.matching.length} aprobada${g.matching.length===1?'':'s'}`:selectedState==='Rechazada'?`${g.matching.length} rechazada${g.matching.length===1?'':'s'}`:`${g.matching.length} solicitud${g.matching.length===1?'':'es'}`;return `<article class="card request-dossier-card ${g.openAll.length?'has-open':''}"><div class="request-dossier-card-main"><div class="request-dossier-card-title"><div><b class="request-dossier-plate">${esc(plate)}</b><span class="subtle">${esc(house)}</span></div><span class="status ${selectedState==='Abierta'?'bad':''}">${esc(label)}</span></div><div class="request-dossier-card-metrics"><span><b>${g.matching.length}</b> en la vista</span><span><b>${g.openAll.length}</b> abiertas</span><span><b>${history}</b> históricas</span><span>Última actividad <b>${esc(shortDateTime(last))}</b></span></div><div class="request-dossier-tags">${tags.slice(0,3).map(x=>`<span>${esc(x)}</span>`).join('')}${tags.length>3?`<span>+${tags.length-3}</span>`:''}</div></div><div class="request-dossier-card-action"><button type="button" class="secondary req-open-dossier" data-key="${esc(g.key)}">Ver expediente</button></div></article>`}).join('')||'<div class="card empty">No hay expedientes que coincidan con los filtros.</div>';$('#req-pager').innerHTML=pagerHtml('req',page,groups.length);document.querySelectorAll('.req-open-dossier').forEach(b=>b.onclick=()=>showDossier(b.dataset.key));const prev=$('#req-prev'),next=$('#req-next');if(prev)prev.onclick=()=>{page--;renderDossiers()};if(next)next.onclick=()=>{page++;renderDossiers()}};
+    const dossierMatches=()=>{const visible=filtered(),keys=[...new Set(visible.map(dossierKeyFor))];return keys.map(key=>{const all=rowsForDossier(key),matching=visible.filter(r=>dossierKeyFor(r)===key),latest=matching.slice().sort((a,b)=>requestActivityTs(b)-requestActivityTs(a))[0]||all[0],openAll=all.filter(requestIsOpenClient);return {key,all,matching,latest,openAll}}).filter(g=>g.matching.length>0).sort((a,b)=>requestActivityTs(b.latest)-requestActivityTs(a.latest)||naturalSort(requestDossierPlate(a.latest),requestDossierPlate(b.latest)))};
+    const renderDossiers=()=>{const groups=dossierMatches(),matchingCount=groups.reduce((n,g)=>n+g.matching.length,0),selectedState=$('#req-state').value;const pages=Math.max(1,Math.ceil(groups.length/PAGE_SIZE));page=Math.min(page,pages);const slice=groups.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE);$('#req-count').textContent=`${groups.length} expediente${groups.length===1?'':'s'} · ${matchingCount} solicitud${matchingCount===1?'':'es'}`;$('#request-dossier-list').innerHTML=slice.map(g=>{const latest=g.latest,plate=requestDossierPlate(latest),house=`Bloque ${latest.Bloque||'—'}, ${latest.Planta||''} ${latest.Apartamento||''}`.replace(/\s+/g,' ').trim(),history=g.all.filter(r=>!requestIsOpenClient(r)).length,last=latest.FechaResolucion||latest.FechaHora,tags=[...new Set(g.matching.map(r=>requestTypeLabel(r.Tipo)))],label=selectedState==='Abierta'?`${g.matching.length} abierta${g.matching.length===1?'':'s'}`:selectedState==='Aprobada'?`${g.matching.length} aprobada${g.matching.length===1?'':'s'}`:selectedState==='Rechazada'?`${g.matching.length} rechazada${g.matching.length===1?'':'s'}`:`${g.matching.length} solicitud${g.matching.length===1?'':'es'}`;return `<article class="card request-dossier-card incident-dossier-card ${g.openAll.length?'has-open':''}"><div class="request-dossier-card-main"><div class="request-dossier-card-title"><div><b class="request-dossier-plate">${esc(groupByOwner?requestOwnerLabel(latest):groupByHousing?house:plate)}</b><span class="subtle">${esc(house)}</span></div><span class="status ${selectedState==='Abierta'?'bad':''}">${esc(label)}</span></div><div class="request-dossier-card-metrics"><span><b>${g.matching.length}</b> en la vista</span><span><b>${g.openAll.length}</b> abiertas</span><span><b>${history}</b> históricas</span><span>Última actividad <b>${esc(shortDateTime(last))}</b></span></div><div class="request-dossier-tags">${tags.slice(0,3).map(x=>`<span>${esc(x)}</span>`).join('')}${tags.length>3?`<span>+${tags.length-3}</span>`:''}</div></div><div class="request-dossier-card-action"><button type="button" class="secondary req-open-dossier" data-key="${esc(g.key)}">Ver expediente</button></div></article>`}).join('')||'<div class="card empty">No hay expedientes que coincidan con los filtros.</div>';$('#req-pager').innerHTML=pagerHtml('req',page,groups.length);document.querySelectorAll('.req-open-dossier').forEach(b=>b.onclick=()=>showDossier(b.dataset.key));const prev=$('#req-prev'),next=$('#req-next');if(prev)prev.onclick=()=>{page--;renderDossiers()};if(next)next.onclick=()=>{page++;renderDossiers()}};
 
-    const renderMode=()=>{const dossiers=viewMode==='dossiers';$('#request-dossier-list').classList.toggle('hide',!dossiers);$('#request-flat-list').classList.toggle('hide',dossiers);$('#request-view-dossiers').classList.toggle('active',dossiers);$('#request-view-list').classList.toggle('active',!dossiers);renderOverview();if(dossiers)renderDossiers();else renderList()};
+    const renderMode=()=>{const dossiers=viewMode==='dossiers';$('#request-dossier-list').classList.toggle('hide',!dossiers);$('#request-flat-list').classList.toggle('hide',dossiers);$('#request-view-dossiers').classList.toggle('active',dossiers&&!groupByHousing&&!groupByOwner);$('#request-view-housing').classList.toggle('active',dossiers&&groupByHousing&&!groupByOwner);$('#request-view-owner').classList.toggle('active',dossiers&&groupByOwner);$('#request-view-list').classList.toggle('active',!dossiers);renderOverview();if(dossiers)renderDossiers();else renderList()};
     $('#requests-export-xlsx').onclick=()=>downloadXlsx(`solicitudes_${new Date().toISOString().slice(0,10)}.xlsx`,viewMode==='dossiers'?dossierMatches().flatMap(g=>g.matching):(state.cache.requestsFiltered||filtered()),null,'Solicitudes').catch(err);$('#requests-export-csv').onclick=()=>downloadCsv(`solicitudes_${new Date().toISOString().slice(0,10)}.csv`,viewMode==='dossiers'?dossierMatches().flatMap(g=>g.matching):(state.cache.requestsFiltered||filtered()));
     $('#req-search').value=navPreset?.search||'';$('#req-state').value=navPreset?.status!==undefined?navPreset.status:'Abierta';$('#req-type').value=navPreset?.type||'';$('#req-period').value='';$('#req-from').value='';$('#req-to').value='';bindPeriodVisibility('req');
     const reset=()=>{page=1;$('#request-dossier').innerHTML='';renderMode()};$('#req-search').oninput=reset;['req-state','req-type','req-period','req-from','req-to'].forEach(id=>$(`#${id}`).onchange=reset);document.querySelectorAll('.sortable-th').forEach(th=>{th.dataset.dir=th.dataset.sort===sortKey?sortDir:'';th.onclick=()=>{const k=th.dataset.sort;sortDir=sortKey===k&&sortDir==='asc'?'desc':'asc';sortKey=k;page=1;document.querySelectorAll('.sortable-th').forEach(x=>x.dataset.dir=x.dataset.sort===sortKey?sortDir:'');if(viewMode==='list')renderList()}});
     const openDefault=()=>{const stateSel=$('#req-state');if(stateSel)stateSel.value='Abierta'};
-    $('#request-view-dossiers').onclick=()=>{viewMode='dossiers';openDefault();page=1;$('#request-detail').innerHTML='';$('#request-dossier').innerHTML='';renderMode()};$('#request-view-list').onclick=()=>{viewMode='list';openDefault();page=1;$('#request-detail').innerHTML='';$('#request-dossier').innerHTML='';renderMode()};
+    $('#request-view-dossiers').onclick=()=>{groupByHousing=false;groupByOwner=false;viewMode='dossiers';openDefault();page=1;$('#request-detail').innerHTML='';$('#request-dossier').innerHTML='';renderMode()};$('#request-view-housing').onclick=()=>{groupByHousing=true;groupByOwner=false;viewMode='dossiers';openDefault();page=1;$('#request-detail').innerHTML='';$('#request-dossier').innerHTML='';renderMode()};$('#request-view-owner').onclick=()=>{groupByHousing=false;groupByOwner=true;viewMode='dossiers';openDefault();page=1;$('#request-detail').innerHTML='';$('#request-dossier').innerHTML='';renderMode()};$('#request-view-list').onclick=()=>{viewMode='list';openDefault();page=1;$('#request-detail').innerHTML='';$('#request-dossier').innerHTML='';renderMode()};
     const requestFilterToggle=$('#request-filter-toggle');
     const requestFilterBar=document.querySelector('.admin-request-filters');
     if(requestFilterToggle&&requestFilterBar){
@@ -4199,7 +4703,20 @@ async function incidentPdfImage(url){
     });
   }catch(_){return ''}
 }
-async function generateIncidentPdf(row,housingLabel=''){
+async function generateIncidentPdf(row,housingLabel='',options={}){
+  // parking_pdf_pre_restauracion_v1: conservar el formato documental PRE.
+  if(options.audience==='OWNER'){
+    // Never include evidence, third-party plates or uncontrolled free-text in owner attachments.
+    row={...row,
+      Descripcion:'El detalle confidencial y las evidencias se conservan en el expediente administrativo.',
+      Situacion:'',Causa:'',MatriculaObservada:'',MatriculaInfraccion:'',
+      ComentarioCierre:'La incidencia ha sido cerrada. Contacta con administración para obtener información adicional.',
+      Foto:'',Fotos:[],MatriculaAutorizada:'',MatriculaRelacionada:'',
+      MatriculaHabitualOrigen:'',MatriculaHabitualVehiculo:'',EstadoVehiculoOrigen:'',
+      Seguimientos:(row.Seguimientos||[]).map(f=>({...f,Foto:'',Fotos:[],
+        Observacion:'Seguimiento registrado.',MatriculaAutorizada:'',MatriculaObservada:''}))
+    };
+  }
   const lib=await loadExternal(
     'jspdf',
     [
@@ -4212,7 +4729,8 @@ async function generateIncidentPdf(row,housingLabel=''){
   const doc=new lib.jsPDF({unit:'mm',format:'a4',orientation:'portrait'});
   const pageW=210,pageH=297,left=16,right=16,contentW=178,bottom=17;
   const green=[31,103,84],dark=[25,38,48],muted=[100,116,139],line=[226,232,240],soft=[246,248,250],softGreen=[240,248,244];
-  const shortId=String(row.ID_Incidencia||'INCIDENCIA').slice(0,8).toUpperCase();
+  const incidentUuid=String(row.ID_Incidencia||'').trim().toUpperCase();
+  const shortId=/^[0-9A-F]{8}-[0-9A-F-]{27,}$/.test(incidentUuid)?`${incidentUuid.slice(0,8)}-${incidentUuid.slice(-8)}`:(incidentUuid||'SIN-ID');
   const officialName=String(appDisplayName()||'Parking Comunidad').replace(/^Urbanizacion\b/i,'Urbanización');
   const clean=v=>String(v??'').trim();
   const formatOrigin=v=>{
@@ -4486,23 +5004,64 @@ async function generateIncidentPdf(row,housingLabel=''){
   }
 
   const plate=normalizePlateClient(row.MatriculaObservada||row.MatriculaInfraccion||row.MatriculaHabitualOrigen||'SIN_MATRICULA');
+  if(options.asBlob)return doc.output('blob');
   doc.save(`Informe_Incidencia_${plate}_${shortId}.pdf`);
 }
+async function uploadIncidentCloseReports(row,housingLabel){
+  const to64=blob=>new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(String(reader.result||'').split(',')[1]||'');
+    reader.onerror=()=>reject(reader.error||new Error('No se pudo leer el informe PDF'));
+    reader.readAsDataURL(blob);
+  });
+  // El informe oficial de la plataforma se genera una sola vez.
+  // ADMIN y propietario reciben el mismo objeto privado, byte por byte.
+  const pdf=await generateIncidentPdf(row,housingLabel,{asBlob:true});
+  if(pdf.size>10*1024*1024)throw new Error('El PDF supera 10 MB.');
+  await call('uploadIncidentPdf',{id:row.ID_Incidencia,audience:'ADMIN',pdfBase64:await to64(pdf)});
+}
+
+function parkingScorePanel(row,all,ownerId,options={}){
+ const home=all.filter(x=>row.ID_Vivienda&&x.ID_Vivienda===row.ID_Vivienda),owned=ownerId?all.filter(x=>x.ID_PropietarioAlHecho===ownerId):[];
+ const rules=options.rules||parkingComplianceActiveRules();
+ const current=parkingScore(home,{rules}),person=ownerId?parkingScore(owned,{rules}):null;
+ const prospective=options.action?parkingScore(home,{rules,closeId:row.ID_Incidencia,action:options.action}):null;
+ const nextOwner=options.action&&ownerId?parkingScore(owned,{rules,closeId:row.ID_Incidencia,action:options.action}):null;
+ const result=(name,score,after)=>`<div class="card incident-stat-card" style="flex:1;min-width:220px">
+   <span>${name}</span><b>${score?score.score+'/100':'Sin atribución verificada'}</b>
+   <small>${score?`${score.open} abiertas · ${score.closed} confirmadas · ${score.excluded} excluidas · ${score.followups} seguimientos`:'Sin historial atribuible'}</small>
+   ${score?.recovery?`<small>Recuperación: +${score.recovery} puntos</small>`:''}
+   ${after?`<small><b>Simulación:</b> ${score.score}/100 → ${after.score}/100</small>`:''}
+ </div>`;
+ const entries=current.items.slice(0,12);
+ return `<section class="card incident-compliance-panel" id="incident-compliance-panel" style="margin:1rem 0">
+   <div class="head"><h3>Antecedentes y puntuación de cumplimiento</h3><span class="system-pill ok">Reglas v${esc(rules.version||0)}</span></div>
+   <p class="muted">Índice explicable de ${esc(rules.window_days)} días. Las solicitudes no descuentan puntos. Los cierres anulados, infundados, sin actuación o con datos corregidos se excluyen.</p>
+   <div style="display:flex;flex-wrap:wrap;gap:.75rem">${result('Vivienda',current,prospective)}${result('Propietario',person,nextOwner)}</div>
+   <p class="muted">Origen: reglas activas de la comunidad y fundamentos congelados al cerrar. Eventos vinculados se computan una sola vez (${current.duplicates} duplicado${current.duplicates===1?'':'s'} excluido${current.duplicates===1?'':'s'}).</p>
+   <details><summary>Ver antecedentes y desglose</summary>
+   <ul>${entries.map(x=>`<li>${esc(shortDateTime(x.row.FechaHora))} · ${esc(x.row.Tipo)} · ${esc(x.row.Estado)} · ${x.attempts+1} intentos · ${x.loss?`−${x.loss}`:'0'} puntos · ${esc(x.origin)}${x.linked>1?` · ${x.linked} eventos vinculados`:''}</li>`).join('')||'<li>Sin antecedentes computables.</li>'}</ul>
+   ${current.recovery?`<p><b>Puntos recuperados:</b> +${current.recovery} tras ${current.daysWithoutDetection} días sin nuevas detecciones y sin casos abiertos.</p>`:''}
+   </details>
+ </section>`;
+}
+function parkingCompliancePanel(row,allRows,options={}){return parkingScorePanel(row,allRows,options.ownerId||row.ID_PropietarioAlHecho||'',options)}
 async function incidents(openId=''){
   try{
     const focusId=openId||state.cache.incidentFocus||'';delete state.cache.incidentFocus;const navPreset=state.cache.incidentPreset||null;delete state.cache.incidentPreset;
-    const response=await call('listIncidentsPayload');const rows=Array.isArray(response)?response:(Array.isArray(response?.rows)?response.rows:[]);if(!Array.isArray(rows))throw new Error('Respuesta inválida al cargar incidencias.');state.cache.incidents=rows;const ui=viewUiState('incidents');let page=ui.page||1,sortKey=ui.sortKey||'FechaHora',sortDir=ui.sortDir||'desc',viewMode=ui.viewMode||'dossiers';
+    const response=await call('listIncidentsPayload');const rows=Array.isArray(response)?response:(Array.isArray(response?.rows)?response.rows:[]);if(!Array.isArray(rows))throw new Error('Respuesta inválida al cargar incidencias.');if(response?.complianceRules)parkingComplianceSetRules(response.complianceRules);state.cache.incidents=rows;const ui=viewUiState('incidents');let page=ui.page||1,sortKey=ui.sortKey||'FechaHora',sortDir=ui.sortDir||'desc',viewMode=ui.viewMode||'dossiers';
     const types=['Matrícula no registrada','Acceso no autorizado','QR no presentado','QR no corresponde con matrícula','Uso indebido','Vehículo inmovilizado / posible abandono','Estacionamiento o ubicación indebida','Fuga / pérdida de líquidos','Otro'];
     const priorities=[...new Set(rows.map(r=>r.Prioridad).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'es'));
-    $('#main').innerHTML=`<div class="head incidents-head"><div><h1>Incidencias</h1><div class="muted">Bandeja de gestión agrupada por vehículo o matrícula observada.</div></div><div class="actions">${exportButtonsHtml('incidents-export')}</div></div><div id="incident-editor"></div><div id="incident-detail"></div><div id="incident-dossier"></div><div class="incident-overview" id="incident-overview"><div class="card incident-stat-card"><span>Incidencias abiertas</span><b id="inc-stat-open">0</b><small>Pendientes de resolver</small></div><div class="card incident-stat-card"><span>Críticas</span><b id="inc-stat-critical">0</b><small>Abiertas con prioridad crítica</small></div><div class="card incident-stat-card"><span>Vehículos afectados</span><b id="inc-stat-vehicles">0</b><small>Matrículas con casos abiertos</small></div><div class="card incident-stat-card"><span>Intentos abiertos</span><b id="inc-stat-attempts">0</b><small>Acumulados en incidencias abiertas</small></div></div><div class="mobile-filter-toggle-wrap">
+    $('#main').innerHTML=`<div class="head incidents-head"><div><h1>Incidencias</h1><div class="muted">Bandeja de gestión con agrupación independiente por vivienda, propietario o matrícula.</div></div><div class="actions">${hasUiRole('ADMIN')?'<button type="button" class="secondary" id="incident-weekly-report">Generar Excel semanal</button>':''}${exportButtonsHtml('incidents-export')}</div></div><div id="incident-editor"></div><div id="incident-detail"></div><div id="incident-dossier"></div><div class="incident-overview" id="incident-overview"><div class="card incident-stat-card"><span>Incidencias abiertas</span><b id="inc-stat-open">0</b><small>Pendientes de resolver</small></div><div class="card incident-stat-card"><span>Críticas</span><b id="inc-stat-critical">0</b><small>Abiertas con prioridad crítica</small></div><div class="card incident-stat-card"><span>Vehículos afectados</span><b id="inc-stat-vehicles">0</b><small>Matrículas con casos abiertos</small></div><div class="card incident-stat-card"><span>Intentos abiertos</span><b id="inc-stat-attempts">0</b><small>Acumulados en incidencias abiertas</small></div></div><div class="mobile-filter-toggle-wrap">
       <button type="button" class="secondary mobile-filter-toggle" id="incident-filter-toggle">
         Filtros
       </button>
-    </div><div class="incident-viewbar"><div class="incident-view-tabs"><button type="button" class="secondary" id="incident-view-dossiers">Expedientes</button><button type="button" class="secondary" id="incident-view-list">Lista de incidencias</button></div><span class="count" id="incident-count"></span></div><div class="filterbar admin-record-filterbar admin-incident-filters"><div class="field filter-search"><label>Buscar</label><input id="incident-search" class="search" placeholder="Matrícula, vivienda, tipo o descripción..."></div>${periodFilterFields('incident')}<div class="field"><label>Estado</label><select id="incident-state"><option value="Abierta" selected>Abiertas</option><option value="">Todas</option><option>Cerrada</option></select></div><div class="field"><label>Prioridad</label><select id="incident-priority"><option value="">Todas</option>${priorities.map(v=>`<option>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Tipo</label><select id="incident-type"><option value="">Todos</option>${types.map(v=>`<option>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Origen</label><select id="incident-origin"><option value="">Todos</option>${[...new Set(rows.map(r=>r.OrigenControl||'Manual'))].sort().map(v=>`<option>${esc(v)}</option>`).join('')}</select></div></div><div id="incident-dossier-list" class="incident-dossier-list"></div><div id="incident-flat-list" class="tablebox compact-table admin-record-tablebox hide"><table class="table responsive-data-table admin-record-table admin-incident-table"><thead><tr><th class="sortable-th" data-sort="FechaHora">Fecha</th><th class="sortable-th" data-sort="MatriculaObservada">Matrícula</th><th class="sortable-th" data-sort="Vivienda">Vivienda</th><th class="sortable-th" data-sort="Tipo">Incidencia</th><th class="sortable-th" data-sort="Prioridad">Prioridad</th><th class="sortable-th" data-sort="Intentos">Intentos</th><th class="sortable-th" data-sort="Estado">Estado</th><th>Acciones</th></tr></thead><tbody id="incident-body"></tbody></table><div id="incident-empty" class="empty hide">No hay incidencias.</div></div><div id="incident-pager"></div>`;
+    </div><div class="incident-viewbar"><div class="incident-view-tabs"><button type="button" class="secondary" id="incident-view-housing">Por vivienda</button><button type="button" class="secondary" id="incident-view-owner">Por propietario</button><button type="button" class="secondary" id="incident-view-dossiers">Por matrícula</button><button type="button" class="secondary" id="incident-view-list">Lista de incidencias</button></div><span class="count" id="incident-count"></span></div><div class="filterbar admin-record-filterbar admin-incident-filters"><div class="field filter-search"><label>Buscar</label><input id="incident-search" class="search" placeholder="Matrícula, vivienda, propietario, tipo o descripción..."></div>${periodFilterFields('incident')}<div class="field"><label>Estado</label><select id="incident-state"><option value="Abierta" selected>Abiertas</option><option value="">Todas</option><option>Cerrada</option></select></div><div class="field"><label>Prioridad</label><select id="incident-priority"><option value="">Todas</option>${priorities.map(v=>`<option>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Tipo</label><select id="incident-type"><option value="">Todos</option>${types.map(v=>`<option>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Origen</label><select id="incident-origin"><option value="">Todos</option>${[...new Set(rows.map(r=>r.OrigenControl||'Manual'))].sort().map(v=>`<option>${esc(v)}</option>`).join('')}</select></div></div><div id="incident-dossier-list" class="incident-dossier-list"></div><div id="incident-flat-list" class="tablebox compact-table admin-record-tablebox hide"><table class="table responsive-data-table admin-record-table admin-incident-table"><thead><tr><th class="sortable-th" data-sort="FechaHora">Fecha</th><th class="sortable-th" data-sort="MatriculaObservada">Matrícula</th><th class="sortable-th" data-sort="Vivienda">Vivienda</th><th class="sortable-th" data-sort="Tipo">Incidencia</th><th class="sortable-th" data-sort="Prioridad">Prioridad</th><th class="sortable-th" data-sort="Intentos">Intentos</th><th class="sortable-th" data-sort="Estado">Estado</th><th>Acciones</th></tr></thead><tbody id="incident-body"></tbody></table><div id="incident-empty" class="empty hide">No hay incidencias.</div></div><div id="incident-pager"></div>`;
     const housingMap=Object.fromEntries((state.cache.formOptions?.housing||[]).map(h=>[h.ID_Vivienda,h]));
     const incidentPlate=r=>normalizePlateClient(r.MatriculaInfraccion||r.MatriculaHabitualOrigen||r.MatriculaObservada||r.MatriculaHabitualVehiculo||'')||'SIN MATRÍCULA';
     const incidentHouse=r=>recordHousingLabel(r,housingMap[r.ID_Vivienda]);
-    const dossierKey=r=>incidentPlate(r)==='SIN MATRÍCULA'?`INC:${r.ID_Incidencia||''}`:`PLATE:${incidentPlate(r)}`;
+    let groupByHousing=ui.groupMode?ui.groupMode==='housing':ui.groupByHousing!==false,groupByOwner=ui.groupMode==='owner';
+    const dossierKey=r=>groupByOwner?(r.ID_PropietarioAlHecho?`OWNER:${r.ID_PropietarioAlHecho}`:`INC:${r.ID_Incidencia}`):groupByHousing?`HOUSING:${r.ID_Vivienda||'unassigned'}`:(incidentPlate(r)==='SIN MATRÍCULA'?`INC:${r.ID_Incidencia||''}`:`PLATE:${incidentPlate(r)}`);
     const rowsForDossier=key=>String(key||'').startsWith('PLATE:')?rows.filter(r=>dossierKey(r)===key):rows.filter(r=>dossierKey(r)===key);
     const lastActivity=r=>{const fs=Array.isArray(r.Seguimientos)?r.Seguimientos:[];return r.UltimoSeguimiento||(fs.length?fs[fs.length-1].FechaHora:'')||r.FechaHora||''};
     const activityTs=r=>{const t=Date.parse(lastActivity(r));return Number.isFinite(t)?t:0};
@@ -4510,11 +5069,13 @@ async function incidents(openId=''){
     const relationCount=r=>incidentRelatedPlatesClient(r,incidentRelatedCasesClient(r,rows),incidentPlate).length;
     bindPeriodVisibility('incident');
     const repeatOnly=!!navPreset?.followup;
+    const focusHousingId=navPreset?.housingId||'';
+    const focusOwnerId=navPreset?.ownerId||'';
     const filtered=()=>{
       const q=$('#incident-search').value.trim().toLowerCase(),type=$('#incident-type').value,status=$('#incident-state').value,origin=$('#incident-origin').value,priority=$('#incident-priority').value,period=$('#incident-period').value,from=$('#incident-from').value,to=$('#incident-to').value;
-      saveViewUiState('incidents',{q,type,status,origin,priority,period,from,to,page,sortKey,sortDir,viewMode,v:'1.2.13.14-FIX11.10'});
+      saveViewUiState('incidents',{q,type,status,origin,priority,period,from,to,page,sortKey,sortDir,viewMode,groupByHousing,groupMode:groupByOwner?'owner':groupByHousing?'housing':'plate',v:'1.2.13.14-FIX11.10'});
       const val=(r,k)=>k==='Vivienda'?incidentHouse(r):k==='MatriculaObservada'?incidentPlate(r):k==='Intentos'?Number(r.Intentos||1):r[k]||'';
-      return rows.filter(r=>(!type||r.Tipo===type)&&(!status||r.Estado===status)&&(!origin||(r.OrigenControl||'Manual')===origin)&&(!priority||r.Prioridad===priority)&&(!repeatOnly||Number(r.Intentos||1)>1)&&periodMatches(r.FechaHora,period,from,to)&&[...Object.values(r),recordHousingLabel(r,housingMap[r.ID_Vivienda])].join(' ').toLowerCase().includes(q)).sort((a,b)=>{const c=String(val(a,sortKey)).localeCompare(String(val(b,sortKey)),'es',{numeric:true,sensitivity:'base'});return sortDir==='asc'?c:-c});
+      return rows.filter(r=>(!focusHousingId||r.ID_Vivienda===focusHousingId)&&(!focusOwnerId||r.ID_PropietarioAlHecho===focusOwnerId)&&(!type||r.Tipo===type)&&(!status||r.Estado===status)&&(!origin||(r.OrigenControl||'Manual')===origin)&&(!priority||r.Prioridad===priority)&&(!repeatOnly||Number(r.Intentos||1)>1)&&periodMatches(r.FechaHora,period,from,to)&&[...Object.values(r),recordHousingLabel(r,housingMap[r.ID_Vivienda])].join(' ').toLowerCase().includes(q)).sort((a,b)=>{const c=String(val(a,sortKey)).localeCompare(String(val(b,sortKey)),'es',{numeric:true,sensitivity:'base'});return sortDir==='asc'?c:-c});
     };
     const detail=r=>{
       const canSeeActors=hasUiRole('ADMIN');
@@ -4526,7 +5087,7 @@ async function incidents(openId=''){
       const eventParticipants=event=>{const participants=event?rows.filter(row=>row.ID_Evento===event||(row.Seguimientos||[]).some(s=>s.ID_EventoSeguimiento===event)):[];return qrLinked?participants.filter(incidentIsQrLinkedCase):participants};
       const eventFollowupCount=x=>eventParticipants(x.ID_EventoSeguimiento||'').length||1;
       const eventFollowupRelated=x=>eventParticipants(x.ID_EventoSeguimiento||'').filter(row=>row.ID_Incidencia!==r.ID_Incidencia).map(linkedLabel);
-      const topActions=`<div class="actions">${hasUiRole('ADMIN')?`<button class="secondary" id="inc-detail-pdf">Generar PDF</button>`:''}${hasUiRole('ADMIN')&&r.Estado==='Abierta'?`<button id="inc-detail-close-case">Resolver incidencia</button>`:''}<button class="secondary" id="inc-detail-close">Cerrar detalle</button></div>`;
+      const topActions=`<div class="actions">${hasUiRole('ADMIN')&&r.Estado==='Abierta'?`<button class="secondary" id="inc-detail-pdf">Generar PDF provisional</button><button id="inc-detail-close-case">Resolver incidencia</button>`:''}${hasUiRole('ADMIN')&&r.Estado==='Cerrada'?'<button class="secondary" id="inc-detail-official-pdf">Ver / descargar PDF</button>':''}<button class="secondary" id="inc-detail-close">Cerrar detalle</button></div>`;
       const relationHtml=qrLinked&&relatedPlates.length?`<div class="message"><b>Vehículos relacionados (${relatedPlates.length}):</b><div>${relatedPlates.map(x=>`<span class="subtle"><b>${esc(x)}</b></span>`).join(' · ')}</div></div>`:(!qrLinked&&r.MatriculaRelacionada?`<div class="message"><b>Relacionado con:</b> ${esc(r.MatriculaRelacionada)}${r.ID_Evento?` · Evento ${esc(r.ID_Evento)}`:''}</div>`:'');
       const linkedHtml=relatedCases.length?`<div class="message"><b>${qrLinked?'Incidencias vinculadas por uso de QR':'Incidencias vinculadas'}:</b><div class="actions">${relatedCases.map(x=>`<button type="button" class="secondary inc-linked" data-id="${esc(x.ID_Incidencia)}">${esc(linkedLabel(x))}</button>`).join('')}</div></div>`:'';
       const meaningful=v=>{const x=String(v??'').trim();return x&&!['—','-','No aplica'].includes(x)};
@@ -4547,7 +5108,7 @@ async function incidents(openId=''){
         ['Slot actual',linked&&!isMoto?(r.Slot||r.SlotActual||''):''],
         ['QR al crear',linked&&!isMoto?r.QREstadoOrigen||'':''],
         ['QR actual',linked&&!isMoto?r.EstadoQR||'':'']
-      ].filter(([,v])=>meaningful(v));
+      ].filter(([label,v])=>meaningful(v)&&!['Método de identificación','Matrícula observada','Tipo vehículo','Estado actual','Estado al crear','Estado al registrar','QR al crear','QR al registrar','QR actual','Slot actual','Situación detectada'].includes(label));
       if(r.Tipo==='Vehículo inmovilizado / posible abandono'){
         technicalItems.push(['ITV vencida',r.ITV_Vencida||'No verificado'],['Fuga / pérdida',r.FugaLiquidos||'No']);
       }
@@ -4555,33 +5116,83 @@ async function incidents(openId=''){
       const followupsHtml=(r.Seguimientos||[]).length?`<section class="incident-detail-section incident-timeline"><div class="incident-section-title"><div><span class="eyebrow">EVOLUCIÓN</span><h4>Seguimientos</h4></div><span class="count">${esc((r.Seguimientos||[]).length)}</span></div>${(r.Seguimientos||[]).map(x=>{const eventCount=eventFollowupCount(x),related=eventFollowupRelated(x),actor=x.NombreUsuario||x.Usuario||'Usuario técnico / ROOT';return `<article class="incident-followup"><div class="incident-followup-head"><div><b>Intento ${esc(x.NumeroIntento||'')}</b><span>${esc(shortDateTime(x.FechaHora))}</span></div>${canSeeActors?`<span class="incident-actor">Registrado por ${esc(actor)}</span>`:''}</div><div class="incident-followup-meta">${x.Situacion?`<div><small>Situación</small><b>${esc(x.Situacion)}</b></div>`:''}${x.MatriculaObservada?`<div><small>Matrícula observada</small><b>${esc(x.MatriculaObservada)}</b></div>`:''}${x.MatriculaAutorizada?`<div><small>Matrícula QR</small><b>${esc(x.MatriculaAutorizada)}</b></div>`:''}</div>${eventCount>1?`<div class="subtle"><b>Evento vinculado:</b> ${esc(eventCount)} incidencias en este intento</div>`:''}${related.length?`<div class="subtle"><b>Relacionadas:</b> ${esc(related.join(' · '))}</div>`:''}${x.Observacion?`<div class="incident-narrative">${esc(x.Observacion)}</div>`:''}${incidentEvidenceLinks(x,'Evidencia seguimiento')}</article>`}).join('')}</section>`:'';
       const auditHtml=canSeeActors?`<div class="incident-audit-line"><span><b>Registrada por:</b> ${esc(r.NombreUsuario||r.Usuario||'Usuario técnico / ROOT')}</span><span>${esc(shortDateTime(r.FechaHora))}</span></div>`:'';
       const resolutionHtml=r.Estado==='Cerrada'?`<section class="incident-resolution"><div class="incident-resolution-head"><div><span class="eyebrow">RESOLUCIÓN</span><h4>${esc(r.AccionCierre||'Sin actuación')}</h4></div><span class="status">Cerrada</span></div><div class="incident-resolution-meta"><div><small>Fecha y hora</small><b>${esc(shortDateTime(r.FechaCierre))}</b></div>${canSeeActors?`<div><small>Cerrada por</small><b>${esc(r.NombreUsuarioCierre||r.UsuarioCierre||'Usuario técnico / ROOT')}</b></div>`:''}</div>${r.ComentarioCierre?`<div class="incident-narrative">${esc(r.ComentarioCierre)}</div>`:''}</section>`:'';
-      host.innerHTML=`<section class="card detail-panel incident-detail-v2">
-        <div class="incident-detail-header">
-          <div>
-            <span class="eyebrow">EXPEDIENTE DE INCIDENCIA</span>
+      host.innerHTML=`<section class="card detail-panel incident-detail-v2 parking-official-case parking-case-v4">
+        <style>
+/* parking-real-ux-v4: styles scoped to the administrative case, not the whole application */
+.parking-case-v4{--case-green:#155e4c;--case-ink:#19352e;--case-line:#e1e9e5;--case-muted:#61756f;padding:0!important;overflow:hidden;background:#fbfcfb!important}
+.parking-case-v4 .parking-case-hero{background:linear-gradient(115deg,#145846,#237c62);padding:23px 25px 21px;color:#fff;display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.parking-case-v4 .parking-case-hero small,.parking-case-v4 .parking-case-hero .eyebrow{color:#cceadf!important;font-size:10px;letter-spacing:.095em;font-weight:750}
+.parking-case-v4 .parking-case-hero h3{color:#fff!important;font-size:21px!important;line-height:1.25;margin:8px 0 10px!important}
+.parking-case-v4 .parking-case-hero .status{display:inline-block;background:#effbf4;color:#1c644d;border-radius:6px;padding:4px 9px;font-size:12px}
+.parking-case-v4 .parking-case-hero .incident-priority{background:#fff2d1;color:#684800;padding:4px 9px;border-radius:6px}
+.parking-case-v4 .parking-case-hero .incident-header-status{display:flex;flex-wrap:wrap;align-items:center;gap:9px;color:#e1f6ed;font-size:12px}
+.parking-case-v4 .parking-case-hero .actions,.parking-case-v4 .parking-case-hero .parking-case-hero-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.parking-case-v4 .parking-case-hero button{background:#e7f5ef!important;border-color:transparent!important;color:#145846!important;white-space:nowrap}
+.parking-case-v4 .parking-case-hero button:not(.secondary){background:#fff!important;color:#114c3a!important}
+.parking-case-v4 .parking-case-hero .parking-case-hero-title{min-width:0}
+.parking-case-v4 .parking-case-hero .parking-case-hero-code{font-size:11px;color:#ddf4e9;margin-top:7px;overflow-wrap:anywhere}
+.parking-case-v4 .parking-case-inner{padding:23px;display:grid;gap:16px}
+.parking-case-v4 .parking-case-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.parking-case-v4 .parking-case-overview>div{background:#edf6f1;border:1px solid #d7e9e0;border-radius:10px;padding:11px 13px;min-width:0}
+.parking-case-v4 .parking-case-overview small{display:block;color:#628175;font-size:10px;margin-bottom:4px}
+.parking-case-v4 .parking-case-overview b{color:#123d2f;font-size:13px;overflow-wrap:anywhere}
+.parking-case-v4 .parking-case-columns{display:grid;grid-template-columns:minmax(0,1.26fr) minmax(0,.94fr);gap:16px;align-items:start}
+.parking-case-v4 .parking-case-column{min-width:0;display:grid;gap:15px;align-content:start}
+.parking-case-v4 .parking-case-section{border:1px solid var(--case-line);background:white;border-radius:12px;padding:16px;min-width:0;margin:0!important}
+.parking-case-v4 .parking-case-section>h4,.parking-case-v4 .parking-case-section .incident-section-title h4{color:var(--case-ink);font-weight:750;font-size:13px;margin:0 0 12px!important}
+.parking-case-v4 .parking-case-section .incident-section-title{margin:0 0 10px}
+.parking-case-v4 .parking-case-section .details,.parking-case-v4 .parking-case-section .incident-primary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.parking-case-v4 .parking-case-section .details>div,.parking-case-v4 .parking-case-section .incident-primary-grid>div{background:#f6f9f7;border:1px solid #eef2ef;border-radius:8px;padding:10px 11px;min-width:0}
+.parking-case-v4 .parking-case-section small{display:block;font-size:10px;color:var(--case-muted);margin-bottom:5px}
+.parking-case-v4 .parking-case-section b{display:block;font-size:12px;line-height:1.4;overflow-wrap:anywhere}
+.parking-case-v4 .parking-case-section .incident-narrative{padding:12px;background:#f7faf8;border-radius:8px;margin:0 0 12px;line-height:1.5}
+.parking-case-v4 .parking-case-section .incident-technical{margin:0;border:0;background:transparent}
+.parking-case-v4 .parking-case-section .incident-technical-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.parking-case-v4 .parking-case-score{min-width:0}.parking-case-v4 .parking-case-score>.card{margin:0!important}
+.parking-case-v4 .parking-case-score #incident-compliance-panel,.parking-case-v4 .parking-case-score #incident-compliance-detail-panel{margin:0!important}
+.parking-case-v4 .parking-case-score .card,.parking-case-v4 .parking-case-history .card{box-shadow:none;border:1px solid var(--case-line);border-radius:12px;margin:0!important}
+.parking-case-v4 .parking-case-history .request-case-section{margin:0!important}
+.parking-case-v4 .parking-case-followups .incident-timeline,.parking-case-v4 .parking-case-resolution .incident-resolution{margin:0}
+.parking-case-v4 .parking-case-decision{border:1px solid #b9dace;background:#f0faf5;border-radius:12px;padding:15px}
+.parking-case-v4 .parking-case-decision .actions{margin-top:12px}
+.parking-case-v4 .parking-case-audit{font-size:12px}
+@media(max-width:840px){.parking-case-v4 .parking-case-columns{grid-template-columns:1fr}.parking-case-v4 .parking-case-hero{flex-direction:column}.parking-case-v4 .parking-case-hero .actions,.parking-case-v4 .parking-case-hero .parking-case-hero-actions{justify-content:flex-start}}
+@media(max-width:560px){.parking-case-v4 .parking-case-inner{padding:12px}.parking-case-v4 .parking-case-hero{padding:16px}.parking-case-v4 .parking-case-hero h3{font-size:18px!important}.parking-case-v4 .parking-case-overview{grid-template-columns:1fr}.parking-case-v4 .parking-case-section .details,.parking-case-v4 .parking-case-section .incident-primary-grid,.parking-case-v4 .parking-case-section .incident-technical-grid{grid-template-columns:1fr}}
+/* v6 - information density: current essentials visible, full history in native disclosure */
+.parking-case-v4 .parking-case-compact{gap:12px}
+.parking-case-v4 .parking-case-extra{padding:11px 14px!important}
+.parking-case-v4 .parking-case-extra>summary{cursor:pointer;font-size:12px;font-weight:700;color:#27594b}
+.parking-case-v4 .parking-case-extra[open]>summary{margin-bottom:12px}
+.parking-case-v4 .parking-case-inline-extra{border-top:1px solid #e8efeb;margin-top:12px;padding-top:12px}
+.parking-case-v4 .parking-case-inline-extra .incident-primary-grid{margin-top:10px}
+.parking-case-v4 .parking-case-overview{gap:8px}
+</style>
+        <header class="parking-case-hero">
+          <div class="parking-case-hero-title"><small>${esc(appDisplayName()||'Parking Comunidad')} · EXPEDIENTE DE INCIDENCIA</small>
             <h3>${esc(r.Tipo)} · ${esc(incidentPlate(r))}</h3>
-            <div class="incident-header-status">
-              <span class="status ${r.Estado==='Cerrada'?'':'bad'}">${esc(r.Estado||'Abierta')}</span>
+            <div class="incident-header-status"><span class="status ${r.Estado==='Cerrada'?'':'bad'}">${esc(r.Estado||'Abierta')}</span>
               <span class="incident-priority ${String(r.Prioridad||'Normal').toLowerCase()}">${esc(r.Prioridad||'Normal')}</span>
-              <span>${esc(r.Intentos||1)} intento${Number(r.Intentos||1)===1?'':'s'}</span>
-            </div>
+              <span>${esc(r.Intentos||1)} intento${Number(r.Intentos||1)===1?'':'s'}</span></div>
+            <div class="parking-case-hero-code" title="${esc(r.ID_Incidencia||'')}">${esc(r.ID_Incidencia?'INC-'+String(r.ID_Incidencia).slice(-8).toUpperCase():'')}</div>
+          </div>${topActions}
+        </header>
+        <div class="parking-case-inner parking-case-compact">
+          <div class="parking-case-overview">
+            <div><small>Vivienda</small><b>${esc(recordHousingLabel(r,h))}</b></div>
+            <div><small>Fecha de registro</small><b>${esc(shortDateTime(r.FechaHora))}</b></div>
+            <div><small>Vehículo</small><b>${esc(incidentPlate(r))} · ${esc(linked?r.EstadoVehiculo||'No informado':'No informado')}</b></div>
           </div>
-          ${topActions}
-        </div>
-        <div class="incident-primary-grid">
-          <div><small>Fecha y hora</small><b>${esc(shortDateTime(r.FechaHora))}</b></div>
-          <div><small>Vivienda</small><b>${esc(recordHousingLabel(r,h))}</b></div>
-          <div><small>Situación</small><b>${esc(r.Situacion||'—')}</b></div>
-          <div><small>Origen</small><b>${esc(r.OrigenControl||'Manual')}</b></div>
-        </div>
-        <div class="incident-identification-grid">
-          <div><small>Método de identificación</small><b>${esc(identificationMethod)}</b></div>
-          <div><small>Matrícula observada</small><b>${esc(observedIncidentPlate||'—')}</b></div>
-          ${qrAssociatedPlate?`<div><small>Matrícula asociada al QR</small><b>${esc(qrAssociatedPlate)}</b></div>`:''}
-        </div>
-        ${auditHtml}
-        ${technicalHtml}
-        <section class="incident-detail-section">
+          <div class="parking-case-columns">
+            <div class="parking-case-column parking-case-main">
+              <details class="parking-case-section parking-case-extra">
+                <summary>Identificación y origen</summary>
+                <div class="incident-primary-grid">
+                  <div><small>Identificación</small><b>${esc(identificationMethod)}</b></div>
+                  <div><small>Origen</small><b>${esc(r.OrigenControl||'Manual')}</b></div>
+                  ${r.Situacion?`<div><small>Situación</small><b>${esc(r.Situacion)}</b></div>`:''}
+                </div>
+              </details>
+              <section class="parking-case-section">        <section class="incident-detail-section">
           <div class="incident-section-title"><div><span class="eyebrow">REGISTRO INICIAL</span><h4>Hechos registrados</h4></div></div>
           <div class="incident-narrative">${esc(r.Descripcion||'Sin descripción.')}</div>
           ${relationHtml}${linkedHtml}
@@ -4591,19 +5202,75 @@ async function incidents(openId=''){
             <div class="incident-main-evidence">${incidentEvidenceLinks(r,'Evidencia inicial')}</div>
           </div>
         </section>
-        <div id="incident-close-editor"></div>
-        ${followupsHtml}
-        ${resolutionHtml}
+</section>
+              <div class="parking-case-followups">${followupsHtml}</div>
+              <div class="parking-case-resolution">${resolutionHtml}</div>
+            </div>
+            <aside class="parking-case-column parking-case-side">
+              <section class="parking-case-section">
+                <h4>Estado actual del vehículo</h4>
+                <div class="incident-primary-grid">
+                  <div><small>Tipo de vehículo</small><b>${esc(linked?(isMoto?'Moto':r.TipoVehiculo||r.TipoVehiculoOrigen||'No informado'):'No informado')}</b></div>
+                  <div><small>Estado actual</small><b>${esc(linked?r.EstadoVehiculo||'No informado':'No informado')}</b></div>
+                  ${!isMoto&&linked&&r.EstadoQR?`<div><small>QR actual</small><b>${esc(r.EstadoQR)}</b></div>`:''}
+                  ${!isMoto&&linked&&(r.Slot||r.SlotActual)?`<div><small>Slot actual</small><b>${esc(r.Slot||r.SlotActual)}</b></div>`:''}
+                </div>
+                <details class="parking-case-extra parking-case-inline-extra">
+                  <summary>Datos originales del vehículo</summary>
+                  <div class="incident-primary-grid">
+                    <div><small>Estado al registrar</small><b>${esc(r.EstadoVehiculoOrigen||'No informado')}</b></div>
+                    ${!isMoto?`<div><small>QR al registrar</small><b>${esc(r.QREstadoOrigen||'No informado')}</b></div>`:''}
+                    ${!isMoto&&r.SlotOrigen?`<div><small>Slot origen</small><b>${esc(r.SlotOrigen)}</b></div>`:''}
+                    ${qrAssociatedPlate?`<div><small>Matrícula asociada al QR</small><b>${esc(qrAssociatedPlate)}</b></div>`:''}
+                  </div>
+                </details>
+              </section>
+              ${auditHtml}
+              ${technicalHtml?`<section class="parking-case-section">${technicalHtml}</section>`:""}
+              <div class="parking-case-score">${parkingCompliancePanel(r,rows).replace('id="incident-compliance-panel"','id="incident-compliance-detail-panel"')}</div>
+            </aside>
+          </div>
+          <div id="incident-close-editor"></div>
+        </div>
       </section>`;
       $('#inc-detail-close').onclick=()=>host.innerHTML='';const pdfBtn=$('#inc-detail-pdf');if(pdfBtn)pdfBtn.onclick=async()=>{busy(pdfBtn);try{await generateIncidentPdf(r,recordHousingLabel(r,h));toast('PDF generado.')}catch(e){toast(e.message||'No se pudo generar el PDF.',true)}finally{busy(pdfBtn,false)}};document.querySelectorAll('.inc-linked').forEach(b=>b.onclick=()=>detail(rows.find(x=>x.ID_Incidencia===b.dataset.id)));
+      // parking_official_pdf_single_button_v1: download only the stored, shared final report.
+      const officialPdf=$('#inc-detail-official-pdf');
+      if(officialPdf)officialPdf.onclick=async()=>{
+        busy(officialPdf);
+        try {
+          const result=await call('downloadIncidentPdf',{id:r.ID_Incidencia});
+          if(!result?.url)throw new Error('No se encontró el PDF oficial del expediente.');
+          const anchor=document.createElement('a');
+          anchor.href=result.url;
+          anchor.target='_blank';
+          anchor.rel='noopener noreferrer';
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+        }catch(e){toast(e.message||'No se pudo abrir el PDF oficial.',true)}
+        finally{busy(officialPdf,false)}
+      };
       const close=$('#inc-detail-close-case');
       if(close)close.onclick=()=>{
         $('#incident-close-editor').innerHTML=`<form class="form" id="incident-close-form" style="margin-top:1rem"><div class="field"><label>Acción realizada</label><select name="AccionCierre" id="incident-close-action" required><option value="">Selecciona una acción</option>${actions.map(x=>`<option value="${esc(x)}">${esc(actionLabel(x))}</option>`).join('')}</select></div><div class="field wide"><label>Comentario de cierre</label><textarea name="ComentarioCierre" required placeholder="Qué se hizo, contacto con propietario, observaciones..."></textarea></div><div class="message wide" id="incident-action-help"></div><div class="wide actions"><button>CONFIRMAR Y CERRAR</button><button type="button" class="secondary" id="cancel-close-inc">Cancelar</button></div></form>`;
         const actionSel=$('#incident-close-action'),help=$('#incident-action-help');
         const refreshAction=()=>{const a=actionSel.value;const mismatch=r.Tipo==='QR no corresponde con matrícula';const messages={'Revocar QR':mismatch?`Se revocará el QR presentado, perteneciente a ${qrOwnerPlate}. El vehículo observado ${observedPlate} no cambia de estado.`:'El QR quedará revocado. El vehículo seguirá activo.','Renovar QR':'El QR anterior quedará invalidado y se generará uno nuevo.','Suspender vehículo':mismatch?`Se suspenderá el vehículo observado ${observedPlate}. El QR presentado de ${qrOwnerPlate} no se modifica.`:(isMoto?'La moto quedará suspendida.':'El vehículo quedará suspendido, liberará su slot y quedará sin QR asignado.'),'Dar de baja':isMoto?'La moto quedará dada de baja.':'El vehículo quedará dado de baja, liberará el slot y quedará sin QR asignado.','Mantener suspensión':mismatch?`La incidencia se cerrará manteniendo suspendido el vehículo observado ${observedPlate}.`:'La incidencia se cerrará manteniendo el vehículo suspendido.','Aviso al propietario':'Se registrará que se realizó un aviso. Esta acción no envía automáticamente un email ni una notificación.','Datos corregidos':'Se registrará que los datos fueron corregidos. Esta acción no modifica automáticamente la ficha del vehículo o vivienda.'};help.textContent=messages[a]||'La incidencia se cerrará con la acción seleccionada.'};
-        actionSel.onchange=refreshAction;refreshAction();
-        $('#cancel-close-inc').onclick=()=>$('#incident-close-editor').innerHTML='';
-        $('#incident-close-form').onsubmit=async e=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.target)),action=data.AccionCierre;if(!action){toast('Selecciona la acción realizada.',true);return}if(!String(data.ComentarioCierre||'').trim()){toast('El comentario de cierre es obligatorio.',true);return}const mutating=['Revocar QR','Renovar QR','Suspender vehículo','Dar de baja'].includes(action),mismatch=r.Tipo==='QR no corresponde con matrícula',effects={'Revocar QR':mismatch?`Se revocará únicamente el QR presentado de ${qrOwnerPlate}.`:'El vehículo seguirá activo y su QR quedará revocado.','Renovar QR':'Se invalidará el QR anterior y se generará uno nuevo.','Suspender vehículo':mismatch?`Se suspenderá únicamente el vehículo observado ${observedPlate}.`:(isMoto?'La moto quedará suspendida.':'El vehículo quedará suspendido, liberará su slot y quedará sin QR asignado.'),'Dar de baja':isMoto?'La moto quedará de baja.':'El vehículo quedará de baja, liberará el slot y quedará sin QR asignado.'},target=action==='Revocar QR'&&mismatch?qrOwnerPlate:observedPlate;if(mutating&&!confirm(`${actionLabel(action)}.\n\n${effects[action]||''}\n\nObjetivo: ${target}.\n\n¿Confirmar y cerrar la incidencia?`))return;const b=e.submitter;busy(b);try{await call('closeIncident',Object.assign({id:r.ID_Incidencia},data));toast('Incidencia resuelta y cerrada.');invalidateClientParkingData();incidents()}catch(x){toast(x.message,true);busy(b,false)}};
+        const updateCompliancePreview=action=>{const panel=$('#incident-compliance-detail-panel');if(panel)panel.outerHTML=parkingCompliancePanel(r,rows,action?{action}:{}).replace('id="incident-compliance-panel"','id="incident-compliance-detail-panel"')};
+        actionSel.onchange=()=>{refreshAction();updateCompliancePreview(actionSel.value)};refreshAction();
+        $('#cancel-close-inc').onclick=()=>{$('#incident-close-editor').innerHTML='';updateCompliancePreview('')};
+        $('#incident-close-form').onsubmit=async e=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.target)),action=data.AccionCierre;if(!action){toast('Selecciona la acción realizada.',true);return}if(!String(data.ComentarioCierre||'').trim()){toast('El comentario de cierre es obligatorio.',true);return}const mutating=['Revocar QR','Renovar QR','Suspender vehículo','Dar de baja'].includes(action),mismatch=r.Tipo==='QR no corresponde con matrícula',effects={'Revocar QR':mismatch?`Se revocará únicamente el QR presentado de ${qrOwnerPlate}.`:'El vehículo seguirá activo y su QR quedará revocado.','Renovar QR':'Se invalidará el QR anterior y se generará uno nuevo.','Suspender vehículo':mismatch?`Se suspenderá únicamente el vehículo observado ${observedPlate}.`:(isMoto?'La moto quedará suspendida.':'El vehículo quedará suspendido, liberará su slot y quedará sin QR asignado.'),'Dar de baja':isMoto?'La moto quedará de baja.':'El vehículo quedará de baja, liberará el slot y quedará sin QR asignado.'},target=action==='Revocar QR'&&mismatch?qrOwnerPlate:observedPlate;if(mutating&&!confirm(`${actionLabel(action)}.\n\n${effects[action]||''}\n\nObjetivo: ${target}.\n\n¿Confirmar y cerrar la incidencia?`))return;const b=e.submitter;busy(b);try{await call('closeIncident',Object.assign({id:r.ID_Incidencia},data));
+      toast('Incidencia cerrada. Preparando notificaciones.');
+      try{
+        const refreshed=await call('listIncidentsPayload');
+        const closed=(refreshed.rows||[]).find(x=>x.ID_Incidencia===r.ID_Incidencia);
+        if(!closed||closed.Estado!=='Cerrada')throw new Error('No se pudo recuperar el informe final.');
+        await uploadIncidentCloseReports(closed,recordHousingLabel(closed,housingMap[closed.ID_Vivienda]));
+        toast('Informes de cierre preparados para notificación.');
+      }catch(pdfError){
+        toast('Cierre guardado, pero falta preparar el PDF para email: '+(pdfError.message||pdfError),true);
+      }
+      invalidateClientParkingData();incidents()}catch(x){toast(x.message,true);busy(b,false)}};
       };
       host.scrollIntoView({behavior:'smooth',block:'start'});
     };
@@ -4614,23 +5281,29 @@ async function incidents(openId=''){
       host.innerHTML=`<section class="card incident-dossier-detail"><div class="head"><div><div class="eyebrow">EXPEDIENTE</div><h2>${esc(plate)}</h2><div class="muted">${esc(house||'Sin vivienda asociada')}${vehicleState?` · Estado del vehículo: ${esc(vehicleState)}`:''}</div></div><button type="button" class="secondary" id="incident-dossier-close">Cerrar expediente</button></div><div class="incident-dossier-metrics"><div><b>${open.length}</b><span>Abiertas</span></div><div><b>${attempts}</b><span>Intentos abiertos</span></div><div><b>${closed.length}</b><span>Resueltas</span></div><div><b>${relations.length}</b><span>Relacionados</span></div></div>${relations.length?`<div class="message incident-dossier-relations"><b>Vehículos relacionados:</b> ${relations.map(x=>`<span>${esc(x)}</span>`).join(' · ')}</div>`:''}<div class="incident-dossier-section"><div class="incident-dossier-section-head"><h3>Incidencias abiertas</h3><span>${open.length}</span></div>${open.length?open.map(r=>dossierIncidentItem(r,false)).join(''):'<div class="empty compact-empty">No hay incidencias abiertas.</div>'}</div><div class="incident-dossier-section"><div class="incident-dossier-section-head"><h3>Histórico resuelto</h3><span>${closed.length}</span></div>${closed.length?closed.slice(0,8).map(r=>dossierIncidentItem(r,true)).join(''):'<div class="empty compact-empty">No hay incidencias resueltas.</div>'}${closed.length>8?`<div class="subtle">Se muestran las 8 más recientes de ${closed.length}.</div>`:''}</div></section>`;
       $('#incident-dossier-close').onclick=()=>host.innerHTML='';document.querySelectorAll('.inc-dossier-incident').forEach(b=>b.onclick=()=>{const target=rows.find(r=>r.ID_Incidencia===b.dataset.id);if(target)detail(target)});host.scrollIntoView({behavior:'smooth',block:'start'});
     };
-    const renderSummary=()=>{const open=rows.filter(r=>r.Estado!=='Cerrada'),critical=open.filter(r=>String(r.Prioridad||'').toLowerCase()==='crítica'),vehicleKeys=new Set(open.map(dossierKey)),attempts=open.reduce((n,r)=>n+Number(r.Intentos||1),0);$('#inc-stat-open').textContent=open.length;$('#inc-stat-critical').textContent=critical.length;$('#inc-stat-vehicles').textContent=vehicleKeys.size;$('#inc-stat-attempts').textContent=attempts};
+    const renderSummary=()=>{const open=rows.filter(r=>r.Estado!=='Cerrada'),critical=open.filter(r=>String(r.Prioridad||'').toLowerCase()==='crítica'),vehicleKeys=new Set(open.map(incidentPlate).filter(x=>x!=='SIN MATRÍCULA')),attempts=open.reduce((n,r)=>n+Number(r.Intentos||1),0);$('#inc-stat-open').textContent=open.length;$('#inc-stat-critical').textContent=critical.length;$('#inc-stat-vehicles').textContent=vehicleKeys.size;$('#inc-stat-attempts').textContent=attempts};
     const renderDossiers=list=>{
       const grouped=new Map();list.forEach(r=>{const key=dossierKey(r);if(!grouped.has(key))grouped.set(key,[]);grouped.get(key).push(r)});
       const groups=[...grouped.entries()].map(([key,items])=>{const all=rowsForDossier(key),openAll=all.filter(r=>r.Estado!=='Cerrada'),latest=all.slice().sort((a,b)=>activityTs(b)-activityTs(a))[0]||items[0],rank=Math.max(0,...openAll.map(r=>priorityRank(r.Prioridad)));return {key,items,all,openAll,latest,rank}}).sort((a,b)=>b.rank-a.rank||activityTs(b.latest)-activityTs(a.latest)||naturalSort(incidentPlate(a.latest),incidentPlate(b.latest)));
       const pages=Math.max(1,Math.ceil(groups.length/PAGE_SIZE));page=Math.min(page,pages);const slice=groups.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE);$('#incident-count').textContent=`${groups.length} expediente${groups.length===1?'':'s'} · ${list.length} incidencia${list.length===1?'':'s'}`;
-      $('#incident-dossier-list').innerHTML=slice.map(g=>{const plate=incidentPlate(g.latest),house=incidentHouse(g.latest),attempts=g.openAll.reduce((n,r)=>n+Number(r.Intentos||1),0),relations=[...new Set(g.all.flatMap(r=>incidentRelatedPlatesClient(r,incidentRelatedCasesClient(r,rows),incidentPlate)))],openTypes=[...new Set(g.openAll.map(r=>r.Tipo+(r.Situacion?` · ${r.Situacion}`:'')))],critical=g.openAll.some(r=>priorityRank(r.Prioridad)===4),last=lastActivity(g.latest);return `<article class="card incident-dossier-card ${critical?'has-critical':''}"><div class="incident-dossier-card-main"><div class="incident-dossier-card-title"><div><b class="incident-dossier-plate">${esc(plate)}</b><span class="subtle">${esc(house||'Sin vivienda asociada')}</span></div><div class="incident-dossier-status">${critical?'<span class="incident-priority crítica">Crítica</span>':''}<span class="status ${g.openAll.length?'bad':''}">${g.openAll.length} abierta${g.openAll.length===1?'':'s'}</span></div></div><div class="incident-dossier-card-metrics"><span><b>${attempts}</b> intentos</span><span><b>${relations.length}</b> relacionados</span><span>Última actividad <b>${esc(shortDateTime(last))}</b></span></div><div class="incident-dossier-tags">${openTypes.slice(0,3).map(x=>`<span>${esc(x)}</span>`).join('')}${openTypes.length>3?`<span>+${openTypes.length-3}</span>`:''}</div></div><div class="incident-dossier-card-action"><button type="button" class="secondary inc-open-dossier" data-key="${esc(g.key)}">Ver expediente</button></div></article>`}).join('')||'<div class="card empty">No hay expedientes que coincidan con los filtros.</div>';
+      $('#incident-dossier-list').innerHTML=slice.map(g=>{const plate=incidentPlate(g.latest),house=incidentHouse(g.latest),owner=g.latest.NombrePropietarioAlHecho||'Sin atribución verificada',attempts=g.openAll.reduce((n,r)=>n+Number(r.Intentos||1),0),relations=[...new Set(g.all.flatMap(r=>incidentRelatedPlatesClient(r,incidentRelatedCasesClient(r,rows),incidentPlate)))],openTypes=[...new Set(g.openAll.map(r=>r.Tipo+(r.Situacion?` · ${r.Situacion}`:'')))],critical=g.openAll.some(r=>priorityRank(r.Prioridad)===4),last=lastActivity(g.latest),title=groupByOwner?owner:groupByHousing?(house||'Sin vivienda identificada'):plate,subtitle=groupByOwner?`${new Set(g.all.map(r=>r.ID_Vivienda).filter(Boolean)).size} vivienda(s) vinculada(s)`:house||'Sin vivienda asociada';return `<article class="card incident-dossier-card ${critical?'has-critical':''}"><div class="incident-dossier-card-main"><div class="incident-dossier-card-title"><div><b class="incident-dossier-plate">${esc(title)}</b><span class="subtle">${esc(subtitle)}</span></div><div class="incident-dossier-status">${critical?'<span class="incident-priority crítica">Crítica</span>':''}<span class="status ${g.openAll.length?'bad':''}">${g.openAll.length} abierta${g.openAll.length===1?'':'s'}</span></div></div><div class="incident-dossier-card-metrics"><span><b>${attempts}</b> intentos</span><span><b>${relations.length}</b> relacionados</span><span>Última actividad <b>${esc(shortDateTime(last))}</b></span></div><div class="incident-dossier-tags">${openTypes.slice(0,3).map(x=>`<span>${esc(x)}</span>`).join('')}${openTypes.length>3?`<span>+${openTypes.length-3}</span>`:''}</div></div><div class="incident-dossier-card-action"><button type="button" class="secondary inc-open-dossier" data-key="${esc(g.key)}">Ver expediente</button></div></article>`}).join('')||'<div class="card empty">No hay expedientes que coincidan con los filtros.</div>';
       $('#incident-pager').innerHTML=pagerHtml('incident',page,groups.length);document.querySelectorAll('.inc-open-dossier').forEach(b=>b.onclick=()=>showDossier(b.dataset.key));const prev=$('#incident-prev'),next=$('#incident-next');if(prev)prev.onclick=()=>{page--;render()};if(next)next.onclick=()=>{page++;render()};
     };
     const renderList=list=>{
       const pages=Math.max(1,Math.ceil(list.length/PAGE_SIZE));page=Math.min(page,pages);const slice=list.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE);$('#incident-count').textContent=`Mostrando ${slice.length?((page-1)*PAGE_SIZE+1):0}–${Math.min(page*PAGE_SIZE,list.length)} de ${list.length}`;
       $('#incident-body').innerHTML=slice.map(r=>{const plate=incidentPlate(r),house=incidentHouse(r);return `<tr><td data-label="Fecha">${esc(shortDateTime(r.FechaHora))}</td><td data-label="Matrícula"><b>${esc(plate)}</b></td><td data-label="Vivienda">${esc(house)}</td><td data-label="Incidencia"><b>${esc(r.Tipo)}</b>${r.Situacion?`<div class="subtle">Situación: ${esc(r.Situacion)}</div>`:''}${r.Causa?`<div class="subtle">Causa: ${esc(r.Causa)}</div>`:''}</td><td data-label="Prioridad"><span class="incident-priority ${String(r.Prioridad||'Normal').toLowerCase()}">${esc(r.Prioridad||'Normal')}</span></td><td data-label="Intentos"><b>${esc(r.Intentos||1)}</b>${r.UltimoSeguimiento?`<span class="subtle">${esc(shortDateTime(r.UltimoSeguimiento))}</span>`:''}</td><td data-label="Estado"><span class="status ${r.Estado==='Cerrada'?'':'bad'}">${esc(r.Estado||'Abierta')}</span></td><td data-label="Acciones">${actionMenuHtml(`<button class="secondary inc-view" data-id="${esc(r.ID_Incidencia)}">Ver</button><button class="secondary inc-row-dossier" data-key="${esc(dossierKey(r))}">Expediente</button>`)}</td></tr>`}).join('');$('#incident-empty').classList.toggle('hide',!!list.length);$('#incident-pager').innerHTML=pagerHtml('incident',page,list.length);document.querySelectorAll('.inc-view').forEach(b=>b.onclick=()=>detail(rows.find(r=>r.ID_Incidencia===b.dataset.id)));document.querySelectorAll('.inc-row-dossier').forEach(b=>b.onclick=()=>showDossier(b.dataset.key));const prev=$('#incident-prev'),next=$('#incident-next');if(prev)prev.onclick=()=>{page--;render()};if(next)next.onclick=()=>{page++;render()};
     };
-    const render=()=>{const list=filtered();state.cache.incidentsFiltered=list;renderSummary();const dossiers=viewMode==='dossiers';$('#incident-dossier-list').classList.toggle('hide',!dossiers);$('#incident-flat-list').classList.toggle('hide',dossiers);$('#incident-view-dossiers').classList.toggle('active',dossiers);$('#incident-view-list').classList.toggle('active',!dossiers);if(dossiers)renderDossiers(list);else renderList(list)};
+    const render=()=>{const list=filtered();state.cache.incidentsFiltered=list;renderSummary();const dossiers=viewMode==='dossiers';$('#incident-dossier-list').classList.toggle('hide',!dossiers);$('#incident-flat-list').classList.toggle('hide',dossiers);$('#incident-view-dossiers').classList.toggle('active',dossiers&&!groupByHousing&&!groupByOwner);$('#incident-view-housing').classList.toggle('active',dossiers&&groupByHousing);$('#incident-view-owner').classList.toggle('active',dossiers&&groupByOwner);$('#incident-view-list').classList.toggle('active',!dossiers);if(dossiers)renderDossiers(list);else renderList(list)};
+    const reportButton=$('#incident-weekly-report');
+    if(reportButton)reportButton.onclick=async()=>{busy(reportButton);try{
+      const result=await call('weeklyManualReport');
+      toast(result.report?.status==='already_ready'?'Informe semanal ya generado.':'Informe semanal Excel generado. Envío en cola.');
+    }catch(e){toast(e.message||'No se pudo generar el informe.',true)}
+    finally{busy(reportButton,false)}};
     $('#incidents-export-xlsx').onclick=()=>downloadXlsx(`incidencias_${new Date().toISOString().slice(0,10)}.xlsx`,state.cache.incidentsFiltered||filtered(),null,'Incidencias').catch(err);$('#incidents-export-csv').onclick=()=>downloadCsv(`incidencias_${new Date().toISOString().slice(0,10)}.csv`,state.cache.incidentsFiltered||filtered());
     $('#incident-search').value=navPreset?.search||ui.q||'';$('#incident-state').value=navPreset?.status!==undefined?navPreset.status:(ui.status===undefined?'Abierta':ui.status);$('#incident-priority').value=ui.priority||'';$('#incident-type').value=ui.type||'';$('#incident-origin').value=ui.origin||'';$('#incident-period').value=ui.period||'';$('#incident-from').value=ui.from||'';$('#incident-to').value=ui.to||'';bindPeriodVisibility('incident');
     const reset=()=>{page=1;$('#incident-dossier').innerHTML='';render()};$('#incident-search').oninput=reset;['incident-state','incident-priority','incident-type','incident-origin','incident-period','incident-from','incident-to'].forEach(id=>$("#"+id).onchange=reset);
-    $('#incident-view-dossiers').onclick=()=>{viewMode='dossiers';page=1;$('#incident-detail').innerHTML='';render()};$('#incident-view-list').onclick=()=>{viewMode='list';page=1;$('#incident-dossier').innerHTML='';render()};
+    $('#incident-view-dossiers').onclick=()=>{groupByHousing=false;groupByOwner=false;viewMode='dossiers';page=1;$('#incident-detail').innerHTML='';render()};$('#incident-view-housing').onclick=()=>{groupByHousing=true;groupByOwner=false;viewMode='dossiers';page=1;$('#incident-detail').innerHTML='';render()};$('#incident-view-owner').onclick=()=>{groupByHousing=false;groupByOwner=true;viewMode='dossiers';page=1;$('#incident-detail').innerHTML='';render()};$('#incident-view-list').onclick=()=>{viewMode='list';page=1;$('#incident-dossier').innerHTML='';render()};
     document.querySelectorAll('.sortable-th').forEach(th=>{th.dataset.dir=th.dataset.sort===sortKey?sortDir:'';th.onclick=()=>{const k=th.dataset.sort;sortDir=sortKey===k&&sortDir==='asc'?'desc':'asc';sortKey=k;page=1;document.querySelectorAll('.sortable-th').forEach(x=>x.dataset.dir=x.dataset.sort===sortKey?sortDir:'');render()}});
     const incidentFilterToggle=$('#incident-filter-toggle');
     const incidentFilterBar=document.querySelector('.admin-incident-filters');
@@ -4811,9 +5484,9 @@ async function ownerHousing(){try{const {hs,vs}=await ownerData();hs.sort((a,b)=
 function ownerVehicleActionBindings(vs){bindOwnerVehicleActions(vs);document.querySelectorAll('.owner-req-link').forEach(b=>b.onclick=()=>{state.cache.ownerNavPreset={view:'ownerRequests',filter:'pending',plate:b.dataset.plate};go('ownerRequests')});document.querySelectorAll('.owner-inc-link').forEach(b=>b.onclick=()=>{state.cache.ownerNavPreset={view:'ownerIncidents',filter:'open',plate:b.dataset.plate};go('ownerIncidents')})}
 async function ownerVehicles(){try{const {hs,vs,reqs,incs}=await ownerData(),hm=Object.fromEntries(hs.map(h=>[h.ID_Vivienda,h])),ui=viewUiState('ownerVehiclesTable'),preset=state.cache.ownerNavPreset?.view==='ownerVehicles'?state.cache.ownerNavPreset:null;delete state.cache.ownerNavPreset;const activeH=state.cache.ownerHousingFilter||'';state.cache.ownerHousingFilter='';const vehiclePreset=state.cache.ownerVehiclePreset||{};delete state.cache.ownerVehiclePreset;const pendingReq=id=>reqs.some(r=>r.ID_Vehiculo===id&&r.Estado==='Abierta'),pendingInc=id=>incs.some(r=>r.ID_Vehiculo===id&&r.Estado!=='Cerrada'),houses=[...hs].sort((a,b)=>naturalSort(housingShort(a),housingShort(b)));$('#main').innerHTML=`<div class="head"><h1>Mis vehículos</h1><button id="ov-add-top">＋ Añadir vehículo</button></div><div class="filterbar"><div class="field filter-search"><label>Buscar</label><input id="ov-search" class="search" placeholder="Matrícula, temporal o vivienda..."></div>${houses.length>1?`<div class="field"><label>Vivienda</label><select id="ov-house"><option value="">Todas</option>${houses.map(h=>`<option value="${esc(h.ID_Vivienda)}">${esc(housingShort(h))}</option>`).join('')}</select></div>`:''}<div class="field"><label>Clase</label><select id="ov-class"><option value="">Todos</option><option>Vehículo</option><option>Moto</option></select></div><div class="field"><label>Slot</label><select id="ov-slot"><option value="">Todos</option><option>Con slot</option><option>Sin slot</option></select></div><div class="field"><label>Solicitudes</label><select id="ov-req"><option value="">Todas</option><option>Con abiertas</option><option>Sin abiertas</option></select></div><div class="field"><label>Incidencias</label><select id="ov-inc"><option value="">Todas</option><option>Con abiertas</option><option>Sin abiertas</option></select></div><button type="button" class="secondary" id="ov-clear">Limpiar</button><span class="count" id="ov-count"></span></div><div id="owner-editor"></div><div class="tablebox compact-table owner-admin-like"><table class="table responsive-data-table"><thead><tr><th>Matrícula habitual</th><th>Matrícula temporal</th><th>Vigencia temporal</th><th>Vivienda</th><th>Slot</th><th>Clase</th><th>Estado</th><th>QR</th><th>Solicitudes</th><th>Incidencias</th><th>Acciones</th></tr></thead><tbody id="ov-body"></tbody></table></div>`;const houseSel=$('#ov-house');if(houseSel)houseSel.value=activeH||ui.house||'';const addAfterNav=state.cache.ownerAddVehicleAfterNav||'';delete state.cache.ownerAddVehicleAfterNav;$('#ov-search').value=ui.q||'';$('#ov-class').value=vehiclePreset.vehicleClass||ui.cl||'';$('#ov-slot').value=vehiclePreset.slot||ui.slot||'';$('#ov-req').value=ui.req||'';$('#ov-inc').value=ui.inc||'';if(preset?.filter==='temporary')$('#ov-search').value='';const actions=(v,i)=>{const hasSlot=v.Tipo!=='Moto'&&['1','2'].includes(String(v.Slot||'')),canQr=v.Tipo!=='Moto'&&hasSlot&&v.QR_Estado==='Activo',renew=v.Tipo!=='Moto'&&v.Estado==='Activo'&&hasSlot&&v.QR_Estado==='Revocado';return actionMenuHtml(`<button class="secondary owner-edit" data-i="${i}">Editar</button><button class="secondary owner-periods" data-i="${i}">Temporales</button>${canQr?`<button class="secondary owner-qr" data-i="${i}">QR</button>`:''}${renew?`<button class="secondary owner-renew" data-i="${i}">Solicitar renovación QR</button>`:''}${v.Tipo!=='Moto'&&['Activo','Desasignado'].includes(v.Estado)?`<button class="secondary owner-slot" data-i="${i}">${hasSlot?'Cambiar slot':'Asignar slot'}</button>${hasSlot?`<button class="secondary owner-release-slot" data-i="${i}">Liberar slot</button>`:''}`:''}${v.Estado==='Activo'?`<button class="secondary owner-replace" data-i="${i}">Reemplazar</button><button class="secondary owner-longstay" data-i="${i}">Avisar permanencia</button><button class="danger owner-low" data-i="${i}">Dar de baja</button>`:['Suspendido','Baja'].includes(v.Estado)?`<button class="secondary owner-reactivate" data-i="${i}">Solicitar activación</button>`:''}`)};const render=()=>{const q=$('#ov-search').value.trim().toLowerCase(),house=houseSel?.value||'',cl=$('#ov-class').value,slot=$('#ov-slot').value,rq=$('#ov-req').value,ic=$('#ov-inc').value;saveViewUiState('ownerVehiclesTable',{q,house,cl,slot,req:rq,inc:ic,v:'1.2.12.2'});const rows=[...vs].sort((a,b)=>naturalSort(housingShort(hm[a.ID_Vivienda]),housingShort(hm[b.ID_Vivienda]))||naturalSort(a.MatriculaHabitual,b.MatriculaHabitual)).filter(v=>{const cls=v.Tipo==='Moto'?'Moto':'Vehículo',hasSlot=v.Tipo!=='Moto'&&['1','2'].includes(String(v.Slot||'')),blob=[v.MatriculaHabitual,v.PeriodoTemporalActual?.MatriculaTemporal,housingShort(hm[v.ID_Vivienda])].join(' ').toLowerCase();return blob.includes(q)&&(!house||v.ID_Vivienda===house)&&(!cl||cls===cl)&&(!slot||(slot==='Con slot'?hasSlot:!hasSlot))&&(!rq||(rq==='Con abiertas'?pendingReq(v.ID_Vehiculo):!pendingReq(v.ID_Vehiculo)))&&(!ic||(ic==='Con abiertas'?pendingInc(v.ID_Vehiculo):!pendingInc(v.ID_Vehiculo)))&&(!preset?.filter||preset.filter!=='temporary'||!!v.PeriodoTemporalActual)});$('#ov-count').textContent=`Mostrando ${rows.length} de ${vs.length}`;$('#ov-body').innerHTML=rows.map(v=>{const i=vs.indexOf(v),tmp=v.PeriodoTemporalActual,hasSlot=v.Tipo!=='Moto'&&['1','2'].includes(String(v.Slot||'')),plate=v.MatriculaHabitual||'';return `<tr><td data-label="Matrícula habitual"><b>${esc(plate||'—')}</b></td><td data-label="Matrícula temporal">${tmp?`<b class="temp-active">${esc(tmp.MatriculaTemporal)}</b>`:'—'}</td><td data-label="Vigencia temporal">${tmp?`${esc(dateEs(tmp.Desde))} → ${esc(dateEs(tmp.Hasta))}`:'—'}</td><td data-label="Vivienda">${esc(housingShort(hm[v.ID_Vivienda]))}</td><td data-label="Slot">${esc(v.Tipo==='Moto'?'No aplica':hasSlot?'Slot '+v.Slot:'Sin slot')}</td><td data-label="Clase">${v.Tipo==='Moto'?'Moto':'Vehículo'}</td><td data-label="Estado"><span class="status ${v.Estado==='Activo'?'':'bad'}">${esc(v.Estado)}</span></td><td data-label="QR">${esc(v.Tipo==='Moto'?'No aplica':hasSlot?(v.QR_Estado||'—'):'—')}</td><td data-label="Solicitudes">${pendingReq(v.ID_Vehiculo)?`<button class="link-chip owner-req-link" data-plate="${esc(plate)}">Abierta</button>`:'—'}</td><td data-label="Incidencias">${pendingInc(v.ID_Vehiculo)?`<button class="link-chip owner-inc-link" data-plate="${esc(plate)}">Pendiente</button>`:'—'}</td><td data-label="Acciones">${actions(v,i)}</td></tr>`}).join('')||'<tr><td colspan="11" class="empty">No hay vehículos que coincidan con los filtros.</td></tr>';ownerVehicleActionBindings(vs)};$('#ov-add-top').onclick=()=>{if(houses.length===1)ownerAddVehicle(houses[0].ID_Vivienda);else if(houseSel&&houseSel.value)ownerAddVehicle(houseSel.value);else toast('Selecciona una vivienda para añadir el vehículo.',true)};$('#ov-search').oninput=render;['ov-house','ov-class','ov-slot','ov-req','ov-inc'].forEach(id=>{const el=$(`#${id}`);if(el)el.onchange=render});$('#ov-clear').onclick=()=>{['ov-search','ov-class','ov-slot','ov-req','ov-inc'].forEach(id=>{const el=$(`#${id}`);if(el)el.value=''});if(houseSel)houseSel.value='';render()};render();if(addAfterNav)ownerAddVehicle(addAfterNav)}catch(e){err(e)}}
 
-async function ownerIncidents(){try{const {hs,incs}=await ownerData(),hm=Object.fromEntries(hs.map(h=>[h.ID_Vivienda,h])),ui=viewUiState('ownerIncidentsTable'),preset=state.cache.ownerNavPreset?.view==='ownerIncidents'?state.cache.ownerNavPreset:null;delete state.cache.ownerNavPreset;let sortKey=ui.sortKey||'FechaHora',sortDir=ui.sortDir||'desc';const types=[...new Set(incs.map(r=>r.Tipo).filter(Boolean))].sort();$('#main').innerHTML=`<div class="head"><h1>Mis incidencias</h1></div><div class="filterbar"><div class="field filter-search"><label>Buscar</label><input id="oi-search" class="search" placeholder="Matrícula, vivienda, tipo o descripción..."></div>${periodFilterFields('oi')}<div class="field"><label>Estado</label><select id="oi-state"><option value="Abierta">Abiertas</option><option value="">Todas</option><option>Cerrada</option></select></div><div class="field"><label>Tipo</label><select id="oi-type"><option value="">Todos</option>${types.map(x=>`<option>${esc(x)}</option>`).join('')}</select></div><div class="field"><label>Agrupar por</label><select id="oi-group"><option value="none">Sin agrupar</option><option value="plate">Matrícula</option><option value="housing">Vivienda</option><option value="type">Tipo</option></select></div><span class="count" id="oi-count"></span></div><div class="tablebox compact-table owner-admin-like"><table class="table responsive-data-table"><thead><tr><th class="sortable-th" data-sort="FechaHora">Fecha</th><th class="sortable-th" data-sort="plate">Matrícula</th><th class="sortable-th" data-sort="housing">Vivienda</th><th class="sortable-th" data-sort="Tipo">Tipo</th><th class="sortable-th" data-sort="Estado">Estado</th><th>Seguimiento</th><th>Detalle</th><th>Resolución</th></tr></thead><tbody id="oi-body"></tbody></table></div>`;$('#oi-search').value=preset?.plate||ui.q||'';$('#oi-state').value=preset?.filter==='open'?'Abierta':(ui.st===undefined?'Abierta':ui.st);$('#oi-type').value=ui.tp||'';$('#oi-period').value=ui.period||'';$('#oi-from').value=ui.from||'';$('#oi-to').value=ui.to||'';$('#oi-group').value=ui.group||'none';bindPeriodVisibility('oi');const plate=r=>r.MatriculaObservada||r.MatriculaHabitualOrigen||r.MatriculaHabitualVehiculo||'SIN MATRÍCULA',house=r=>recordHousingLabel(r,hm[r.ID_Vivienda]),val=(r,k)=>k==='plate'?plate(r):k==='housing'?house(r):r[k]||'',cmp=(a,b)=>{const c=String(val(a,sortKey)).localeCompare(String(val(b,sortKey)),'es',{numeric:true});return sortDir==='asc'?c:-c};const rowHtml=r=>`<tr><td data-label="Fecha">${esc(shortDateTime(r.FechaHora))}</td><td data-label="Matrícula"><b>${esc(plate(r))}</b></td><td data-label="Vivienda">${esc(house(r))}</td><td data-label="Tipo">${esc(r.Tipo)}</td><td data-label="Estado"><span class="status ${r.Estado==='Cerrada'?'':'bad'}">${esc(r.Estado||'Abierta')}</span></td><td data-label="Seguimiento"><b>${esc(r.Prioridad||'Normal')}</b><br><span class="subtle">${esc(r.Intentos||1)} intento(s)</span></td><td data-label="Detalle" class="detail-text">${esc(r.Descripcion||'—')}${r.Foto?`<br><a href="${esc(r.Foto)}" target="_blank" rel="noopener">Ver fotografía</a>`:''}</td><td data-label="Resolución" class="resolution-cell">${r.Estado==='Cerrada'?`<div class="message owner-resolution"><b>Acción realizada:</b> ${esc(r.AccionCierre||'—')}<br><b>Comentario:</b> ${esc(r.ComentarioCierre||'—')}<br><span class="subtle">Cerrada por ${esc(r.NombreUsuarioCierre||r.UsuarioCierre||'—')} · ${esc(shortDateTime(r.FechaCierre))}</span></div>`:'<span class="muted">Abierta</span>'}</td></tr>`;const render=()=>{const q=$('#oi-search').value.trim().toLowerCase(),st=$('#oi-state').value,tp=$('#oi-type').value,period=$('#oi-period').value,from=$('#oi-from').value,to=$('#oi-to').value,group=$('#oi-group').value;saveViewUiState('ownerIncidentsTable',{q,st,tp,period,from,to,group,sortKey,sortDir,v:'1.2.12.2'});const rows=incs.filter(r=>(!st||r.Estado===st)&&(!tp||r.Tipo===tp)&&periodMatches(r.FechaHora,period,from,to)&&[...Object.values(r),house(r)].join(' ').toLowerCase().includes(q));$('#oi-count').textContent=`${rows.length} incidencia${rows.length===1?'':'s'}`;if(group==='none')$('#oi-body').innerHTML=[...rows].sort(cmp).map(rowHtml).join('')||'<tr><td colspan="8" class="empty">No tienes incidencias con estos filtros.</td></tr>';else{const keyFn=group==='plate'?plate:group==='housing'?house:r=>r.Tipo||'Sin tipo',entries=groupedRowsStable(rows,keyFn,cmp,(a,b)=>b[1].length-a[1].length||naturalSort(a[0],b[0]));$('#oi-body').innerHTML=entries.map(([key,list])=>`<tr class="table-group-row"><td colspan="8"><b>${esc(key)}</b> · ${list.length} incidencia(s)</td></tr>${list.map(rowHtml).join('')}`).join('')||'<tr><td colspan="8" class="empty">No tienes incidencias con estos filtros.</td></tr>'}};$('#oi-search').oninput=render;['oi-state','oi-type','oi-period','oi-from','oi-to','oi-group'].forEach(id=>$(`#${id}`).onchange=render);document.querySelectorAll('.sortable-th').forEach(th=>{th.dataset.dir=th.dataset.sort===sortKey?sortDir:'';th.onclick=()=>{const k=th.dataset.sort;sortDir=sortKey===k&&sortDir==='asc'?'desc':'asc';sortKey=k;document.querySelectorAll('.sortable-th').forEach(x=>x.dataset.dir=x.dataset.sort===sortKey?sortDir:'');render()}});render()}catch(e){err(e)}}
+async function ownerIncidents(){try{const {hs,incs}=await ownerData(),hm=Object.fromEntries(hs.map(h=>[h.ID_Vivienda,h])),ui=viewUiState('ownerIncidentsTable'),preset=state.cache.ownerNavPreset?.view==='ownerIncidents'?state.cache.ownerNavPreset:null;delete state.cache.ownerNavPreset;let sortKey=ui.sortKey||'FechaHora',sortDir=ui.sortDir||'desc';const types=[...new Set(incs.map(r=>r.Tipo).filter(Boolean))].sort();$('#main').innerHTML=`<div class="head"><h1>Mis incidencias</h1></div><div class="filterbar"><div class="field filter-search"><label>Buscar</label><input id="oi-search" class="search" placeholder="Matrícula, vivienda, tipo o descripción..."></div>${periodFilterFields('oi')}<div class="field"><label>Estado</label><select id="oi-state"><option value="Abierta">Abiertas</option><option value="">Todas</option><option>Cerrada</option></select></div><div class="field"><label>Tipo</label><select id="oi-type"><option value="">Todos</option>${types.map(x=>`<option>${esc(x)}</option>`).join('')}</select></div><div class="field"><label>Agrupar por</label><select id="oi-group"><option value="none">Sin agrupar</option><option value="plate">Matrícula</option><option value="housing">Vivienda</option><option value="type">Tipo</option></select></div><span class="count" id="oi-count"></span></div><div class="tablebox compact-table owner-admin-like"><table class="table responsive-data-table"><thead><tr><th class="sortable-th" data-sort="FechaHora">Fecha</th><th class="sortable-th" data-sort="plate">Matrícula</th><th class="sortable-th" data-sort="housing">Vivienda</th><th class="sortable-th" data-sort="Tipo">Tipo</th><th class="sortable-th" data-sort="Estado">Estado</th><th>Seguimiento</th><th>Detalle</th><th>Resolución</th></tr></thead><tbody id="oi-body"></tbody></table></div>`;$('#oi-search').value=preset?.incidentId||preset?.plate||ui.q||'';$('#oi-state').value=preset?.incidentId?'':preset?.filter==='open'?'Abierta':(ui.st===undefined?'Abierta':ui.st);$('#oi-type').value=ui.tp||'';$('#oi-period').value=ui.period||'';$('#oi-from').value=ui.from||'';$('#oi-to').value=ui.to||'';$('#oi-group').value=ui.group||'none';bindPeriodVisibility('oi');const plate=r=>r.MatriculaObservada||r.MatriculaHabitualOrigen||r.MatriculaHabitualVehiculo||'SIN MATRÍCULA',house=r=>recordHousingLabel(r,hm[r.ID_Vivienda]),val=(r,k)=>k==='plate'?plate(r):k==='housing'?house(r):r[k]||'',cmp=(a,b)=>{const c=String(val(a,sortKey)).localeCompare(String(val(b,sortKey)),'es',{numeric:true});return sortDir==='asc'?c:-c};const rowHtml=r=>`<tr><td data-label="Fecha">${esc(shortDateTime(r.FechaHora))}</td><td data-label="Matrícula"><b>${esc(plate(r))}</b></td><td data-label="Vivienda">${esc(house(r))}</td><td data-label="Tipo">${esc(r.Tipo)}</td><td data-label="Estado"><span class="status ${r.Estado==='Cerrada'?'':'bad'}">${esc(r.Estado||'Abierta')}</span></td><td data-label="Seguimiento"><b>${esc(r.Prioridad||'Normal')}</b><br><span class="subtle">${esc(r.Intentos||1)} intento(s)</span></td><td data-label="Detalle" class="detail-text">${esc(r.Descripcion||'—')}${r.Foto?`<br><a href="${esc(r.Foto)}" target="_blank" rel="noopener">Ver fotografía</a>`:''}</td><td data-label="Resolución" class="resolution-cell">${r.Estado==='Cerrada'?`<div class="message owner-resolution"><b>Acción realizada:</b> ${esc(r.AccionCierre||'—')}<br><b>Comentario:</b> ${esc(r.ComentarioCierre||'—')}<br><span class="subtle">Cerrada por ${esc(r.NombreUsuarioCierre||r.UsuarioCierre||'—')} · ${esc(shortDateTime(r.FechaCierre))}</span></div>`:'<span class="muted">Abierta</span>'}</td></tr>`;const render=()=>{const q=$('#oi-search').value.trim().toLowerCase(),st=$('#oi-state').value,tp=$('#oi-type').value,period=$('#oi-period').value,from=$('#oi-from').value,to=$('#oi-to').value,group=$('#oi-group').value;saveViewUiState('ownerIncidentsTable',{q,st,tp,period,from,to,group,sortKey,sortDir,v:'1.2.12.2'});const rows=incs.filter(r=>(!st||r.Estado===st)&&(!tp||r.Tipo===tp)&&periodMatches(r.FechaHora,period,from,to)&&[...Object.values(r),house(r)].join(' ').toLowerCase().includes(q));$('#oi-count').textContent=`${rows.length} incidencia${rows.length===1?'':'s'}`;if(group==='none')$('#oi-body').innerHTML=[...rows].sort(cmp).map(rowHtml).join('')||'<tr><td colspan="8" class="empty">No tienes incidencias con estos filtros.</td></tr>';else{const keyFn=group==='plate'?plate:group==='housing'?house:r=>r.Tipo||'Sin tipo',entries=groupedRowsStable(rows,keyFn,cmp,(a,b)=>b[1].length-a[1].length||naturalSort(a[0],b[0]));$('#oi-body').innerHTML=entries.map(([key,list])=>`<tr class="table-group-row"><td colspan="8"><b>${esc(key)}</b> · ${list.length} incidencia(s)</td></tr>${list.map(rowHtml).join('')}`).join('')||'<tr><td colspan="8" class="empty">No tienes incidencias con estos filtros.</td></tr>'}};$('#oi-search').oninput=render;['oi-state','oi-type','oi-period','oi-from','oi-to','oi-group'].forEach(id=>$(`#${id}`).onchange=render);document.querySelectorAll('.sortable-th').forEach(th=>{th.dataset.dir=th.dataset.sort===sortKey?sortDir:'';th.onclick=()=>{const k=th.dataset.sort;sortDir=sortKey===k&&sortDir==='asc'?'desc':'asc';sortKey=k;document.querySelectorAll('.sortable-th').forEach(x=>x.dataset.dir=x.dataset.sort===sortKey?sortDir:'');render()}});render()}catch(e){err(e)}}
 
-async function ownerRequests(){try{const {reqs}=await ownerData(),ui=viewUiState('ownerRequestsTable'),preset=state.cache.ownerNavPreset?.view==='ownerRequests'?state.cache.ownerNavPreset:null;delete state.cache.ownerNavPreset;let sortKey=ui.sortKey||'FechaHora',sortDir=ui.sortDir||'desc';$('#main').innerHTML=`<div class="head"><h1>Mis solicitudes</h1></div><div class="filterbar"><div class="field filter-search"><label>Buscar</label><input id="or-search" class="search" placeholder="Matrícula, vivienda o tipo..."></div>${periodFilterFields('or')}<div class="field"><label>Estado</label><select id="or-state"><option value="Abierta">Abiertas</option><option value="">Todas</option><option>Aprobada</option><option>Rechazada</option></select></div><div class="field"><label>Tipo</label><select id="or-type"><option value="">Todos</option><option value="REACTIVACION_VEHICULO">Activación</option><option value="RENOVACION_QR">Renovación QR</option><option value="PERMANENCIA_PROLONGADA">Permanencia prolongada</option></select></div><div class="field"><label>Agrupar por</label><select id="or-group"><option value="none">Sin agrupar</option><option value="plate">Matrícula</option><option value="housing">Vivienda</option><option value="type">Tipo</option></select></div><span class="count" id="or-count"></span></div><div class="tablebox compact-table owner-admin-like"><table class="table responsive-data-table"><thead><tr><th class="sortable-th" data-sort="FechaHora">Fecha</th><th class="sortable-th" data-sort="plate">Matrícula</th><th class="sortable-th" data-sort="housing">Vivienda</th><th class="sortable-th" data-sort="Tipo">Tipo</th><th class="sortable-th" data-sort="Estado">Estado</th><th>Resolución</th></tr></thead><tbody id="or-body"></tbody></table></div>`;$('#or-search').value=preset?.plate||ui.q||'';$('#or-state').value=preset?.filter==='pending'?'Abierta':(ui.st===undefined?'Abierta':ui.st);$('#or-type').value=ui.tp||'';$('#or-period').value=ui.period||'';$('#or-from').value=ui.from||'';$('#or-to').value=ui.to||'';$('#or-group').value=ui.group||'none';bindPeriodVisibility('or');const plate=r=>r.MatriculaHabitual||r.MatriculaOrigen||'SIN MATRÍCULA',house=r=>`Bloque ${r.Bloque}, ${r.Planta} ${r.Apartamento}`,val=(r,k)=>k==='plate'?plate(r):k==='housing'?house(r):k==='Tipo'?requestTypeLabel(r.Tipo):r[k]||'',cmp=(a,b)=>{const c=String(val(a,sortKey)).localeCompare(String(val(b,sortKey)),'es',{numeric:true});return sortDir==='asc'?c:-c},rowHtml=r=>`<tr><td data-label="Fecha">${esc(shortDateTime(r.FechaHora))}</td><td data-label="Matrícula"><b>${esc(plate(r))}</b></td><td data-label="Vivienda">${esc(house(r))}</td><td data-label="Tipo">${esc(requestTypeLabel(r.Tipo))}</td><td data-label="Estado"><span class="status ${r.Estado==='Abierta'?'bad':''}">${esc(r.Estado)}</span></td><td data-label="Resolución" class="resolution-cell">${r.Estado==='Abierta'?'<span class="muted">Abierta</span>':`<div class="message owner-resolution"><b>Resolución:</b> ${esc(r.Estado)}<br><b>Comentario:</b> ${esc(r.ObservacionesResolucion||'—')}<br><span class="subtle">${esc(r.Estado==='Aprobada'?'Aprobada':'Rechazada')} por ${esc(r.NombreResolucion||r.UsuarioResolucion||'—')} · ${esc(shortDateTime(r.FechaResolucion))}</span></div>`}</td></tr>`;const render=()=>{const q=$('#or-search').value.trim().toLowerCase(),st=$('#or-state').value,tp=$('#or-type').value,period=$('#or-period').value,from=$('#or-from').value,to=$('#or-to').value,group=$('#or-group').value;saveViewUiState('ownerRequestsTable',{q,st,tp,period,from,to,group,sortKey,sortDir,v:'1.2.12.2'});const rows=reqs.filter(r=>(!st||r.Estado===st)&&(!tp||r.Tipo===tp)&&periodMatches(r.FechaHora,period,from,to)&&Object.values(r).join(' ').toLowerCase().includes(q));$('#or-count').textContent=`${rows.length} solicitud${rows.length===1?'':'es'}`;if(group==='none')$('#or-body').innerHTML=[...rows].sort(cmp).map(rowHtml).join('')||'<tr><td colspan="6" class="empty">No tienes solicitudes con estos filtros.</td></tr>';else{const keyFn=group==='plate'?plate:group==='housing'?house:r=>requestTypeLabel(r.Tipo),entries=groupedRowsStable(rows,keyFn,cmp,(a,b)=>naturalSort(a[0],b[0]));$('#or-body').innerHTML=entries.map(([key,list])=>`<tr class="table-group-row"><td colspan="6"><b>${esc(key)}</b> · ${list.length} solicitud(es)</td></tr>${list.map(rowHtml).join('')}`).join('')||'<tr><td colspan="6" class="empty">No tienes solicitudes con estos filtros.</td></tr>'}};$('#or-search').oninput=render;['or-state','or-type','or-period','or-from','or-to','or-group'].forEach(id=>$(`#${id}`).onchange=render);document.querySelectorAll('.sortable-th').forEach(th=>{th.dataset.dir=th.dataset.sort===sortKey?sortDir:'';th.onclick=()=>{const k=th.dataset.sort;sortDir=sortKey===k&&sortDir==='asc'?'desc':'asc';sortKey=k;document.querySelectorAll('.sortable-th').forEach(x=>x.dataset.dir=x.dataset.sort===sortKey?sortDir:'');render()}});render()}catch(e){err(e)}}
+async function ownerRequests(){try{const {reqs}=await ownerData(),ui=viewUiState('ownerRequestsTable'),preset=state.cache.ownerNavPreset?.view==='ownerRequests'?state.cache.ownerNavPreset:null;delete state.cache.ownerNavPreset;let sortKey=ui.sortKey||'FechaHora',sortDir=ui.sortDir||'desc';$('#main').innerHTML=`<div class="head"><h1>Mis solicitudes</h1></div><div class="filterbar"><div class="field filter-search"><label>Buscar</label><input id="or-search" class="search" placeholder="Matrícula, vivienda o tipo..."></div>${periodFilterFields('or')}<div class="field"><label>Estado</label><select id="or-state"><option value="Abierta">Abiertas</option><option value="">Todas</option><option>Aprobada</option><option>Rechazada</option></select></div><div class="field"><label>Tipo</label><select id="or-type"><option value="">Todos</option><option value="REACTIVACION_VEHICULO">Activación</option><option value="RENOVACION_QR">Renovación QR</option><option value="PERMANENCIA_PROLONGADA">Permanencia prolongada</option></select></div><div class="field"><label>Agrupar por</label><select id="or-group"><option value="none">Sin agrupar</option><option value="plate">Matrícula</option><option value="housing">Vivienda</option><option value="type">Tipo</option></select></div><span class="count" id="or-count"></span></div><div class="tablebox compact-table owner-admin-like"><table class="table responsive-data-table"><thead><tr><th class="sortable-th" data-sort="FechaHora">Fecha</th><th class="sortable-th" data-sort="plate">Matrícula</th><th class="sortable-th" data-sort="housing">Vivienda</th><th class="sortable-th" data-sort="Tipo">Tipo</th><th class="sortable-th" data-sort="Estado">Estado</th><th>Resolución</th></tr></thead><tbody id="or-body"></tbody></table></div>`;$('#or-search').value=preset?.requestId||preset?.plate||ui.q||'';$('#or-state').value=preset?.requestId?'':preset?.filter==='pending'?'Abierta':(ui.st===undefined?'Abierta':ui.st);$('#or-type').value=ui.tp||'';$('#or-period').value=ui.period||'';$('#or-from').value=ui.from||'';$('#or-to').value=ui.to||'';$('#or-group').value=ui.group||'none';bindPeriodVisibility('or');const plate=r=>r.MatriculaHabitual||r.MatriculaOrigen||'SIN MATRÍCULA',house=r=>`Bloque ${r.Bloque}, ${r.Planta} ${r.Apartamento}`,val=(r,k)=>k==='plate'?plate(r):k==='housing'?house(r):k==='Tipo'?requestTypeLabel(r.Tipo):r[k]||'',cmp=(a,b)=>{const c=String(val(a,sortKey)).localeCompare(String(val(b,sortKey)),'es',{numeric:true});return sortDir==='asc'?c:-c},rowHtml=r=>`<tr><td data-label="Fecha">${esc(shortDateTime(r.FechaHora))}</td><td data-label="Matrícula"><b>${esc(plate(r))}</b></td><td data-label="Vivienda">${esc(house(r))}</td><td data-label="Tipo">${esc(requestTypeLabel(r.Tipo))}</td><td data-label="Estado"><span class="status ${r.Estado==='Abierta'?'bad':''}">${esc(r.Estado)}</span></td><td data-label="Resolución" class="resolution-cell">${r.Estado==='Abierta'?'<span class="muted">Abierta</span>':`<div class="message owner-resolution"><b>Resolución:</b> ${esc(r.Estado)}<br><b>Comentario:</b> ${esc(r.ObservacionesResolucion||'—')}<br><span class="subtle">${esc(r.Estado==='Aprobada'?'Aprobada':'Rechazada')} por ${esc(r.NombreResolucion||r.UsuarioResolucion||'—')} · ${esc(shortDateTime(r.FechaResolucion))}</span></div>`}</td></tr>`;const render=()=>{const q=$('#or-search').value.trim().toLowerCase(),st=$('#or-state').value,tp=$('#or-type').value,period=$('#or-period').value,from=$('#or-from').value,to=$('#or-to').value,group=$('#or-group').value;saveViewUiState('ownerRequestsTable',{q,st,tp,period,from,to,group,sortKey,sortDir,v:'1.2.12.2'});const rows=reqs.filter(r=>(!st||r.Estado===st)&&(!tp||r.Tipo===tp)&&periodMatches(r.FechaHora,period,from,to)&&Object.values(r).join(' ').toLowerCase().includes(q));$('#or-count').textContent=`${rows.length} solicitud${rows.length===1?'':'es'}`;if(group==='none')$('#or-body').innerHTML=[...rows].sort(cmp).map(rowHtml).join('')||'<tr><td colspan="6" class="empty">No tienes solicitudes con estos filtros.</td></tr>';else{const keyFn=group==='plate'?plate:group==='housing'?house:r=>requestTypeLabel(r.Tipo),entries=groupedRowsStable(rows,keyFn,cmp,(a,b)=>naturalSort(a[0],b[0]));$('#or-body').innerHTML=entries.map(([key,list])=>`<tr class="table-group-row"><td colspan="6"><b>${esc(key)}</b> · ${list.length} solicitud(es)</td></tr>${list.map(rowHtml).join('')}`).join('')||'<tr><td colspan="6" class="empty">No tienes solicitudes con estos filtros.</td></tr>'}};$('#or-search').oninput=render;['or-state','or-type','or-period','or-from','or-to','or-group'].forEach(id=>$(`#${id}`).onchange=render);document.querySelectorAll('.sortable-th').forEach(th=>{th.dataset.dir=th.dataset.sort===sortKey?sortDir:'';th.onclick=()=>{const k=th.dataset.sort;sortDir=sortKey===k&&sortDir==='asc'?'desc':'asc';sortKey=k;document.querySelectorAll('.sortable-th').forEach(x=>x.dataset.dir=x.dataset.sort===sortKey?sortDir:'');render()}});render()}catch(e){err(e)}}
 
 
 // 1.2.12.2 - Inicio propietario alineado visualmente con Resumen ADMIN
