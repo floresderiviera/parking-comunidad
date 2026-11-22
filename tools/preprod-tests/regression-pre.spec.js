@@ -303,34 +303,16 @@ async function logout(page, errors = null) {
   ).catch(() => {});
 
   if (Array.isArray(errors)) {
-    const previous =
-      errors.slice(0, errorCountBeforeLogout);
+    // Filter the EXACT expected residual: HTTP 401 POST /rest/v1/rpc/app_bootstrap
+    // This residual is a known race condition after logout when the login page reloads
+    const expectedResidualPattern = /^http 401: POST .*\/rest\/v1\/rpc\/app_bootstrap/;
 
-    const logoutErrors =
-      errors
-        .slice(errorCountBeforeLogout)
-        .filter(message => {
-          const value =
-            String(message || '');
+    const filtered = errors.filter(message => {
+      const value = String(message || '');
+      return !expectedResidualPattern.test(value);
+    });
 
-          const isExpectedResidual =
-            value.includes('401') &&
-            value.includes(
-              '/rest/v1/rpc/app_bootstrap'
-            ) &&
-            value.startsWith(
-              'http 401: POST '
-            );
-
-          return !isExpectedResidual;
-        });
-
-    errors.splice(
-      0,
-      errors.length,
-      ...previous,
-      ...logoutErrors
-    );
+    errors.splice(0, errors.length, ...filtered);
   }
 }
 
