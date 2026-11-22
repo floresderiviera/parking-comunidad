@@ -681,7 +681,7 @@ async function incidents(openId=''){
         // Keep the first option (placeholder)
         select.innerHTML = '<option value="">— Informes guardados —</option>';
         for (const r of reports) {
-          if (r.state === 'ready' && r.attachment_path) {
+          if (r.state === 'ready' && r.period_start && r.period_end) {
             const opt = document.createElement('option');
             opt.value = r.period_start;
             opt.dataset.periodEnd = r.period_end;
@@ -695,7 +695,7 @@ async function incidents(openId=''){
     }
 
     // Initial load of historical reports
-    loadHistoricalReports();
+    if (hasUiRole('ADMIN')) loadHistoricalReports();
 
     const reportButton=$('#incident-weekly-report');
     if(reportButton)reportButton.onclick=async()=>{busy(reportButton);try{
