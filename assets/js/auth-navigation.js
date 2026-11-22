@@ -827,20 +827,29 @@ function shell(){
 
   const doLogout=async()=>{
     closeMobileMenus();
-
-    await server(
-      'logout',
-      state.token
-    );
-
-    localStorage.removeItem(
-      'parking_token'
-    );
-
+    let remoteFailure=null;
+    try{
+      await server('logout',state.token);
+    }catch(error){
+      remoteFailure=error;
+      // Never leave a still-valid local Supabase session after a failed remote sign-out.
+      try{
+        const client=window.parkingSupabase;
+        if(!client?.auth)throw new Error('Supabase client missing');
+        const result=await client.auth.signOut({scope:'local'});
+        if(result.error)throw result.error;
+      }catch(localFailure){
+        toast('No se pudo cerrar sesión; reintentá.',true);
+        console.error('Logout failed locally',localFailure);
+        return;
+      }
+    }
+    localStorage.removeItem('parking_token');
     clearUiState();
-
     state.token='';
+    state.user=null;
     login();
+    if(remoteFailure)toast('Sesión cerrada en este dispositivo; no se confirmó el cierre remoto.',true);
   };
 
   $('#logout').onclick=doLogout;

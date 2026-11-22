@@ -281,6 +281,9 @@ Object.assign(PARKING_I18N.en,{
 
 
 const PARKING_UI_EN_EXACT={
+  'No se pudo cerrar sesión; reintentá.': 'Could not sign out; please try again.',
+  'Sesión cerrada en este dispositivo; no se confirmó el cierre remoto.': 'Signed out on this device; remote sign-out could not be confirmed.',
+
   'REPORTES · ADMINISTRACIÓN': 'REPORTS · ADMINISTRATION',
   'Informe semanal': 'Weekly report',
   'Generación y consulta de informes Excel.': 'Generate and browse Excel reports.',
