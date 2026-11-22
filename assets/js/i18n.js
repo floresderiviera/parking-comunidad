@@ -281,6 +281,15 @@ Object.assign(PARKING_I18N.en,{
 
 
 const PARKING_UI_EN_EXACT={
+  'REPORTES · ADMINISTRACIÓN': 'REPORTS · ADMINISTRATION',
+  'Informe semanal': 'Weekly report',
+  'Generación y consulta de informes Excel.': 'Generate and browse Excel reports.',
+  'Solo ADMIN / ROOT': 'ADMIN / ROOT only',
+  'Semana anterior · hora Madrid': 'Previous week · Madrid time',
+  'Informes guardados': 'Saved reports',
+  'Seleccionar informe': 'Select a report',
+  'Seleccioná un informe existente para descargarlo.': 'Select a saved report to download it.',
+
   'Periodo calculado automáticamente (semana anterior lunes-domingo, hora Madrid)': 'Period calculated automatically (previous Monday-Sunday week, Madrid time)',
   'Selecciona un periodo válido.': 'Select a valid period.',
   'No se encontró el informe para el periodo seleccionado.': 'No report was found for the selected period.',

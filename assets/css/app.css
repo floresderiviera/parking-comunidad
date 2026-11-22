@@ -1994,3 +1994,28 @@ button.vehicle-alert-chip:hover{filter:brightness(.97)}
   .incident-followup-head{flex-direction:column;gap:.25rem}
   .incident-narrative{max-width:none}
 }
+
+/* weekly-excel-workspace: 2026-11 */
+.incidents-head {align-items:center;gap:16px;margin-bottom:14px}
+.incidents-head .incident-export-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.incident-weekly-workspace {margin:0 0 20px;padding:0;border:1px solid #dce9e5;border-radius:16px;background:#fff;box-shadow:0 3px 12px rgba(18,60,49,.035);overflow:hidden}
+.incident-weekly-heading {display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 22px 16px;border-bottom:1px solid #e7efec}
+.incident-weekly-heading h2 {font-size:1.08rem;line-height:1.3;margin:4px 0;color:#153e34}
+.incident-weekly-heading p {color:#657a76;font-size:.81rem;margin:4px 0 0}
+.incident-weekly-eyebrow {font-size:.67rem;font-weight:800;letter-spacing:.1em;color:#277b65}
+.incident-weekly-status {flex-shrink:0;padding:6px 10px;border-radius:99px;background:#ebf5f0;color:#246650;font-size:.69rem;font-weight:700}
+.incident-weekly-body {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:0}
+.incident-weekly-generate,.incident-weekly-history {min-width:0;padding:20px 22px;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.incident-weekly-generate {border-right:1px solid #e7efec;background:#fafcfb}
+.incident-weekly-label {display:block;font-size:.75rem;font-weight:750;color:#58746c;margin:0}
+.incident-weekly-dates {font-weight:800;font-size:1.1rem;color:#173c33;line-height:1.45}
+.incident-weekly-workspace button {min-height:36px}
+.incident-weekly-primary {background:#146047!important;color:#fff!important;border:1px solid #146047!important;border-radius:9px!important;padding:8px 15px!important;font-size:.79rem!important;font-weight:750!important}
+.incident-weekly-primary:hover {background:#0d4836!important}
+.incident-weekly-history-controls {width:100%;display:flex;align-items:stretch;gap:9px;min-width:0}
+.incident-weekly-history-controls select {flex:1 1 240px;min-width:0;max-width:none;width:auto;border-radius:9px;background:#fff}
+.incident-weekly-history-controls button {white-space:nowrap;flex:0 0 auto;border-radius:9px}
+.incident-weekly-history-controls button:disabled {opacity:.5;cursor:not-allowed}
+.incident-weekly-hint {color:#748782;font-size:.72rem;line-height:1.4}
+@media(max-width:900px){.incident-weekly-body{grid-template-columns:1fr}.incident-weekly-generate{border-right:0;border-bottom:1px solid #e7efec}}
+@media(max-width:580px){.incident-weekly-heading{align-items:flex-start;padding:15px;flex-direction:column;gap:8px}.incident-weekly-status{align-self:flex-start}.incident-weekly-generate,.incident-weekly-history{padding:16px 15px}.incident-weekly-history-controls{flex-direction:column}.incident-weekly-history-controls select,.incident-weekly-history-controls button{width:100%;flex:auto}.incident-weekly-history-controls button{min-height:42px}.incidents-head .incident-export-actions{width:100%}}
