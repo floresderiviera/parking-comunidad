@@ -577,10 +577,23 @@ async function incidents(openId=''){
       $('#inc-detail-close').onclick=()=>host.innerHTML='';const pdfBtn=$('#inc-detail-pdf');if(pdfBtn)pdfBtn.onclick=async()=>{busy(pdfBtn);try{await generateIncidentPdf(r,recordHousingLabel(r,h));toast('PDF generado.')}catch(e){toast(e.message||'No se pudo generar el PDF.',true)}finally{busy(pdfBtn,false)}};document.querySelectorAll('.inc-linked').forEach(b=>b.onclick=()=>detail(rows.find(x=>x.ID_Incidencia===b.dataset.id)));
       // parking_official_pdf_single_button_v1: download only the stored, shared final report.
       const officialPdf=$('#inc-detail-official-pdf');
+      let prepareOfficialPdf=false;
       if(officialPdf)officialPdf.onclick=async()=>{
         busy(officialPdf);
         try {
+          if(prepareOfficialPdf){
+            await uploadIncidentCloseReports(r,recordHousingLabel(r,h));
+            prepareOfficialPdf=false;
+            officialPdf.textContent='Ver / descargar PDF';
+            toast('PDF oficial preparado correctamente.');
+          }
           const result=await call('downloadIncidentPdf',{id:r.ID_Incidencia});
+          if(result?.missing){
+            prepareOfficialPdf=true;
+            officialPdf.textContent='Preparar PDF oficial';
+            toast('El PDF oficial todavía no está preparado. Pulsa «Preparar PDF oficial» para generarlo.');
+            return;
+          }
           if(!result?.url)throw new Error('No se encontró el PDF oficial del expediente.');
           const anchor=document.createElement('a');
           anchor.href=result.url;
@@ -589,7 +602,7 @@ async function incidents(openId=''){
           document.body.appendChild(anchor);
           anchor.click();
           anchor.remove();
-        }catch(e){toast(e.message||'No se pudo abrir el PDF oficial.',true)}
+        }catch(e){toast(e.message||'No se pudo preparar o abrir el PDF oficial.',true)}
         finally{busy(officialPdf,false)}
       };
       const close=$('#inc-detail-close-case');

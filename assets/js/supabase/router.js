@@ -31,6 +31,32 @@ export function createRouter({
       appBootstrap
     } = runtime;
 
+    async function edgeFunctionError(
+      error,
+      fallback
+    ) {
+      try {
+        const context =
+          error?.context?.clone
+            ? error.context.clone()
+            : error?.context;
+
+        const payload =
+          await context?.json?.();
+
+        const message =
+          String(
+            payload?.error ||
+            payload?.message ||
+            ''
+          ).replace(/^Error:\s*/, '');
+
+        if (message) return message;
+      } catch (_) {}
+
+      return error?.message || fallback;
+    }
+
     const {
       listTemporaryPeriods,
       saveTemporaryPeriod,
@@ -338,8 +364,9 @@ export function createRouter({
           const response=await sb.functions.invoke('parking-notifications',{
             body:{action:'download-official-pdf',incident_id:payload.id}
           });
-          if(response.error)throw response.error;
+          if(response.error)throw new Error(await edgeFunctionError(response.error,'No se pudo consultar el PDF oficial.'));
           if(response.data?.error)throw new Error(response.data.error);
+          if(response.data?.missing)return response.data;
           if(!response.data?.url)throw new Error('El PDF oficial no está disponible.');
           // parking_official_pdf_browser_origin_v2: Supabase Storage can sign using Docker's internal 'kong' host.
           // Keep the signed path and token unchanged; use only the public API origin configured for this client.
@@ -359,7 +386,7 @@ export function createRouter({
           const response=await sb.functions.invoke('parking-notifications',{
             body:{action:'upload-pdf',incident_id:payload.id,audience:payload.audience,pdf_base64:payload.pdfBase64}
           });
-          if(response.error)throw response.error;
+          if(response.error)throw new Error(await edgeFunctionError(response.error,'No se pudo preparar el PDF oficial.'));
           if(response.data?.error)throw new Error(response.data.error);
           return response.data;
         }
