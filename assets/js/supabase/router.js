@@ -402,6 +402,37 @@ export function createRouter({
           return response.data;
         }
 
+        case 'downloadWeeklyReport': {
+          const boot=await appBootstrap();
+          if(!boot.user.IsRoot&&!boot.roles.includes('ADMIN'))throw new Error('ADMIN requerido.');
+          const response=await sb.functions.invoke('parking-notifications',{
+            body:{action:'download-weekly-report',community_id:boot.communityId,period_start:payload.period_start,period_end:payload.period_end}
+          });
+          if(response.error)throw response.error;
+          if(response.data?.error)throw new Error(response.data.error);
+          if(!response.data?.url)throw new Error('No se pudo obtener el informe.');
+          // Keep the signed path and token unchanged; use only the public API origin configured for this client.
+          const publicBase=new URL(sb.supabaseUrl);
+          const signed=new URL(response.data.url,publicBase);
+          if(!signed.pathname.startsWith('/storage/v1/object/sign/')){
+            throw new Error('Ruta del informe semanal no autorizada.');
+          }
+          signed.protocol=publicBase.protocol;
+          signed.host=publicBase.host;
+          return {...response.data,url:signed.href};
+        }
+
+        case 'listWeeklyReports': {
+          const boot=await appBootstrap();
+          if(!boot.user.IsRoot&&!boot.roles.includes('ADMIN'))throw new Error('ADMIN requerido.');
+          const response=await sb.functions.invoke('parking-notifications',{
+            body:{action:'list-weekly-reports',community_id:boot.communityId}
+          });
+          if(response.error)throw response.error;
+          if(response.data?.error)throw new Error(response.data.error);
+          return {reports: response.data.reports || []};
+        }
+
         case 'housingDetail': {
           const [detail, complianceRules] = await Promise.all([
             housingDetail(payload),

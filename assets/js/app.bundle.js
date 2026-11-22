@@ -4657,6 +4657,27 @@ async function requests(openId=''){
     renderMode();if(dossierFocus)showDossier(dossierFocus);if(focusId){const target=rows.find(r=>r.ID_Solicitud===focusId);if(target)detail(target)}
   }catch(e){err(e)}
 }
+// Calculate previous week (Mon-Sun) in Europe/Madrid timezone - matches Edge Function's previousWeek()
+function previousWeekMadrid() {
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Madrid', year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hourCycle: 'h23', weekday: 'short'
+  });
+  const parts = Object.fromEntries(formatter.formatToParts(now).map(x => [x.type, x.value]));
+  const current = parts.year + '-' + parts.month + '-' + parts.day;
+  const dow = new Date(current + 'T12:00:00Z').getUTCDay(); // 0=Sun, 1=Mon...
+  const thisMonday = new Date(current + 'T12:00:00Z');
+  thisMonday.setUTCDate(thisMonday.getUTCDate() - ((dow + 6) % 7));
+  const start = new Date(thisMonday);
+  start.setUTCDate(start.getUTCDate() - 7);
+  const end = thisMonday;
+  return {
+    start: start.toISOString().slice(0, 10),
+    end: end.toISOString().slice(0, 10)
+  };
+}
+
 function incidentIsQrLinkedCase(row){
   row=row||{};const type=String(row.Tipo||''),situation=String(row.Situacion||''),origin=String(row.OrigenControl||'');
   return origin==='QR'&&((type==='Uso indebido'&&(situation==='Cesión de QR'||situation==='Uso de QR ajeno'))||type==='Matrícula no registrada'||type==='QR no corresponde con matrícula');
@@ -5052,7 +5073,9 @@ async function incidents(openId=''){
     const response=await call('listIncidentsPayload');const rows=Array.isArray(response)?response:(Array.isArray(response?.rows)?response.rows:[]);if(!Array.isArray(rows))throw new Error('Respuesta inválida al cargar incidencias.');if(response?.complianceRules)parkingComplianceSetRules(response.complianceRules);state.cache.incidents=rows;const ui=viewUiState('incidents');let page=ui.page||1,sortKey=ui.sortKey||'FechaHora',sortDir=ui.sortDir||'desc',viewMode=ui.viewMode||'dossiers';
     const types=['Matrícula no registrada','Acceso no autorizado','QR no presentado','QR no corresponde con matrícula','Uso indebido','Vehículo inmovilizado / posible abandono','Estacionamiento o ubicación indebida','Fuga / pérdida de líquidos','Otro'];
     const priorities=[...new Set(rows.map(r=>r.Prioridad).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'es'));
-    $('#main').innerHTML=`<div class="head incidents-head"><div><h1>Incidencias</h1><div class="muted">Bandeja de gestión con agrupación independiente por vivienda, propietario o matrícula.</div></div><div class="actions">${hasUiRole('ADMIN')?'<button type="button" class="secondary" id="incident-weekly-report">Generar Excel semanal</button>':''}${exportButtonsHtml('incidents-export')}</div></div><div id="incident-editor"></div><div id="incident-detail"></div><div id="incident-dossier"></div><div class="incident-overview" id="incident-overview"><div class="card incident-stat-card"><span>Incidencias abiertas</span><b id="inc-stat-open">0</b><small>Pendientes de resolver</small></div><div class="card incident-stat-card"><span>Críticas</span><b id="inc-stat-critical">0</b><small>Abiertas con prioridad crítica</small></div><div class="card incident-stat-card"><span>Vehículos afectados</span><b id="inc-stat-vehicles">0</b><small>Matrículas con casos abiertos</small></div><div class="card incident-stat-card"><span>Intentos abiertos</span><b id="inc-stat-attempts">0</b><small>Acumulados en incidencias abiertas</small></div></div><div class="mobile-filter-toggle-wrap">
+    // Auto-calculate previous week (Mon-Sun) in Madrid timezone
+    const prevWeek = previousWeekMadrid();
+    $('#main').innerHTML=`<div class="head incidents-head"><div><h1>Incidencias</h1><div class="muted">Bandeja de gestión con agrupación independiente por vivienda, propietario o matrícula.</div></div><div class="actions">${hasUiRole('ADMIN')?'<button type="button" class="secondary" id="incident-weekly-report">Generar Excel semanal</button>':''}${hasUiRole('ADMIN')?'<div class="weekly-report-download"><select id="incident-report-history" class="secondary" style="width:200px"><option value="">— Informes guardados —</option></select><input type="date" id="incident-report-period" class="secondary" style="width:160px" value="${prevWeek.start}" readonly title="Periodo calculado automáticamente (semana anterior lunes-domingo, hora Madrid)"><input type="date" id="incident-report-period-end" class="secondary" style="width:160px" value="${prevWeek.end}" readonly title="Periodo calculado automáticamente (semana anterior lunes-domingo, hora Madrid)"><button type="button" class="secondary" id="incident-download-weekly-report">Descargar informe</button></div>':''}${exportButtonsHtml('incidents-export')}</div></div><div id="incident-editor"></div><div id="incident-detail"></div><div id="incident-dossier"></div><div class="incident-overview" id="incident-overview"><div class="card incident-stat-card"><span>Incidencias abiertas</span><b id="inc-stat-open">0</b><small>Pendientes de resolver</small></div><div class="card incident-stat-card"><span>Críticas</span><b id="inc-stat-critical">0</b><small>Abiertas con prioridad crítica</small></div><div class="card incident-stat-card"><span>Vehículos afectados</span><b id="inc-stat-vehicles">0</b><small>Matrículas con casos abiertos</small></div><div class="card incident-stat-card"><span>Intentos abiertos</span><b id="inc-stat-attempts">0</b><small>Acumulados en incidencias abiertas</small></div></div><div class="mobile-filter-toggle-wrap">
       <button type="button" class="secondary mobile-filter-toggle" id="incident-filter-toggle">
         Filtros
       </button>
@@ -5307,12 +5330,85 @@ async function incidents(openId=''){
       $('#incident-body').innerHTML=slice.map(r=>{const plate=incidentPlate(r),house=incidentHouse(r);return `<tr><td data-label="Fecha">${esc(shortDateTime(r.FechaHora))}</td><td data-label="Matrícula"><b>${esc(plate)}</b></td><td data-label="Vivienda">${esc(house)}</td><td data-label="Incidencia"><b>${esc(r.Tipo)}</b>${r.Situacion?`<div class="subtle">Situación: ${esc(r.Situacion)}</div>`:''}${r.Causa?`<div class="subtle">Causa: ${esc(r.Causa)}</div>`:''}</td><td data-label="Prioridad"><span class="incident-priority ${String(r.Prioridad||'Normal').toLowerCase()}">${esc(r.Prioridad||'Normal')}</span></td><td data-label="Intentos"><b>${esc(r.Intentos||1)}</b>${r.UltimoSeguimiento?`<span class="subtle">${esc(shortDateTime(r.UltimoSeguimiento))}</span>`:''}</td><td data-label="Estado"><span class="status ${r.Estado==='Cerrada'?'':'bad'}">${esc(r.Estado||'Abierta')}</span></td><td data-label="Acciones">${actionMenuHtml(`<button class="secondary inc-view" data-id="${esc(r.ID_Incidencia)}">Ver</button><button class="secondary inc-row-dossier" data-key="${esc(dossierKey(r))}">Expediente</button>`)}</td></tr>`}).join('');$('#incident-empty').classList.toggle('hide',!!list.length);$('#incident-pager').innerHTML=pagerHtml('incident',page,list.length);document.querySelectorAll('.inc-view').forEach(b=>b.onclick=()=>detail(rows.find(r=>r.ID_Incidencia===b.dataset.id)));document.querySelectorAll('.inc-row-dossier').forEach(b=>b.onclick=()=>showDossier(b.dataset.key));const prev=$('#incident-prev'),next=$('#incident-next');if(prev)prev.onclick=()=>{page--;render()};if(next)next.onclick=()=>{page++;render()};
     };
     const render=()=>{const list=filtered();state.cache.incidentsFiltered=list;renderSummary();const dossiers=viewMode==='dossiers';$('#incident-dossier-list').classList.toggle('hide',!dossiers);$('#incident-flat-list').classList.toggle('hide',dossiers);$('#incident-view-dossiers').classList.toggle('active',dossiers&&!groupByHousing&&!groupByOwner);$('#incident-view-housing').classList.toggle('active',dossiers&&groupByHousing);$('#incident-view-owner').classList.toggle('active',dossiers&&groupByOwner);$('#incident-view-list').classList.toggle('active',!dossiers);if(dossiers)renderDossiers(list);else renderList(list)};
+    // Load historical reports from parking_weekly_reports table
+    async function loadHistoricalReports() {
+      try {
+        const response = await call('listWeeklyReports');
+        const reports = Array.isArray(response) ? response : (response?.reports || []);
+        const select = $('#incident-report-history');
+        if (!select) return;
+        // Keep the first option (placeholder)
+        select.innerHTML = '<option value="">— Informes guardados —</option>';
+        for (const r of reports) {
+          if (r.state === 'ready' && r.attachment_path) {
+            const opt = document.createElement('option');
+            opt.value = r.period_start;
+            opt.dataset.periodEnd = r.period_end;
+            opt.textContent = `${r.period_start} → ${r.period_end} (${r.generated_at ? new Date(r.generated_at).toLocaleDateString('es-ES') : 'sin fecha'})`;
+            select.appendChild(opt);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load historical reports:', e);
+      }
+    }
+
+    // Initial load of historical reports
+    loadHistoricalReports();
+
     const reportButton=$('#incident-weekly-report');
     if(reportButton)reportButton.onclick=async()=>{busy(reportButton);try{
       const result=await call('weeklyManualReport');
+      const period = result.period || result.report?.period;
+      if (period) {
+        // Update date inputs with the returned period
+        $('#incident-report-period').value = period.start;
+        $('#incident-report-period-end').value = period.end;
+        // Enable download button
+        $('#incident-download-weekly-report').disabled = false;
+        // Refresh historical reports list
+        loadHistoricalReports();
+      }
       toast(result.report?.status==='already_ready'?'Informe semanal ya generado.':'Informe semanal Excel generado. Envío en cola.');
     }catch(e){toast(e.message||'No se pudo generar el informe.',true)}
     finally{busy(reportButton,false)}};
+
+    const historySelect=$('#incident-report-history');
+    if(historySelect)historySelect.onchange=()=>{
+      const opt = historySelect.options[historySelect.selectedIndex];
+      if (opt && opt.value) {
+        $('#incident-report-period').value = opt.value;
+        $('#incident-report-period-end').value = opt.dataset.periodEnd || '';
+        $('#incident-download-weekly-report').disabled = false;
+      } else {
+        $('#incident-download-weekly-report').disabled = true;
+      }
+    };
+
+    const downloadReportButton=$('#incident-download-weekly-report');
+    if(downloadReportButton)downloadReportButton.onclick=async()=>{
+      const periodStart = $('#incident-report-period').value;
+      const periodEnd = $('#incident-report-period-end').value;
+      if (!periodStart || !periodEnd) {
+        toast('Selecciona un periodo válido.', true);
+        return;
+      }
+      try{
+        const result=await call('downloadWeeklyReport',{period_start:periodStart,period_end:periodEnd});
+        if(result?.url){
+          const anchor=document.createElement('a');
+          anchor.href=result.url;
+          anchor.target='_blank';
+          anchor.rel='noopener noreferrer';
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+          toast('Descargando informe semanal...');
+        }else{
+          toast('No se encontró el informe para el periodo seleccionado.',true);
+        }
+      }catch(e){toast(e.message||'No se pudo descargar el informe.',true)}
+    };
     $('#incidents-export-xlsx').onclick=()=>downloadXlsx(`incidencias_${new Date().toISOString().slice(0,10)}.xlsx`,state.cache.incidentsFiltered||filtered(),null,'Incidencias').catch(err);$('#incidents-export-csv').onclick=()=>downloadCsv(`incidencias_${new Date().toISOString().slice(0,10)}.csv`,state.cache.incidentsFiltered||filtered());
     $('#incident-search').value=navPreset?.search||ui.q||'';$('#incident-state').value=navPreset?.status!==undefined?navPreset.status:(ui.status===undefined?'Abierta':ui.status);$('#incident-priority').value=ui.priority||'';$('#incident-type').value=ui.type||'';$('#incident-origin').value=ui.origin||'';$('#incident-period').value=ui.period||'';$('#incident-from').value=ui.from||'';$('#incident-to').value=ui.to||'';bindPeriodVisibility('incident');
     const reset=()=>{page=1;$('#incident-dossier').innerHTML='';render()};$('#incident-search').oninput=reset;['incident-state','incident-priority','incident-type','incident-origin','incident-period','incident-from','incident-to'].forEach(id=>$("#"+id).onchange=reset);
