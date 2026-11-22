@@ -281,6 +281,9 @@ Object.assign(PARKING_I18N.en,{
 
 
 const PARKING_UI_EN_EXACT={
+  'Periodo calculado automáticamente (semana anterior lunes-domingo, hora Madrid)': 'Period calculated automatically (previous Monday-Sunday week, Madrid time)',
+  'Selecciona un periodo válido.': 'Select a valid period.',
+  'No se encontró el informe para el periodo seleccionado.': 'No report was found for the selected period.',
   "Identificación y origen": "Identification and origin",
   "Estado actual del vehículo": "Current vehicle status",
   "Datos originales del vehículo": "Original vehicle information",
