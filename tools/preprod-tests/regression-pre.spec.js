@@ -275,6 +275,33 @@ async function logout(page, errors = null) {
     timeout: 10000
   });
 
+  await expect(
+    page.locator('#logout, #nav, #main')
+  ).toHaveCount(0);
+
+  const signedOutState =
+    await page.evaluate(async () => {
+      const result =
+        await window.parkingSupabase
+          ?.auth
+          ?.getSession();
+
+      return {
+        hasSession: !!result?.data?.session,
+        hasStoredToken: !!localStorage.getItem('parking_token')
+      };
+    });
+
+  expect(signedOutState).toEqual({
+    hasSession: false,
+    hasStoredToken: false
+  });
+
+  await page.waitForLoadState(
+    'networkidle',
+    { timeout: 5000 }
+  ).catch(() => {});
+
   if (Array.isArray(errors)) {
     const previous =
       errors.slice(0, errorCountBeforeLogout);
@@ -286,16 +313,16 @@ async function logout(page, errors = null) {
           const value =
             String(message || '');
 
-          return !(
+          const isExpectedResidual =
             value.includes('401') &&
-            value.includes('/rest/v1/profiles')
-          ) &&
-          !(
             value.includes(
-              'Failed to load resource'
+              '/rest/v1/rpc/app_bootstrap'
             ) &&
-            value.includes('401')
-          );
+            value.startsWith(
+              'http 401: POST '
+            );
+
+          return !isExpectedResidual;
         });
 
     errors.splice(
