@@ -269,11 +269,22 @@ async function logout(page, errors = null) {
 
   await page.locator('#logout').click();
 
-  await expect(
-    page.locator('#login-form')
-  ).toBeVisible({
-    timeout: 10000
-  });
+  try {
+    await expect(
+      page.locator('#login-form')
+    ).toBeVisible({ timeout: 15000 });
+  } catch (error) {
+    const snapshot = await page.evaluate(() => ({
+      loginVisible: !!document.querySelector('#login-form'),
+      logoutVisible: !!document.querySelector('#logout'),
+      toast: document.querySelector('#toast')?.innerText || '',
+      app: document.querySelector('#app')?.innerText?.slice(0, 800) || ''
+    }));
+
+    throw new Error(
+      `Logout incompleto: ${JSON.stringify(snapshot)}\n${error.message}`
+    );
+  }
 
   await expect(
     page.locator('#logout, #nav, #main')
