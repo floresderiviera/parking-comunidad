@@ -216,6 +216,8 @@
             );
 
             invalidate();
+            // El cierre de sesión también debe vaciar inmediatamente la UI.
+            window.dispatchEvent(new Event('parking:auth-signed-out'));
           }
         }
       );

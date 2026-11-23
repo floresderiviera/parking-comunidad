@@ -690,6 +690,9 @@ async function incidents(openId=''){
           }
         }
       } catch (e) {
+        // Una consulta iniciada en una sesión anterior no debe reabrir ni
+        // contaminar la pantalla de login tras SIGNED_OUT.
+        if(state.authClosing||!state.token||!$('#incident-report-history'))return;
         console.error('Failed to load historical reports:', e);
       }
     }

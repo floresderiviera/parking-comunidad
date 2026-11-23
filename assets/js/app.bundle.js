@@ -2030,7 +2030,7 @@ async function call(action,payload={}){
   for(let i=0;i<attempts;i++){
     try{const value=await server('api',state.token,action,payload);recordClientCall(action,performance.now()-callStarted,true);return value}catch(e){
       last=e;
-      if(/sesión|session/i.test(e.message)){recordClientCall(action,performance.now()-callStarted,false,e.message||String(e));localStorage.removeItem('parking_token');state.token='';state.user=null;login(e.message);throw e}
+      if(/sesión|session/i.test(e.message)){recordClientCall(action,performance.now()-callStarted,false,e.message||String(e));window.dispatchEvent(new CustomEvent('parking:auth-invalid',{detail:{message:e.message}}));throw e}
       if(/mantenimiento/i.test(e.message||'')){try{const publicState=await server('getPublicAppState');renderMaintenanceScreen(publicState)}catch(_e){}recordClientCall(action,performance.now()-callStarted,false,e.message||String(e));throw e}
       if(i+1<attempts)await sleep(650);
     }
@@ -2600,6 +2600,28 @@ function recoveryPassword(){
       busy(b,false);
     }
   };
+}
+
+// La interfaz y los datos privados se invalidan en un solo lugar.
+function clearAuthenticatedUi(message=''){
+  state.navSeq++;
+  state.authClosing=false;
+  state.token='';
+  state.user=null;
+  state.view='';
+  state.cache={};
+  localStorage.removeItem('parking_token');
+  clearUiState();
+  stopScanner();
+  login(message);
+}
+
+if(!window.__parkingAuthStateUiBound){
+  window.__parkingAuthStateUiBound=true;
+  window.addEventListener('parking:auth-signed-out',()=>clearAuthenticatedUi());
+  window.addEventListener('parking:auth-invalid',event=>{
+    clearAuthenticatedUi(event.detail?.message||'La sesión ha caducado. Vuelve a iniciar sesión.');
+  });
 }
 
 function login(message=''){
@@ -3204,29 +3226,35 @@ function shell(){
   }
 
   const doLogout=async()=>{
+    if(state.authClosing)return;
     closeMobileMenus();
+    state.authClosing=true;
+    // Invalida los callbacks de navegación antes de cerrar Supabase Auth.
+    state.navSeq++;
+    const token=state.token;
     let remoteFailure=null;
     try{
-      await server('logout',state.token);
+      await server('logout',token);
     }catch(error){
       remoteFailure=error;
-      // Never leave a still-valid local Supabase session after a failed remote sign-out.
       try{
         const client=window.parkingSupabase;
         if(!client?.auth)throw new Error('Supabase client missing');
         const result=await client.auth.signOut({scope:'local'});
-        if(result.error)throw result.error;
+        if(result.error){
+          // 'Auth session missing' indica que el cierre ya se produjo.
+          const current=await client.auth.getSession();
+          if(current.error||current.data?.session)throw result.error;
+        }
       }catch(localFailure){
+        state.authClosing=false;
         toast('No se pudo cerrar sesión; reintentá.',true);
         console.error('Logout failed locally',localFailure);
         return;
       }
     }
-    localStorage.removeItem('parking_token');
-    clearUiState();
-    state.token='';
-    state.user=null;
-    login();
+    // SIGNED_OUT puede haberlo limpiado ya; esta operación es idempotente.
+    clearAuthenticatedUi();
     if(remoteFailure)toast('Sesión cerrada en este dispositivo; no se confirmó el cierre remoto.',true);
   };
 
@@ -3286,9 +3314,10 @@ function closeMobileMenus(){closeMobileUserMenu();closeMobileMore()}
 function stopScanner(){if(state.scanner){try{state.scanner.stop().catch(()=>{})}catch(e){}state.scanner=null}}
 function viewLabel(view){const key={dashboard:'dashboard',search:null,config:'config',dataReview:'dataReview',users:'users',housing:'housing',vehicles:'vehicles',incidents:'incidents',requests:'requests',audit:'audit',control:'control',ownerHome:'ownerHome',ownerHousing:'ownerHousing',ownerVehicles:'ownerVehicles',ownerRequests:'ownerRequests',ownerIncidents:'ownerIncidents',profile:'profile'}[view];return key?t(`nav.${key}`):(view==='search'?t('common.search'):'Parking')}
 function renderLoading(view){const main=$('#main');if(!main)return;main.innerHTML=`<section class="card loading-state"><div class="spinner"></div><h2>${esc(viewLabel(view))}</h2><p class="muted">${esc(t('common.loading'))}</p></section>`}
-function go(view){if(view==='audit'&&activeUiRole()==='ADMIN'&&isMobileViewport())view='dashboard';if(view==='config'&&!canViewConfiguration()){view=defaultViewForRole(activeUiRole());toast(t('errors.configurationForbidden'),true)}if(view==='control'&&activeUiRole()!=='CONTROL'){view=defaultViewForRole(activeUiRole())}closeMobileMenus();stopScanner();state.view=view;rememberCurrentView(view);state.navSeq++;renderNav();renderLoading(view);const fn=({dashboard,search:globalSearchView,config:configurationView,dataReview:consistencyReviewView,users,housing,vehicles,incidents,requests,audit,control,ownerHome,ownerHousing,ownerVehicles,ownerIncidents,ownerRequests,profile}[view]||ownerHome);Promise.resolve()
-  .then(fn)
+function go(view){if(state.authClosing||!state.token||!state.user)return;if(view==='audit'&&activeUiRole()==='ADMIN'&&isMobileViewport())view='dashboard';if(view==='config'&&!canViewConfiguration()){view=defaultViewForRole(activeUiRole());toast(t('errors.configurationForbidden'),true)}if(view==='control'&&activeUiRole()!=='CONTROL'){view=defaultViewForRole(activeUiRole())}closeMobileMenus();stopScanner();state.view=view;rememberCurrentView(view);state.navSeq++;renderNav();renderLoading(view);const navGeneration=state.navSeq;const fn=({dashboard,search:globalSearchView,config:configurationView,dataReview:consistencyReviewView,users,housing,vehicles,incidents,requests,audit,control,ownerHome,ownerHousing,ownerVehicles,ownerIncidents,ownerRequests,profile}[view]||ownerHome);Promise.resolve()
+  .then(()=>state.authClosing||!state.token||navGeneration!==state.navSeq?null:fn())
   .then(()=>{
+    if(state.authClosing||!state.token||navGeneration!==state.navSeq)return;
     enhanceMobileFilterBars();
 
     if(view==='profile'){
@@ -3296,7 +3325,7 @@ function go(view){if(view==='audit'&&activeUiRole()==='ADMIN'&&isMobileViewport(
     }
   })
   .catch(err)}
-function err(e){const message=(e&&e.message)||String(e)||t('errors.loadGeneric');toast(message,true);const main=$('#main');if(!main)return;const stillLoading=!!main.querySelector('.loading-state,.spinner')||!main.textContent.trim();if(stillLoading){const view=state.view;main.innerHTML=`<section class="card retry-state"><h2>${esc(t('errors.loadView',{view:viewLabel(view)}))}</h2><p class="muted">${esc(message)}</p><div class="actions"><button id="retry-view">${esc(t('common.retry'))}</button><button class="secondary" id="retry-home">${esc(t('common.home'))}</button></div></section>`;$('#retry-view').onclick=()=>go(view);$('#retry-home').onclick=()=>go(defaultViewForRole(activeUiRole()))}}
+function err(e){if(state.authClosing||(!state.token&&!$('#main')))return;const message=(e&&e.message)||String(e)||t('errors.loadGeneric');toast(message,true);const main=$('#main');if(!main)return;const stillLoading=!!main.querySelector('.loading-state,.spinner')||!main.textContent.trim();if(stillLoading){const view=state.view;main.innerHTML=`<section class="card retry-state"><h2>${esc(t('errors.loadView',{view:viewLabel(view)}))}</h2><p class="muted">${esc(message)}</p><div class="actions"><button id="retry-view">${esc(t('common.retry'))}</button><button class="secondary" id="retry-home">${esc(t('common.home'))}</button></div></section>`;$('#retry-view').onclick=()=>go(view);$('#retry-home').onclick=()=>go(defaultViewForRole(activeUiRole()))}}
 async function dashboard(){
   try{
     const d=await call('dashboard'),pct=d.slotCapacity?Math.round((d.occupiedSlots/d.slotCapacity)*100):0;
@@ -5373,6 +5402,9 @@ async function incidents(openId=''){
           }
         }
       } catch (e) {
+        // Una consulta iniciada en una sesión anterior no debe reabrir ni
+        // contaminar la pantalla de login tras SIGNED_OUT.
+        if(state.authClosing||!state.token||!$('#incident-report-history'))return;
         console.error('Failed to load historical reports:', e);
       }
     }

@@ -149,7 +149,7 @@ async function call(action,payload={}){
   for(let i=0;i<attempts;i++){
     try{const value=await server('api',state.token,action,payload);recordClientCall(action,performance.now()-callStarted,true);return value}catch(e){
       last=e;
-      if(/sesión|session/i.test(e.message)){recordClientCall(action,performance.now()-callStarted,false,e.message||String(e));localStorage.removeItem('parking_token');state.token='';state.user=null;login(e.message);throw e}
+      if(/sesión|session/i.test(e.message)){recordClientCall(action,performance.now()-callStarted,false,e.message||String(e));window.dispatchEvent(new CustomEvent('parking:auth-invalid',{detail:{message:e.message}}));throw e}
       if(/mantenimiento/i.test(e.message||'')){try{const publicState=await server('getPublicAppState');renderMaintenanceScreen(publicState)}catch(_e){}recordClientCall(action,performance.now()-callStarted,false,e.message||String(e));throw e}
       if(i+1<attempts)await sleep(650);
     }
