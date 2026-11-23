@@ -402,6 +402,22 @@ export function createRouter({
           return response.data;
         }
 
+        case 'regenerateWeeklyReport':
+        case 'listWeeklyReportVersions':
+        case 'restoreWeeklyReport': {
+          const boot=await appBootstrap();
+          if(!boot.user.IsRoot&&!boot.roles.includes('ADMIN'))throw new Error('ADMIN requerido.');
+          const action={regenerateWeeklyReport:'regenerate-weekly-report',
+            listWeeklyReportVersions:'list-weekly-report-versions',restoreWeeklyReport:'restore-weekly-report'}[name];
+          const response=await sb.functions.invoke('parking-notifications',{
+            body:{action,community_id:boot.communityId,period_start:payload.period_start,
+              period_end:payload.period_end,version_id:payload.version_id}
+          });
+          if(response.error)throw new Error(await edgeFunctionError(response.error,'No se pudo operar sobre el Excel.'));
+          if(response.data?.error)throw new Error(response.data.error);
+          return response.data;
+        }
+
         case 'downloadWeeklyReport': {
           const boot=await appBootstrap();
           if(!boot.user.IsRoot&&!boot.roles.includes('ADMIN'))throw new Error('ADMIN requerido.');

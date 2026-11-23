@@ -292,6 +292,10 @@ const PARKING_UI_EN_EXACT={
   'Informes guardados': 'Saved reports',
   'Seleccionar informe': 'Select a report',
   'Seleccioná un informe existente para descargarlo.': 'Select a saved report to download it.',
+  'Versión disponible': 'Available version',
+  'Restaurar versión seleccionada': 'Restore selected version',
+  'Se generará una nueva versión del Excel, conservando la original. ¿Continuar?': 'A new Excel version will be generated, preserving the original. Continue?',
+  'Esta versión pasará a ser la activa. Se conservarán las demás. ¿Restaurar?': 'This version will become active. All other versions will be preserved. Restore?',
 
   'Periodo calculado automáticamente (semana anterior lunes-domingo, hora Madrid)': 'Period calculated automatically (previous Monday-Sunday week, Madrid time)',
   'Selecciona un periodo válido.': 'Select a valid period.',

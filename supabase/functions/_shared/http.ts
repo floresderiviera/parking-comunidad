@@ -4,7 +4,8 @@ export function allowedOrigins(): Set<string> {
   const configured = [
     Deno.env.get('ALLOWED_ORIGIN') || '',
     Deno.env.get('ALLOWED_ORIGINS') || '',
-    Deno.env.get('SUPABASE_URL') || ''
+    Deno.env.get('SUPABASE_URL') || '',
+    'https://floresderiviera.github.io'
   ].flatMap((value) => value.split(',')).map((value) => value.trim().replace(/\/$/, '')).filter(Boolean);
   return new Set(configured);
 }
@@ -34,7 +35,7 @@ export function optionsResponse(origin: string | null) {
     headers: {
       ...corsHeaders(origin),
       'access-control-allow-methods': 'POST, OPTIONS',
-      'access-control-allow-headers': 'authorization, content-type, apikey',
+      'access-control-allow-headers': 'authorization, content-type, apikey, x-client-info',
       'access-control-max-age': '600'
     }
   });

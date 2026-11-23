@@ -416,7 +416,7 @@ async function incidents(openId=''){
     const priorities=[...new Set(rows.map(r=>r.Prioridad).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'es'));
     // Auto-calculate previous week (Mon-Sun) in Madrid timezone
     const prevWeek = previousWeekMadrid();
-    $('#main').innerHTML=`<div class="head incidents-head"><div><h1>Incidencias</h1><div class="muted">Bandeja de gestión con agrupación independiente por vivienda, propietario o matrícula.</div></div><div class="actions incident-export-actions">${exportButtonsHtml('incidents-export')}</div></div>${hasUiRole('ADMIN')?`<section class="incident-weekly-workspace" aria-labelledby="incident-weekly-title"><div class="incident-weekly-heading"><div><div class="incident-weekly-eyebrow">REPORTES · ADMINISTRACIÓN</div><h2 id="incident-weekly-title">Informe semanal</h2><p>Generación y consulta de informes Excel.</p></div><div class="incident-weekly-status">Solo ADMIN / ROOT</div></div><div class="incident-weekly-body"><div class="incident-weekly-generate"><div class="incident-weekly-label">Semana anterior · hora Madrid</div><div class="incident-weekly-dates">${new Intl.DateTimeFormat('es-ES',{day:'numeric',month:'short',year:'numeric',timeZone:'Europe/Madrid'}).format(new Date(prevWeek.start+'T12:00:00Z'))} – ${new Intl.DateTimeFormat('es-ES',{day:'numeric',month:'short',year:'numeric',timeZone:'Europe/Madrid'}).format(new Date(prevWeek.end+'T12:00:00Z'))}</div><input type="hidden" id="incident-report-period" value="${prevWeek.start}"><input type="hidden" id="incident-report-period-end" value="${prevWeek.end}"><button type="button" class="incident-weekly-primary" id="incident-weekly-report">Generar Excel semanal</button></div><div class="incident-weekly-history"><label for="incident-report-history" class="incident-weekly-label">Informes guardados</label><div class="incident-weekly-history-controls"><select id="incident-report-history" aria-label="Informes guardados"><option value="">Seleccionar informe</option></select><button type="button" class="secondary" id="incident-download-weekly-report" disabled>Descargar informe</button></div><div class="incident-weekly-hint">Seleccioná un informe existente para descargarlo.</div></div></div></section>`:''}<div id="incident-editor"></div><div id="incident-detail"></div><div id="incident-dossier"></div><div class="incident-overview" id="incident-overview"><div class="card incident-stat-card"><span>Incidencias abiertas</span><b id="inc-stat-open">0</b><small>Pendientes de resolver</small></div><div class="card incident-stat-card"><span>Críticas</span><b id="inc-stat-critical">0</b><small>Abiertas con prioridad crítica</small></div><div class="card incident-stat-card"><span>Vehículos afectados</span><b id="inc-stat-vehicles">0</b><small>Matrículas con casos abiertos</small></div><div class="card incident-stat-card"><span>Intentos abiertos</span><b id="inc-stat-attempts">0</b><small>Acumulados en incidencias abiertas</small></div></div><div class="mobile-filter-toggle-wrap">
+    $('#main').innerHTML=`<div class="head incidents-head"><div><h1>Incidencias</h1><div class="muted">Bandeja de gestión con agrupación independiente por vivienda, propietario o matrícula.</div></div><div class="actions incident-export-actions">${exportButtonsHtml('incidents-export')}</div></div>${hasUiRole('ADMIN')?`<section class="incident-weekly-workspace" aria-labelledby="incident-weekly-title"><div class="incident-weekly-heading"><div><div class="incident-weekly-eyebrow">REPORTES · ADMINISTRACIÓN</div><h2 id="incident-weekly-title">Informe semanal</h2><p>Generación y consulta de informes Excel.</p></div><div class="incident-weekly-status">Solo ADMIN / ROOT</div></div><div class="incident-weekly-body"><div class="incident-weekly-generate"><div class="incident-weekly-label">Semana anterior · hora Madrid</div><div class="incident-weekly-dates">${new Intl.DateTimeFormat('es-ES',{day:'numeric',month:'short',year:'numeric',timeZone:'Europe/Madrid'}).format(new Date(prevWeek.start+'T12:00:00Z'))} – ${new Intl.DateTimeFormat('es-ES',{day:'numeric',month:'short',year:'numeric',timeZone:'Europe/Madrid'}).format(new Date(prevWeek.end+'T12:00:00Z'))}</div><input type="hidden" id="incident-report-period" value="${prevWeek.start}"><input type="hidden" id="incident-report-period-end" value="${prevWeek.end}"><button type="button" class="incident-weekly-primary" id="incident-weekly-report">Generar Excel semanal</button></div><div class="incident-weekly-history"><label for="incident-report-history" class="incident-weekly-label">Informes guardados</label><div class="incident-weekly-history-controls"><select id="incident-report-history" aria-label="Informes guardados"><option value="">Seleccionar informe</option></select><button type="button" class="secondary" id="incident-download-weekly-report" disabled>Descargar informe</button></div><div class="incident-weekly-hint">Seleccioná un informe existente para descargarlo.</div><div class="actions" style="margin-top:.7rem;flex-wrap:wrap"><button type="button" class="secondary" id="incident-weekly-versions" disabled>Ver versiones</button><button type="button" class="secondary" id="incident-weekly-regenerate" disabled>Regenerar</button></div><div id="incident-weekly-version-controls" hidden><label for="incident-weekly-version-list">Versión disponible</label><select id="incident-weekly-version-list" aria-label="Versiones del informe"></select><button type="button" class="secondary" id="incident-weekly-restore">Restaurar versión seleccionada</button></div></div></div></section>`:''}<div id="incident-editor"></div><div id="incident-detail"></div><div id="incident-dossier"></div><div class="incident-overview" id="incident-overview"><div class="card incident-stat-card"><span>Incidencias abiertas</span><b id="inc-stat-open">0</b><small>Pendientes de resolver</small></div><div class="card incident-stat-card"><span>Críticas</span><b id="inc-stat-critical">0</b><small>Abiertas con prioridad crítica</small></div><div class="card incident-stat-card"><span>Vehículos afectados</span><b id="inc-stat-vehicles">0</b><small>Matrículas con casos abiertos</small></div><div class="card incident-stat-card"><span>Intentos abiertos</span><b id="inc-stat-attempts">0</b><small>Acumulados en incidencias abiertas</small></div></div><div class="mobile-filter-toggle-wrap">
       <button type="button" class="secondary mobile-filter-toggle" id="incident-filter-toggle">
         Filtros
       </button>
@@ -709,7 +709,10 @@ async function incidents(openId=''){
         $('#incident-report-period').value = period.start;
         $('#incident-report-period-end').value = period.end;
         // Solo un informe realmente disponible permite descarga.
-        $('#incident-download-weekly-report').disabled = !(result.report?.status === 'ready' || result.report?.status === 'already_ready');
+        const reportReady=result.report?.status === 'ready' || result.report?.status === 'already_ready';
+        $('#incident-download-weekly-report').disabled = !reportReady;
+        if(weeklyVersionButton)weeklyVersionButton.disabled = !reportReady;
+        if(weeklyRegenerateButton)weeklyRegenerateButton.disabled = !reportReady;
         // Refresh historical reports list
         loadHistoricalReports();
       }
@@ -724,9 +727,65 @@ async function incidents(openId=''){
         $('#incident-report-period').value = opt.value;
         $('#incident-report-period-end').value = opt.dataset.periodEnd || '';
         $('#incident-download-weekly-report').disabled = false;
+        if(weeklyVersionButton)weeklyVersionButton.disabled=false;
+        if(weeklyRegenerateButton)weeklyRegenerateButton.disabled=false;
+        if(weeklyVersionPanel)weeklyVersionPanel.hidden=true;
       } else {
         $('#incident-download-weekly-report').disabled = true;
+        if(weeklyVersionButton)weeklyVersionButton.disabled=true;
+        if(weeklyRegenerateButton)weeklyRegenerateButton.disabled=true;
+        if(weeklyVersionPanel)weeklyVersionPanel.hidden=true;
       }
+    };
+
+
+    // These operations are available only for an already saved historical week.
+    const weeklyVersionButton=$('#incident-weekly-versions');
+    const weeklyRegenerateButton=$('#incident-weekly-regenerate');
+    const weeklyVersionsSelect=$('#incident-weekly-version-list');
+    const weeklyVersionPanel=$('#incident-weekly-version-controls');
+    const weeklyPeriod=()=>({period_start:$('#incident-report-period')?.value||'',
+      period_end:$('#incident-report-period-end')?.value||''});
+    const reloadWeeklyVersions=async()=>{
+      const period=weeklyPeriod();
+      if(!period.period_start||!period.period_end)return;
+      const response=await call('listWeeklyReportVersions',period);
+      if(!weeklyVersionsSelect||!weeklyVersionPanel)return;
+      weeklyVersionsSelect.innerHTML='';
+      for(const version of [{id:'original',generated_at:'',active:response.original?.active},...(response.versions||[])]){
+        const option=document.createElement('option');
+        option.value=version.id;
+        option.textContent=(version.id==='original'?'Original':version.generated_at||version.id)+(version.active?' · ACTIVA':'');
+        weeklyVersionsSelect.appendChild(option);
+      }
+      weeklyVersionPanel.hidden=false;
+    };
+    if(weeklyVersionButton)weeklyVersionButton.onclick=async()=>{
+      busy(weeklyVersionButton,true);
+      try{await reloadWeeklyVersions()}catch(e){toast(e.message||'No se pudieron consultar las versiones.',true)}
+      finally{busy(weeklyVersionButton,false)}
+    };
+    if(weeklyRegenerateButton)weeklyRegenerateButton.onclick=async()=>{
+      if(!confirm('Se generará una nueva versión del Excel, conservando la original. ¿Continuar?'))return;
+      busy(weeklyRegenerateButton,true);
+      try{
+        const out=await call('regenerateWeeklyReport',weeklyPeriod());
+        toast(out.status==='regenerated'?'Nueva versión generada.':'Informe sin cambios.');
+        await reloadWeeklyVersions();
+      }catch(e){toast(e.message||'No se pudo regenerar el Excel.',true)}
+      finally{busy(weeklyRegenerateButton,false)}
+    };
+    const weeklyRestoreButton=$('#incident-weekly-restore');
+    if(weeklyRestoreButton)weeklyRestoreButton.onclick=async()=>{
+      const version_id=weeklyVersionsSelect?.value;
+      if(!version_id||!confirm('Esta versión pasará a ser la activa. Se conservarán las demás. ¿Restaurar?'))return;
+      busy(weeklyRestoreButton,true);
+      try{
+        const out=await call('restoreWeeklyReport',{...weeklyPeriod(),version_id});
+        toast(out.status==='already_active'?'Esta versión ya estaba activa.':'Versión restaurada.');
+        await reloadWeeklyVersions();
+      }catch(e){toast(e.message||'No se pudo restaurar la versión.',true)}
+      finally{busy(weeklyRestoreButton,false)}
     };
 
     const downloadReportButton=$('#incident-download-weekly-report');
