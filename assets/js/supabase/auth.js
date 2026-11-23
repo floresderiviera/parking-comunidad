@@ -187,8 +187,15 @@
         }
       } catch (_) {}
 
-      if (waitForIdle) {
-        await waitForIdle();
+      // No revocar Auth mientras quedan lecturas privadas en vuelo.
+      // Si aun hay actividad, no hacer signOut a mitad de una consulta.
+      const idle = waitForIdle
+        ? await waitForIdle(7500, 900)
+        : true;
+      if (!idle) {
+        throw new Error(
+          'No se pudo cerrar sesión; reintentá.'
+        );
       }
 
       invalidate();

@@ -27,8 +27,8 @@ export function createRuntime() {
   }
 
   async function waitForIdle(
-    timeoutMs = 4000,
-    quietMs = 500
+    timeoutMs = 7500,
+    quietMs = 900
   ) {
     const startedAt = Date.now();
 

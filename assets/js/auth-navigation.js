@@ -859,6 +859,11 @@ function shell(){
       await server('logout',token);
     }catch(error){
       remoteFailure=error;
+      if(error?.message==='No se pudo cerrar sesión; reintentá.'){
+        state.authClosing=false;
+        toast(error.message,true);
+        return;
+      }
       try{
         const client=window.parkingSupabase;
         if(!client?.auth)throw new Error('Supabase client missing');
